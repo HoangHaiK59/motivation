@@ -26,21 +26,25 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
-  self.launchOptions = launchOptions;
+//   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
+//   self.launchOptions = launchOptions;
 
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-#ifdef DEBUG
-  [self initializeReactNativeApp];
-#else
-  EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
-  controller.delegate = self;
-  [controller startAndShowLaunchScreen:self.window];
-#endif
+//   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+// #ifdef DEBUG
+//   [self initializeReactNativeApp];
+// #else
+//   EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
+//   controller.delegate = self;
+//   [controller startAndShowLaunchScreen:self.window];
+// #endif
 
-  [super application:application didFinishLaunchingWithOptions:launchOptions];
+//   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
-  return YES;
+//   return YES;
+
+  NSURL *jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+     [ReactNativeNavigation bootstrap:jsCodeLocation launchOptions:launchOptions];
+     return YES;
 }
 
 - (RCTBridge *)initializeReactNativeApp

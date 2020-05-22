@@ -1,6 +1,19 @@
 import { registerRootComponent } from 'expo';
+import { Navigation } from 'react-native-navigation';
 
 import App from './App';
+// import registerScreens from './App';
+// registerScreens();
+
+// Navigation.events().registerAppLaunchedListener(() => {
+//     Navigation.setRoot({
+//         root: {
+//             component: {
+//                 name: 'Dashboard'
+//             }
+//         }
+//     })
+// })
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in the Expo client or in a native build,

@@ -1,19 +1,22 @@
 import * as React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
+//import { Navigation } from 'react-native-navigation';
+import Container from './src/container';
 
 const instructions = Platform.select({
   ios: `Press Cmd+R to reload,\nCmd+D or shake for dev menu`,
   android: `Double tap R on your keyboard to reload,\nShake or press menu button for dev menu`,
 });
 
+
+// export default function registerScreens() {
+//     Navigation.registerComponent('Dashboard', () => require('./components/dashboard').default);
+// }
+
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.welcome}>Welcome to React Native!</Text>
-      <Text style={styles.instructions}>To get started, edit App.js</Text>
-      <Text style={styles.instructions}>{instructions}</Text>
-    </View>
-  );
+    return (
+      <Container />
+    )
 }
 
 const styles = StyleSheet.create({
@@ -21,12 +24,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#121212'
   },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
+    color: '#333333'
   },
   instructions: {
     textAlign: 'center',
