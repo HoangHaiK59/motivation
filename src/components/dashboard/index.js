@@ -1,12 +1,12 @@
 import * as React from 'react';
 //import Animated from 'react-native-reanimated';
-import { View, StyleSheet, Text, TouchableWithoutFeedback, Animated, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableWithoutFeedback, Animated, Dimensions, YellowBox } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Activity from '../activity';
-import firebase from '../../firebase';
 
 const { width, height } = Dimensions.get('window');
 
+YellowBox.ignoreWarnings(['Setting a timer']);
 
 
 export default function Dashboard(props) {
@@ -21,18 +21,6 @@ export default function Dashboard(props) {
         {key: 'Saturday', title: 'Saturday'},
         {key: 'Sunday', title: 'Sunday'},
     ]);
-
-    React.useEffect(() => {
-        // firebase.firestore(firebase.app('motivation')).collection('activity').get()
-        // .then(result => {
-        //     console.log(result.docs)
-        //     if(result.docs.length> 0) {
-        //         let activity = [];
-        //         result.docs.forEach(doc => activity.push(doc.data()));
-        //         setData(activity);
-        //     }
-        // })
-    }, [])
 
     const renderScene = SceneMap({
         Monday: () => <Activity />,

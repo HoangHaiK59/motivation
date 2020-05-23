@@ -2,6 +2,15 @@ import * as React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 //import { Navigation } from 'react-native-navigation';
 import Container from './src/container';
+import { decode, encode } from 'base-64';
+
+if(!global.btoa) {
+  global.btoa = encode;
+}
+
+if(!global.atob) {
+  global.atob = decode;
+}
 
 const instructions = Platform.select({
   ios: `Press Cmd+R to reload,\nCmd+D or shake for dev menu`,
