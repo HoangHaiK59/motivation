@@ -1,7 +1,7 @@
 import * as React from 'react';
 // import { View, StyleSheet } from 'react-native';
 //import { Navigation } from 'react-native-navigation';
-import { View, StatusBar, StyleSheet } from 'react-native';
+import { View, StatusBar, StyleSheet, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -13,7 +13,12 @@ import Creative from '../components/creative';
 import Diary from '../components/diary';
 import Relax from '../components/relax';
 import Statistic from '../components/statistic';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
+import Maxim from '../components/maxim';
+import Travel from '../components/travel';
+import Style from '../components/style';
+import Detail from '../components/activity/detail';
+import DetailBook from '../components/book/detail';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,12 +27,17 @@ function HomeStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Book" component={Book} options={{ headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Sport" component={Sport} options={{ headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Task" component={Task} options={{ headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Creative" component={Creative} options={{ headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Diary" component={Diary} options={{ headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Relax" component={Relax} options={{ headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Book" component={Book} options={{headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Sport" component={Sport} options={{headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Task" component={Task} options={{headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Creative" component={Creative} options={{headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Diary" component={Diary} options={{headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Relax" component={Relax} options={{headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Maxim" component={Maxim} options={{headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Travel" component={Travel} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Style" component={Style} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Detail Book" component={DetailBook} options={{ headerShown: false, headerTitleAlign: 'center' }} />
         </Stack.Navigator>
     )
 }
@@ -51,16 +61,27 @@ export default function Container() {
                 }
             }}>
                 <Tab.Navigator
+                tabBarOptions={{
+                    style: {
+                        backgroundColor: '#121212'
+                    },
+                    tabStyle: {
+                        height: 45
+                    },
+                    labelStyle: {
+                        color: '#c4c0c0'
+                    }
+                }}
                 screenOptions={( {route} ) => ({tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
                     if(route.name === 'Home') {
-                        iconName = focused ? 'ios-information-circle': 'ios-information-circle-outline'
+                        iconName = focused ? 'home': 'home'
                     } else if ((route.name === 'Statistic')) {
                         iconName = focused
-                        ? 'ios-list-box'
-                        : 'ios-list';
+                        ? 'line-chart'
+                        : 'line-chart';
                     }
-                    return <Ionicons name={iconName} size={size} color={color} />;
+                    return <FontAwesome name={iconName} size={size} color={color} />;
                 } })}
                 >
                     <Tab.Screen name="Home" component={HomeStack} />

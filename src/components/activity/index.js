@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, YellowBox, Modal, ScrollView, FlatList, TouchableHighlight, Dimensions } from 'react-native';
 import firebase, { getAppName, DB } from '../../firebase';
+import { FontAwesome } from '@expo/vector-icons';
 
 YellowBox.ignoreWarnings(['Setting a timer']);
+
+const { width, height } = Dimensions.get('window');
 
 class Activity extends React.Component {
     constructor(props) {
@@ -12,6 +15,12 @@ class Activity extends React.Component {
             activity: null,
             visible: false
         }
+    }
+
+    handlePressView(router, options) {
+        this.props.navigation.navigate(router, {
+            data: options
+        })
     }
 
     componentDidMount() {
@@ -33,21 +42,27 @@ class Activity extends React.Component {
                     this.state.activity && <View style={styles.activityContainer}>
                         {
                             <>
-                                <Text style={styles.header}>
-                                    {
-                                        this.state.activity[0].name
-                                    }
-                                </Text>
+                                <View style={styles.headerContainer}>
+                                    <FontAwesome style={{ marginTop: 5 }} name="tasks" size={15} color="#db9e5c" />
+                                    <Text style={[styles.header, { marginLeft: 10 }]}>
+                                        {
+                                            this.state.activity[0].name
+                                        }
+                                    </Text>
+                                </View>
                                 <View style={styles.list}>
-                                    <FlatList
-                                        data={this.state.activity[0].activities.map((activity, id) => ({ ...activity, key: `${id}` }))}
-                                        renderItem={({ item }) => <TouchableHighlight onPress={() => this.setState({ visible: true })} >
-                                            <Text style={styles.text}>{item.name}</Text>
-                                        </TouchableHighlight>}
-                                    />
+                                    {
+                                        this.state.activity[0].activities.map((activity, id) =>
+                                            <View key={id} style={styles.content}>
+                                                <View style={styles.left}></View>
+                                                <TouchableHighlight style={styles.center} key={id} onPress={() => this.handlePressView('Detail', activity)} >
+                                                    <Text numberOfLines={1} ellipsizeMode="head" style={styles.text}>{activity.name}</Text>
+                                                </TouchableHighlight>
+                                                <Text style={[styles.right, styles.text]}>{activity.time_start} - {activity.time_end + 'h'}</Text>
+                                            </View>)
+                                    }
                                 </View>
                             </>
-
                         }
 
                     </View>
@@ -100,7 +115,13 @@ const styles = StyleSheet.create({
     activityContainer: {
         flex: 1,
         justifyContent: 'flex-start',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        marginTop: 3
+    },
+    headerContainer: {
+        flex: 0.2,
+        flexDirection: 'row',
+        justifyContent: 'flex-start'
     },
     header: {
         color: '#c4c0c0',
@@ -110,6 +131,27 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'flex-start'
+    },
+    content: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-start'
+    },
+    left: {
+        width: 15,
+        borderRadius: 500,
+        height: 15,
+        backgroundColor: '#295191',
+        marginTop: 3
+    },
+    center: {
+        marginLeft: 20,
+        width: width - 110,
+        overflow: 'hidden'
+    },
+    right: {
+        width: 45,
+        textAlign: 'right'
     },
     text: {
         color: '#c4c0c0',
