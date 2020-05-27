@@ -182,6 +182,7 @@ class Book extends React.Component {
                             <Text style={styles.marginLeft}>Category</Text>
                             <TextInput
                                 style={[styles.textInput, styles.marginLeft]}
+                                keyboardType={"numeric"}
                                 selectTextOnFocus={true}
                                 multiline={true}
                                 onChangeText={text => this.handleChangeText(parseInt(text), 'category')}
@@ -197,6 +198,7 @@ class Book extends React.Component {
                             <TextInput
                                 style={[styles.textInput, styles.marginLeft]}
                                 selectTextOnFocus={true}
+                                keyboardType={"numeric"}
                                 multiline={true}
                                 onChangeText={text => this.handleChangeText(parseInt(text), 'num_of_page_read')}
                                 value={this.state.model.num_of_page_read}
@@ -205,6 +207,7 @@ class Book extends React.Component {
                             <TextInput
                                 style={[styles.textInput, styles.marginLeft]}
                                 selectTextOnFocus={true}
+                                keyboardType={"numeric"}
                                 multiline={true}
                                 onChangeText={text => this.handleChangeText(parseInt(text), 'total_page')}
                                 value={this.state.model.total_page}

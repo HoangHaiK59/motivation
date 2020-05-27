@@ -15,6 +15,8 @@ class Activity extends React.Component {
             activity: null,
             visible: false
         }
+
+        this._isMounted = false;
     }
 
     handlePressView(router, options) {
@@ -24,14 +26,21 @@ class Activity extends React.Component {
     }
 
     componentDidMount() {
-        firebase.firestore(getAppName()).collection(DB.activity).get()
-            .then(result => {
-                if (result.docs.length > 0) {
-                    let activity = [];
-                    result.docs.forEach(doc => activity.push(doc.data()));
-                    this.setState({ activity })
-                }
-            })
+        this._isMounted = true;
+        //if(this.isMounted) {
+            firebase.firestore(getAppName()).collection(DB.activity).get()
+                .then(result => {
+                    if (result.docs.length > 0) {
+                        let activity = [];
+                        result.docs.forEach(doc => activity.push(doc.data()));
+                        this.setState({ activity })
+                    }
+                })
+        //}
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     render() {
