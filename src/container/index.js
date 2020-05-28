@@ -38,7 +38,7 @@ function HomeStack() {
             <Stack.Screen name="Travel" component={Travel} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Style" component={Style} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Detail Book" component={DetailBook} options={({route}) => ({ data: route.params.data, headerShown: false, headerTitleAlign: 'center' })} />
+            <Stack.Screen name="Detail Book" component={DetailBook} options={({route, navigation}) => ({ data: route.params.data, headerShown: false, headerTitleAlign: 'center' })} />
             <Stack.Screen name="Detail Travel" component={DetailTravel} options={({ route }) => ({ headerShown: true, headerTitleAlign: 'center', title: route.params.title })} />
         </Stack.Navigator>
     )

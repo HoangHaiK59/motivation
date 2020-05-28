@@ -38,7 +38,7 @@ export default function DetailTravel({ route }) {
     React.useEffect(() => {
         let items = [];
         const name = map(params.ref);
-        firebase.firestore(getAppName())
+        firebase.firestore()
         .collection(`${DB.travel}/${name}/albums`)
         .get()
         .then(result => {
@@ -79,15 +79,15 @@ export default function DetailTravel({ route }) {
         const response = await fetch(file.uri);
         const blob = await response.blob();
         const name = map(params.ref);
-        firebase.storage(getAppName()).ref()
+        firebase.storage().ref()
         .child(ref + `/${file.name}`)
         .put(blob)
         .then(snapShot=> {
-            firebase.storage(getAppName()).ref()
+            firebase.storage().ref()
             .child(snapShot.metadata.fullPath)
             .getDownloadURL()
             .then(url => {
-                firebase.firestore(getAppName()).collection(`${DB.travel}/${name}/albums`)
+                firebase.firestore().collection(`${DB.travel}/${name}/albums`)
                 .add({ 
                     contentType: snapShot.metadata.contentType,
                     fullPath: snapShot.metadata.fullPath,

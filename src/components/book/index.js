@@ -26,13 +26,13 @@ class Book extends React.Component {
             }
         }
 
-        this.firebaseRef = firebase.firestore(getAppName()).collection(DB.book);
+        this.firebaseRef = firebase.firestore().collection(DB.book);
     }
 
     copyDocument() {
         this.firebaseRef.get()
             .then(result => result.docs.forEach(doc => {
-                firebase.firestore(getAppName()).collection(DB.book).add(doc.data())
+                firebase.firestore().collection(DB.book).add(doc.data())
             }))
     }
 

@@ -13,7 +13,7 @@ class Travel extends React.Component {
             folders: []
         }
 
-        this.storageRef = firebase.storage(getAppName()).ref();
+        this.storageRef = firebase.storage().ref();
     }
 
     getAll() {

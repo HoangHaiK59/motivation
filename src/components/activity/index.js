@@ -28,7 +28,7 @@ class Activity extends React.Component {
     componentDidMount() {
         this._isMounted = true;
         if(this._isMounted) {
-            firebase.firestore(getAppName()).collection(DB.activity).get()
+            firebase.firestore().collection(DB.activity).get()
                 .then(result => {
                     if (result.docs.length > 0) {
                         let activity = [];
@@ -36,6 +36,19 @@ class Activity extends React.Component {
                         this.setState({ activity })
                     }
                 })
+        }
+    }
+
+    componentDidUpdate() {
+        if(this._isMounted) {
+            firebase.firestore().collection(DB.activity).get()
+            .then(result => {
+                if (result.docs.length > 0) {
+                    let activity = [];
+                    result.docs.forEach(doc => activity.push(doc.data()));
+                    this.setState({ activity })
+                }
+            })
         }
     }
 
