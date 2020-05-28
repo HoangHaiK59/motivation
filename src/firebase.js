@@ -12,7 +12,7 @@ const firebaseConfig = {
     measurementId : " G-66GKN8R0BR " 
 };
 
-firebase.initializeApp(firebaseConfig, 'motivation');
+firebase.initializeApp(firebaseConfig);
 
 export const DB = {
     activity: 'activity',
@@ -21,7 +21,8 @@ export const DB = {
     diary: 'diary',
     relax: 'relax',
     sport: 'sport',
-    task: 'task'
+    task: 'task',
+    travel: 'travel'
 };
 
 const appName = 'motivation';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View, InteractionManager } from 'react-native';
 //import { Navigation } from 'react-native-navigation';
 import Container from './src/container';
 import { decode, encode } from 'base-64';
@@ -47,7 +47,7 @@ if (Platform.OS === "android") {
   };
 
   global.clearTimeout = id => {
-    if (typeof id === "string" && id.startWith("_lt_")) {
+    if (typeof id === "string" && id.startsWith("_lt_")) {
       _clearTimeout(timerFix[id]);
       delete timerFix[id];
       return;

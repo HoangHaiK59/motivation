@@ -27,7 +27,7 @@ class Activity extends React.Component {
 
     componentDidMount() {
         this._isMounted = true;
-        //if(this.isMounted) {
+        if(this._isMounted) {
             firebase.firestore(getAppName()).collection(DB.activity).get()
                 .then(result => {
                     if (result.docs.length > 0) {
@@ -36,7 +36,7 @@ class Activity extends React.Component {
                         this.setState({ activity })
                     }
                 })
-        //}
+        }
     }
 
     componentWillUnmount() {

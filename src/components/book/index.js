@@ -67,9 +67,7 @@ class Book extends React.Component {
     }
 
     handleViewDetail(router, options) {
-        this.props.navigation.navigate(router, {
-            data: options
-        })
+        this.props.navigation.navigate(router, {data: options});
     }
 
     handleChangeText(text, modelField) {
@@ -157,7 +155,7 @@ class Book extends React.Component {
                     visible={this.state.visible}
                     animationType="slide"
                     transparent={true}
-                    onRequestClose={() => { }}>
+                    onRequestClose={() => {}}>
                     <View style={styles.centerView}>
                         <View style={styles.modalView}>
                             <Text style={styles.marginLeft}>Name</Text>
@@ -185,7 +183,7 @@ class Book extends React.Component {
                                 keyboardType={"numeric"}
                                 selectTextOnFocus={true}
                                 multiline={true}
-                                onChangeText={text => this.handleChangeText(parseInt(text), 'category')}
+                                onChangeText={text => this.handleChangeText(text, 'category')}
                                 value={this.state.model.category} />
                             <Text style={styles.marginLeft}>Note</Text>
                             <TextInput
