@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, YellowBox, Modal, ScrollView, FlatList, TouchableHighlight, Dimensions } from 'react-native';
-import firebase, { getAppName, DB } from '../../firebase';
+import Firebase, { getAppName, DB } from '../../firebase';
 import { FontAwesome } from '@expo/vector-icons';
 
 YellowBox.ignoreWarnings(['Setting a timer']);
@@ -28,7 +28,7 @@ class Activity extends React.Component {
     componentDidMount() {
         this._isMounted = true;
         if(this._isMounted) {
-            firebase.firestore().collection(DB.activity).get()
+            Firebase.firestore().collection(DB.activity).get()
                 .then(result => {
                     if (result.docs.length > 0) {
                         let activity = [];
@@ -41,7 +41,7 @@ class Activity extends React.Component {
 
     componentDidUpdate() {
         if(this._isMounted) {
-            firebase.firestore().collection(DB.activity).get()
+            Firebase.firestore().collection(DB.activity).get()
             .then(result => {
                 if (result.docs.length > 0) {
                     let activity = [];

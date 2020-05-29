@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, CheckBox, Dimensions, TouchableHighlight } from 'react-native';
-import firebase, { getAppName, DB } from '../../firebase';
+import Firebase, { getAppName, DB } from '../../firebase';
 import { FontAwesome } from '@expo/vector-icons';
 
 console.ignoredYellowBox = ['Setting a timer'];
@@ -26,7 +26,7 @@ class Book extends React.Component {
             }
         }
 
-        this.firebaseRef = firebase.firestore().collection(DB.book);
+        this.firebaseRef = Firebase.firestore().collection(DB.book);
     }
 
     copyDocument() {
@@ -34,10 +34,6 @@ class Book extends React.Component {
             .then(result => result.docs.forEach(doc => {
                 firebase.firestore().collection(DB.book).add(doc.data())
             }))
-    }
-
-    updateDocument() {
-
     }
 
     getBooks() {
@@ -50,20 +46,6 @@ class Book extends React.Component {
                     this.setState({ books })
                 }
             })
-    }
-
-    createCommentNote(docId, comments, comment) {
-        this.firebaseRef.doc(docId).update({
-            note: [...comments, comment]
-        }).then()
-            .catch(err => console.log(err))
-    }
-
-    handleChangeFarvorite(docId, state) {
-        this.firebaseRef.doc(docId).update({
-            is_farvorite: state
-        }).then()
-            .catch(err => console.log(err))
     }
 
     handleViewDetail(router, options) {
@@ -130,9 +112,7 @@ class Book extends React.Component {
                                 <Image source={{ uri: book.image }} style={[styles.image, { opacity: .5 }]}>
                                 </Image>
                                 <TouchableOpacity onPress={() => this.handleViewDetail('Detail Book', {
-                                    book: book,
-                                    handleChangeFarvorite: this.handleChangeFarvorite.bind(this),
-                                    createCommentNote: this.createCommentNote.bind(this)
+                                    book: book
                                 })}>
                                     <Text style={[styles.text]}>{book.name}</Text>
                                 </TouchableOpacity>

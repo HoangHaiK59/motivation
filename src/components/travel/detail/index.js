@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, ScrollView, StyleSheet, Text, Image, Modal, Dimensions, TouchableOpacity, TextInput } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import firebase, { getAppName, DB } from '../../../firebase';
+import Firebase, { getAppName, DB } from '../../../firebase';
 //import ImagePicker from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { map } from '../../../helper/map';
@@ -38,7 +38,7 @@ export default function DetailTravel({ route }) {
     React.useEffect(() => {
         let items = [];
         const name = map(params.ref);
-        firebase.firestore()
+        Firebase.firestore()
         .collection(`${DB.travel}/${name}/albums`)
         .get()
         .then(result => {
@@ -79,15 +79,15 @@ export default function DetailTravel({ route }) {
         const response = await fetch(file.uri);
         const blob = await response.blob();
         const name = map(params.ref);
-        firebase.storage().ref()
+        Firebase.storage().ref()
         .child(ref + `/${file.name}`)
         .put(blob)
         .then(snapShot=> {
-            firebase.storage().ref()
+            Firebase.storage().ref()
             .child(snapShot.metadata.fullPath)
             .getDownloadURL()
             .then(url => {
-                firebase.firestore().collection(`${DB.travel}/${name}/albums`)
+                Firebase.firestore().collection(`${DB.travel}/${name}/albums`)
                 .add({ 
                     contentType: snapShot.metadata.contentType,
                     fullPath: snapShot.metadata.fullPath,

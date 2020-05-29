@@ -72,7 +72,8 @@ export default function Container() {
                     },
                     labelStyle: {
                         color: '#c4c0c0'
-                    }
+                    },
+                    keyboardHidesTabBar: true
                 }}
                 screenOptions={( {route} ) => ({tabBarIcon: ({ focused, color, size }) => {
                     let iconName;

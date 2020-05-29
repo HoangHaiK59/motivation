@@ -1,15 +1,31 @@
 import * as React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Modal, TextInput, TouchableHighlight, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import Firebase, {DB} from '../../../firebase';
 
 const { width } = Dimensions.get('window');
 
-export default function DetailBook({ route }) {
-    const { data } = route.params;
-    const { book, handleChangeFarvorite, createCommentNote } = data;
+export default function DetailBook({ route, navigation }) {
+    const { book } = route.params.data;
     const [state, setState] = React.useState(book.is_farvorite);
     const [visible, setVisible] = React.useState(false);
     const [comment, setComment] = React.useState('');
+    const firebaseRef = Firebase.firestore().collection(DB.book);
+
+    function createCommentNote(docId, comments, comment) {
+        firebaseRef.doc(docId).update({
+            note: [...comments, comment]
+        }).then()
+            .catch(err => console.log(err))
+    }
+
+    function handleChangeFarvorite(docId, state) {
+        firebaseRef.doc(docId).update({
+            is_farvorite: state
+        }).then()
+            .catch(err => console.log(err))
+    }
+
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.container}>
