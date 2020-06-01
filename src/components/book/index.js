@@ -109,12 +109,10 @@ class Book extends React.Component {
                                 <View style={styles.label}>
                                     <Text style={styles.labelText}>{book.num_of_page_read}/{book.total_page}</Text>
                                 </View>
-                                <Image source={{ uri: book.image }} style={[styles.image, { opacity: .5 }]}>
-                                </Image>
                                 <TouchableOpacity onPress={() => this.handleViewDetail('Detail Book', {
                                     book: book
                                 })}>
-                                    <Text style={[styles.text]}>{book.name}</Text>
+                                    <Image source={{ uri: book.image }} style={[styles.image, { opacity: .5 }]} />
                                 </TouchableOpacity>
                             </View>) : null
                         }

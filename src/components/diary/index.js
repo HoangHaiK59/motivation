@@ -123,7 +123,6 @@ class Diary extends React.Component {
                     <View style={styles.filter}>
                         <Picker mode={"dropdown"} style={styles.picker} selectedValue={this.state.year}
                             onValueChange={(year, index) => this.setState({ year })}>
-                            <Picker.Item label='2019' value='2019' />
                             <Picker.Item label='2020' value='2020' />
                         </Picker>
                     </View>
@@ -133,7 +132,13 @@ class Diary extends React.Component {
                                  this.state.months.length > 0 ? this.state.months.sort((a, b) => {
                                      return a.data.month - b.data.month
                                  })
-                                 .map((month, id) => <TouchableOpacity key={id}>
+                                 .slice(0, new Date().getMonth() + 1)
+                                 .map((month, id) => <TouchableOpacity key={id} onPress={() => this.props.navigation.navigate('Detail Diary', {
+                                     id: month.id,
+                                     month: month.data.month,
+                                     name: mapMonth(month.data.month),
+                                     year: this.state.year
+                                 })}>
                                  <View style={styles.item}>
                                      <Image source={{ uri: month.data.url }} style={{ width: width-85, height: 400, opacity: .5 }}/>
                                      <View style={styles.viewAbs}>
