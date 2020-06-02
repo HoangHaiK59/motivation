@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, TouchableOpacity, Picker, Modal, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import Firebase, {DB} from '../../firebase';
+import Firebase from '../../firebase';
+import { DB } from '../../helper/db';
 
 const { width, height } = Dimensions.get('window');
 
@@ -34,6 +35,7 @@ class Diary extends React.Component {
 
     getMonth() {
         this.firestoreRef.collection(DB.month)
+        .orderBy('month')
         .get()
         .then(result => {
             if(result.docs.length > 0) {
@@ -126,14 +128,12 @@ class Diary extends React.Component {
                             <Picker.Item label='2020' value='2020' />
                         </Picker>
                     </View>
-                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} centerContent={true} contentContainerStyle={{ flexGrow: 1, marginTop: 15 }}>
+                    <ScrollView  horizontal={true} showsHorizontalScrollIndicator={false} centerContent={true} contentContainerStyle={{ flexGrow: 1, marginTop: 15 }}>
                         <View style={styles.cardContainer}>
                              {
-                                 this.state.months.length > 0 ? this.state.months.sort((a, b) => {
-                                     return a.data.month - b.data.month
-                                 })
+                                 this.state.months.length > 0 ? this.state.months
                                  .slice(0, new Date().getMonth() + 1)
-                                 .map((month, id) => <TouchableOpacity key={id} onPress={() => this.props.navigation.navigate('Detail Diary', {
+                                 .map((month, id) => <TouchableOpacity key={id} onPress={() => this.props.navigation.navigate('Month', {
                                      id: month.id,
                                      month: month.data.month,
                                      name: mapMonth(month.data.month),

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, FlatList, SafeAreaView, TouchableOpacity, Modal, TextInput } from 'react-native';
-import Firebase, { DB } from '../../../firebase';
+import Firebase from '../../../firebase';
+import { DB } from '../../../helper/db';
 import Constants from 'expo-constants';
 import moment from 'moment';
 import * as ImagePicker from 'expo-image-picker';
@@ -15,9 +16,9 @@ const Mapday = (day) => {
     return arr.find((val, id) => id === valueId)
 }
 
-const Item = ({ id, title, selected, onSelect }) => {
+const Item = ({ id, year, collectionId, image,  title,name, selected, onSelect }) => {
     return <TouchableOpacity
-        onPress={() => onSelect(id)}
+        onPress={() => onSelect(id, year, collectionId, name)}
         style={[
             styles.item, {
                 backgroundColor: selected ? '#2d4269' : '#132426'
@@ -25,17 +26,24 @@ const Item = ({ id, title, selected, onSelect }) => {
         ]}>
         <View style={styles.itemLeft}>
             <View style={styles.textInLeft}>
-                <Text style={styles.text}>{id.slice(0, id.indexOf('-'))}</Text>
-                <Text style={styles.text}>{id.slice(id.indexOf('-') + 1, id.length)}</Text>
+                <Text style={[styles.text, {fontWeight: 'bold'}]}>{id.slice(0, id.indexOf('-'))}</Text>
+                <Text style={[styles.text, {fontWeight: 'bold'}]}>{id.slice(id.indexOf('-') + 1, id.length)}</Text>
             </View>
         </View>
         <View style={styles.itemRight}>
-            <Text style={styles.text}>{title}</Text>
+            {
+                image !== '' ? <Image source={{uri: image }} style={styles.image} />:
+                <View style={{width: width - 70, height: 'auto' }}>
+                    <Text style={[styles.textStyle, {fontWeight: 'bold'}]}>&#8221;</Text>
+                    <Text style={[styles.textStyle, {alignSelf: 'center'}]}>{title}</Text>
+                    <Text style={[styles.textStyle, {alignSelf: 'flex-end', fontWeight: 'bold'}]}>&#8221;</Text>
+                </View>
+            }
         </View>
     </TouchableOpacity>
 }
 
-export default function Month({ route }) {
+export default function Month({ route, navigation }) {
     const [file, setFile] = React.useState({});
     const [visible, setVisible] = React.useState(false);
     const [selected, setSelected] = React.useState(new Map());
@@ -47,11 +55,12 @@ export default function Month({ route }) {
     const storageRef = Firebase.storage().ref();
     const { params } = route;
 
-    const onSelect = React.useCallback(id => {
+    const onSelect = React.useCallback((id, year, collectionId, name) => {
         const newSelected = new Map(selected);
         newSelected.set(id, !selected.get(id));
 
         setSelected(newSelected);
+        navigation.navigate('Day', {id, year, collectionId, name})
     }, [selected]);
 
     React.useEffect(() => {
@@ -153,7 +162,11 @@ export default function Month({ route }) {
                 data={items}
                 renderItem={({item}) => (<Item 
                     id={item.id}
+                    collectionId={params.id}
+                    year={params.year}
+                    image={item.url}
                     title={item.title}
+                    name={params.name}
                     selected={!!selected.get(item.id)}
                     onSelect={onSelect}
                     />)}
@@ -222,7 +235,7 @@ const styles = StyleSheet.create({
     },
     item: {
         backgroundColor: '#f9c2ff',
-        padding: 20,
+        padding: 5,
         marginVertical: 8,
         marginHorizontal: 8,
         flexDirection: 'row'
@@ -233,11 +246,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'column'
     },
+    image: {
+        width: width - 65,
+        height: 150
+    },
     textInLeft: {
         alignItems: 'center',
     },
     itemRight: {
-        alignItems: 'center',
+        justifyContent: 'center',
+        height: 150
+    },
+    textStyle: {
+        color: '#c4c0c0',
+        fontSize: 17
     },
     text: {
         color: '#c4c0c0',

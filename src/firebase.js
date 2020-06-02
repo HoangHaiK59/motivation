@@ -13,23 +13,4 @@ const firebaseConfig = {
 };
 
 const Firebase = firebase.initializeApp(firebaseConfig);
-
-export const DB = {
-    activity: 'activity',
-    book: 'book',
-    creative: 'creative',
-    diary: 'diary',
-    relax: 'relax',
-    sport: 'sport',
-    task: 'task',
-    travel: 'travel',
-    month: 'month'
-};
-
-const appName = 'motivation';
-
-export const getAppName = () => {
-    return firebase.app(appName);
-}
-
 export default Firebase;

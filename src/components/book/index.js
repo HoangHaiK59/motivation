@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, CheckBox, Dimensions, TouchableHighlight } from 'react-native';
-import Firebase, { getAppName, DB } from '../../firebase';
+import Firebase from '../../firebase';
+import { DB } from '../../helper/db';
 import { FontAwesome } from '@expo/vector-icons';
 
 console.ignoredYellowBox = ['Setting a timer'];

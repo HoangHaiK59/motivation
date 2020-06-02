@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, YellowBox, Modal, ScrollView, FlatList, TouchableHighlight, Dimensions } from 'react-native';
-import Firebase, { getAppName, DB } from '../../firebase';
+import Firebase from '../../firebase';
+import { DB } from '../../helper/db';
 import { FontAwesome } from '@expo/vector-icons';
 
 YellowBox.ignoreWarnings(['Setting a timer']);

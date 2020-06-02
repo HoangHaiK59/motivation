@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { View, ScrollView, StyleSheet, Text, Image, Modal, Dimensions, TouchableOpacity, TextInput } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import Firebase, { getAppName, DB } from '../../../firebase';
+import Firebase from '../../../firebase';
+import { DB } from '../../../helper/db';
 //import ImagePicker from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { map } from '../../../helper/map';

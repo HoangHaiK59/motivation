@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Modal, TextInput, TouchableHighlight, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import Firebase, {DB} from '../../../firebase';
+import Firebase from '../../../firebase';
+import { DB } from '../../../helper/db';
 
 const { width } = Dimensions.get('window');
 

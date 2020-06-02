@@ -21,6 +21,7 @@ import Detail from '../components/activity/detail';
 import DetailBook from '../components/book/detail';
 import DetailTravel from '../components/travel/detail';
 import Month from '../components/diary/detail';
+import Day from '../components/diary/detail-day';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -41,7 +42,8 @@ function HomeStack() {
             <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail Book" component={DetailBook} options={({route, navigation}) => ({ data: route.params.data, headerShown: false, headerTitleAlign: 'center' })} />
             <Stack.Screen name="Detail Travel" component={DetailTravel} options={({ route }) => ({ headerShown: true, headerTitleAlign: 'center', title: route.params.title })} />
-            <Stack.Screen name="Detail Diary" component={Month} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Month" component={Month} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Day" component={Day} options={{ headerShown: false, headerTitleAlign: 'center' }} />
         </Stack.Navigator>
     )
 }

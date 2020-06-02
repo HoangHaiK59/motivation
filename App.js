@@ -4,11 +4,11 @@ import { Platform, StyleSheet, Text, View, InteractionManager } from 'react-nati
 import Container from './src/container';
 import { decode, encode } from 'base-64';
 
-if(!global.btoa) {
+if (!global.btoa) {
   global.btoa = encode;
 }
 
-if(!global.atob) {
+if (!global.atob) {
   global.atob = decode;
 }
 
@@ -68,9 +68,9 @@ const instructions = Platform.select({
 // }
 
 export default function App() {
-    return (
+  return (
       <Container />
-    )
+  )
 }
 
 const styles = StyleSheet.create({
