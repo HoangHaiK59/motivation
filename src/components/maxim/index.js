@@ -1,85 +1,35 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Animated, Easing, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { View, Text, StyleSheet, Animated, Easing, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { Feather, FontAwesome } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import Modal from 'react-native-modal';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
-// import { ModalProvider, createModalStack } from 'react-native-modalfy';
-// import Button from './button';
-// import CardModal from './modal';
+import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 
-// const { width } = Dimensions.get('screen')
+const { width, height } = Dimensions.get('window');
 
-// const config = { Modal: CardModal};
-
-// const defaultOptions = {
-//     animateInConfig: {
-//         easing: Easing.bezier(0.42, -0.03, 0.27, 0.95),
-//         duration: 450,
-//     },
-//     animateOutConfig: {
-//         easing: Easing.bezier(0.42, -0.03, 0.27, 0.95),
-//         duration: 450,
-//     },
-//     transitionOptions: animatedValue => ({
-//         opacity: animatedValue.interpolate({
-//             inputRange: [0, 1, 2],
-//             outputRange: [0, 1, 0.9],
-//         }),
-//         transform: [
-//             { perspective: 2000 },
-//             {
-//                 translateX: animatedValue.interpolate({
-//                     inputRange: [0, 1, 2],
-//                     outputRange: [-width / 1.5, 0, width / 1.5],
-//                     extrapolate: 'clamp',
-//                 }),
-//             },
-//             {
-//                 rotateY: animatedValue.interpolate({
-//                     inputRange: [0, 1, 2],
-//                     outputRange: ['90deg', '0deg', '-90deg'],
-//                     extrapolate: 'clamp',
-//                 }),
-//             },
-//             {
-//                 scale: animatedValue.interpolate({
-//                     inputRange: [0, 1, 2],
-//                     outputRange: [1.2, 1, 0.9],
-//                     extrapolate: 'clamp',
-//                 }),
-//             },
-//         ],
-//     }),
-// }
-
-// const stack = createModalStack(config, defaultOptions)
-
-const Item = ({ id, title, horizontal }) => (
+const Item = ({ id, title, url, author, horizontal }) => (
     <View style={horizontal ? styles.itemHorizoltal : styles.item}>
         {
             horizontal ? <View style={styles.itemList}>
-                <Text style={styles.text}>{title}</Text>
-            </View> : <Text style={styles.text}>{title}</Text>
+                <Image source={{ uri: url }} style={{ width: width, height: height - 130, margin: 0 }} />
+                <LinearGradient colors={['#190A05','#870000']} start={[0.7, 0.2]} style={styles.maxim}>
+                        <Text style={styles.text}>{title}</Text>
+                        <View style={{ alignItems: 'flex-end' }}>
+                            <Text style={styles.text}>{author}</Text>
+                        </View>
+                </LinearGradient>
+            </View> : <View style={{ flex: 1, flexDirection: 'column' }}>
+                    <Text style={styles.text}>{title}</Text>
+                    <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={styles.text}>{author}</Text>
+                    </View>
+                </View>
         }
     </View>
 );
-
-const data = [
-    {
-        id: '1',
-        title: 'Title 1'
-    },
-    {
-        id: '2',
-        title: 'Title 2'
-    },
-    {
-        id: '3',
-        title: 'Title 3'
-    }
-]
 
 class Maxim extends React.Component {
     constructor(props) {
@@ -91,21 +41,77 @@ class Maxim extends React.Component {
             maxim: '',
             author: '',
             maxims: [],
-            update: false
+            update: false,
+            file: {},
         }
 
         this.firebaseRef = Firebase.firestore().collection(DB.maxim);
+        this.storageRef = Firebase.storage().ref();
     }
 
     getMaxims() {
         this.firebaseRef.get()
-        .then(result => {
-            if(result.docs.length > 0) {
-                let maxims = [];
-                result.forEach(doc => maxims.push({id: doc.id, ...doc.data()}))
-                this.setState({ maxims, update: false })
+            .then(result => {
+                if (result.docs.length > 0) {
+                    let maxims = [];
+                    result.forEach(doc => maxims.push({ id: doc.id, ...doc.data() }))
+                    this.setState({ maxims, update: false })
+                }
+            })
+    }
+
+    upload = async (ref, file) => {
+        const response = await fetch(file.uri);
+        const blob = await response.blob();
+        this.storageRef
+            .child('Maxim' + `/${file.name}`)
+            .put(blob)
+            .then(snapShot => {
+                this.storageRef
+                    .child(snapShot.metadata.fullPath)
+                    .getDownloadURL()
+                    .then(url => {
+                        Firebase.firestore().collection(DB.maxim).doc(ref.author)
+                            .set({
+                                author: ref.author,
+                                created: new Date().toISOString(),
+                                maxim: ref.maxim,
+                                url
+                            })
+                            .then(refer => {
+                                //console.log(refer.id);
+                                this.setState({ visible: false, update: true });
+                            })
+                            .catch(error => console.log(error))
+                    })
+
+            },
+                reject => {
+                    console.log(reject.message);
+                })
+    }
+
+    pickImage = async () => {
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [2, 3],
+                quality: 1
+            });
+
+            if (!result.cancelled) {
+                let fileName = result.uri.split('/').pop();
+                let match = /\.(\w+)$/.exec(fileName);
+                let type = match ? `image/${match[1]}` : `image`;
+                this.setState({ file: { uri: result.uri, name: fileName, type, width: result.width, height: result.height } })
             }
-        })
+
+            //console.log(result);
+        } catch (error) {
+            console.log(error)
+        }
+
     }
 
     componentDidMount() {
@@ -113,7 +119,7 @@ class Maxim extends React.Component {
     }
 
     componentDidUpdate(prevState, prevProps) {
-        if(this.state.update) {
+        if (this.state.update) {
             this.getMaxims();
         }
     }
@@ -124,10 +130,10 @@ class Maxim extends React.Component {
             author: this.state.author,
             maxim: this.state.maxim
         })
-        .then(res => {
-            this.setState({visible: false, update: true})
-        })
-        .catch(error => console.log(error))
+            .then(res => {
+                this.setState({ visible: false, update: true })
+            })
+            .catch(error => console.log(error))
     }
 
     render() {
@@ -146,16 +152,18 @@ class Maxim extends React.Component {
                         showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false}
                         horizontal={this.state.horizontal}
-                        data={data}
+                        data={this.state.maxims}
                         renderItem={({ item }) => <Item
                             horizontal={this.state.horizontal}
                             id={item.id}
-                            title={item.title}
+                            title={item.maxim}
+                            author={item.author}
+                            url={item.url}
                         />}
                     />
                 </SafeAreaView>
                 <View style={styles.bottom}>
-                    <TouchableOpacity onPress={() => this.setState({ visible: true })}>
+                    <TouchableOpacity onPress={() => this.setState({ visible: true, file: {} })}>
                         <Feather name='plus-circle' size={25} color='#db3514' />
                     </TouchableOpacity>
                 </View>
@@ -185,8 +193,23 @@ class Maxim extends React.Component {
                                 style={styles.textInput}
                                 placeholder='Author...'
                             />
+                            <View style={{ alignSelf: 'center' }}>
+                                <Image source={{ uri: this.state.file?.uri }} style={{ width: 50, height: 50 }} />
+                            </View>
+                            <View style={{ alignItems: 'center', alignSelf: 'center' }}>
+                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => this.pickImage()}>
+                                    <FontAwesome name="image" size={20} />
+                                </TouchableOpacity>
+                            </View>
                             <View style={{ flexDirection: 'row', marginVertical: 10, alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}>
-                                <TouchableOpacity style={[styles.buttonModal, {alignItems: 'center'}]} onPress={() => this.addMaxim()}>
+                                <TouchableOpacity
+                                    disabled={(Object.keys(this.state.file).length <= 0 || this.state.maxim === '' || this.state.author === '') ? true : false}
+                                    style={(Object.keys(this.state.file).length <= 0 || this.state.maxim === '' || this.state.author === '') ? [styles.buttonOpacity, { alignItems: 'center' }] :
+                                        [styles.buttonModal, { alignItems: 'center' }]}
+                                    onPress={() => this.upload({
+                                        maxim: this.state.maxim,
+                                        author: this.state.author
+                                    }, this.state.file)}>
                                     <Text style={styles.text}>Add</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.buttonClose} onPress={() => this.setState({ visible: false })}>
@@ -208,13 +231,21 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        justifyContent: 'center',
-        marginTop: 1.5 * Constants.statusBarHeight
+        justifyContent: 'center'
     },
     itemList: {
-        width: Dimensions.get('window').width - 30,
-        height: 250,
-        padding: 10
+        //width: Dimensions.get('window').width - 30,
+        //padding: 35,
+        flexDirection: 'column'
+    },
+    maxim: {
+        position: 'absolute',
+        width: width,
+        height: 200,
+        bottom: 0,
+        //backgroundColor: '#785250',
+        opacity: .8,
+        padding: 16
     },
     bottom: {
         position: 'absolute',
@@ -225,15 +256,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#2d4269',
         padding: 20,
         marginVertical: 8,
-        marginHorizontal: 16,
+        marginHorizontal: 8,
         width: Dimensions.get('window').width - 20
     },
     itemHorizoltal: {
-        backgroundColor: '#2d4269',
+        //backgroundColor: '#2d4269',
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 8,
-        height: 250
+        flex: 1
     },
     title: {
         color: 'white',
