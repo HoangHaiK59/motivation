@@ -38,9 +38,9 @@ export default function DetailTravel({ route }) {
 
     React.useEffect(() => {
         let items = [];
-        const name = map(params.ref);
+        //const name = map(params.ref);
         Firebase.firestore()
-        .collection(`${DB.travel}/${name}/albums`)
+        .collection(`${DB.travel}/${params.ref}/albums`)
         .get()
         .then(result => {
             if(result.docs.length > 0) {

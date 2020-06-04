@@ -13,7 +13,7 @@ class Travel extends React.Component {
         super(props);
 
         this.state = {
-            folders: [],
+            medias: [],
             visible: false,
             name: '',
             file: {}
@@ -27,35 +27,35 @@ class Travel extends React.Component {
         const blob = await response.blob();
         const name = map(ref);
         this.storageRef
-        .child(ref + `/${file.name}`)
-        .put(blob)
-        .then(snapShot=> {
-            this.storageRef
-            .child(snapShot.metadata.fullPath)
-            .getDownloadURL()
-            .then(url => {
-                Firebase.firestore().collection(`${DB.travel}/${name}/albums`)
-                .add({ 
-                    contentType: snapShot.metadata.contentType,
-                    fullPath: snapShot.metadata.fullPath,
-                    name: snapShot.metadata.name,
-                    size: snapShot.metadata.size,
-                    timeCreated: snapShot.metadata.timeCreated,
-                    updated: snapShot.metadata.updated,
-                    url
-                })
-                .then(refer => {
-                    console.log(refer.id);
-                    this.setState({ visible: false });
-                    this.getAll();
-                })
-                .catch(error => console.log(error))
-            })
+            .child(ref + `/${file.name}`)
+            .put(blob)
+            .then(snapShot => {
+                this.storageRef
+                    .child(snapShot.metadata.fullPath)
+                    .getDownloadURL()
+                    .then(url => {
+                        Firebase.firestore().collection(`${DB.travel}/${name}/albums`)
+                            .add({
+                                contentType: snapShot.metadata.contentType,
+                                fullPath: snapShot.metadata.fullPath,
+                                name: snapShot.metadata.name,
+                                size: snapShot.metadata.size,
+                                timeCreated: snapShot.metadata.timeCreated,
+                                updated: snapShot.metadata.updated,
+                                url
+                            })
+                            .then(refer => {
+                                console.log(refer.id);
+                                this.setState({ visible: false });
+                                this.getAll();
+                            })
+                            .catch(error => console.log(error))
+                    })
 
-        },
-        reject => {
-            console.log(reject.message);
-        })
+            },
+                reject => {
+                    console.log(reject.message);
+                })
     }
 
     pickImage = async () => {
@@ -71,7 +71,7 @@ class Travel extends React.Component {
                 let fileName = result.uri.split('/').pop();
                 let match = /\.(\w+)$/.exec(fileName);
                 let type = match ? `image/${match[1]}` : `image`;
-                this.setState({file:{ uri: result.uri, name: fileName, type, width: result.width, height: result.height }})
+                this.setState({ file: { uri: result.uri, name: fileName, type, width: result.width, height: result.height } })
             }
 
             //console.log(result);
@@ -82,26 +82,13 @@ class Travel extends React.Component {
     }
 
     getAll() {
-        this.storageRef.listAll()
+        Firebase.firestore().collection(DB.travel).get()
             .then(result => {
-                var folders = [];
-                result.prefixes.forEach(folder => {
-                    // var items = [];
-                    // firebase.storage(getAppName()).ref(folder.name).listAll()
-                    // .then(res => {
-                    //     res.items.forEach(item => items.push({ 
-                    //         name: item.name, 
-                    //         fullPath: item.fullPath, 
-                    //         getDownloadURL: item.getDownloadURL(),
-                    //         getMetadata: item.getMetadata(),
-                    //         parent: item.parent.name
-                    //     }));
-
-                    // })
-                    //folders.push({name: folder.name, items})
-                    folders.push(folder.name)
-                })
-                this.setState({ folders })
+                if (result.docs.length > 0) {
+                    let medias = [];
+                    result.docs.forEach(doc => medias.push(doc.id));
+                    this.setState({ medias })
+                }
             })
             .catch(error => console.log(error))
     }
@@ -115,15 +102,15 @@ class Travel extends React.Component {
             <View style={styles.mainContainer}>
                 <View style={styles.container}>
                     {
-                        this.state.folders.length > 0 && <View style={styles.travelContainer}>
+                        this.state.medias.length > 0 && <View style={styles.travelContainer}>
                             {
-                                this.state.folders.map((folder, id) => <View key={id} style={styles.item}>
+                                this.state.medias.map((media, id) => <View key={id} style={styles.item}>
                                     <View style={{ alignItems: 'center' }}>
-                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail Travel', { ref: folder, title: folder })}>
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail Travel', { ref: media, title: media })}>
                                             <FontAwesome name="folder" size={55} color='#eda32b' />
                                         </TouchableOpacity>
                                     </View>
-                                    <Text ellipsizeMode={"tail"} style={[styles.text, styles.textStyle]}>{folder}</Text>
+                                    <Text ellipsizeMode={"tail"} style={[styles.text, styles.textStyle]}>{media}</Text>
                                 </View>)
                             }
                         </View>
@@ -137,7 +124,7 @@ class Travel extends React.Component {
                 <Modal visible={this.state.visible} transparent={true} animationType="fade" onRequestClose={() => { }}>
                     <View style={styles.centerView}>
                         <View style={styles.modalView}>
-                            <TextInput placeholder='Folder name' style={styles.textInput} onChangeText={name => this.setState({ name })} selectTextOnFocus={true}/>
+                            <TextInput placeholder='Folder name' style={styles.textInput} onChangeText={name => this.setState({ name })} selectTextOnFocus={true} />
                             {
                                 this.state.file !== null && <View style={{ alignSelf: 'center' }}>
                                     <Image source={{ uri: this.state.file.uri }} style={{ width: 50, height: 50 }} />
@@ -149,12 +136,12 @@ class Travel extends React.Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
-                                <TouchableOpacity disabled={(Object.keys(this.state.file).length <= 0 || this.state.name === '') ? true : false} 
-                                style={(Object.keys(this.state.file).length > 0 || this.state.name !=='') ? [styles.buttonModal, { alignItems: 'center' }] : [styles.buttonModal, { alignItems: 'center', opacity: .6 }]} 
-                                onPress={() => this.upload(this.state.name, this.state.file)}>
+                                <TouchableOpacity disabled={(Object.keys(this.state.file).length <= 0 || this.state.name === '') ? true : false}
+                                    style={(Object.keys(this.state.file).length > 0 || this.state.name !== '') ? [styles.buttonModal, { alignItems: 'center' }] : [styles.buttonModal, { alignItems: 'center', opacity: .6 }]}
+                                    onPress={() => this.upload(this.state.name, this.state.file)}>
                                     <Text style={styles.text}>Create</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[styles.buttonClose, { alignItems: 'center' }]} onPress={() => this.setState({visible: false})}>
+                                <TouchableOpacity style={[styles.buttonClose, { alignItems: 'center' }]} onPress={() => this.setState({ visible: false })}>
                                     <Text style={styles.text}>Close</Text>
                                 </TouchableOpacity>
                             </View>

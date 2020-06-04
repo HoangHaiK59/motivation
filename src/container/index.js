@@ -59,17 +59,17 @@ function StatisticStack() {
 export default function Container() {
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor='#121212' />
+            <StatusBar backgroundColor='#050504' />
             <NavigationContainer theme={{
                 colors: {
-                    background: '#121212',
+                    background: '#050504',
                     text: '#c4c0c0'
                 }
             }}>
                 <Tab.Navigator
                 tabBarOptions={{
                     style: {
-                        backgroundColor: '#121212'
+                        backgroundColor: '#050504'
                     },
                     tabStyle: {
                         height: 45
@@ -88,7 +88,7 @@ export default function Container() {
                         ? 'line-chart'
                         : 'line-chart';
                     }
-                    return <FontAwesome name={iconName} size={size} color={color} />;
+                    return <FontAwesome name={iconName} size={size} color={focused? '#e33310':  color} />;
                 } })}
                 >
                     <Tab.Screen name="Home" component={HomeStack} />
