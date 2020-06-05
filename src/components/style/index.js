@@ -3,31 +3,13 @@ import Constants from 'expo-constants';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
 
 const { width, height } = Dimensions.get('screen');
-import Cover from './cover';
+import Cover from '../common/cover';
 import Content from './content';
 import Animated from 'react-native-reanimated';
 
 const style = {
     cover: require('../../assets/default-image.jpg'),
-    artist: "Jan Blomqvist",
     header: 'STYLE',
-    tracks: [
-        { name: "Stories Over" },
-        { name: "More", artist: "Jan Blomqvist, Elena Pitoulis" },
-        { name: "Empty Floor" },
-        { name: "Her Great Escape" },
-        { name: "Dark Noise" },
-        { name: "Drift", artist: "Jan Blomqvist, Aparde" },
-        { name: "Same Mistake" },
-        {
-            name: "Dancing People Are Never Wrong",
-            artist: "Jan Blomqvist, The Bianca Story"
-        },
-        { name: "Back in the Taxi" },
-        { name: "Ghosttrack" },
-        { name: "Just OK" },
-        { name: "The End" }
-    ]
 }
 
 class Style extends React.Component {

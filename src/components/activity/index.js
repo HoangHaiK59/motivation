@@ -14,7 +14,7 @@ class Activity extends React.Component {
 
         this.state = {
             activity: null,
-            visible: false
+            visible: false,
         }
 
         this._isMounted = false;
@@ -40,20 +40,8 @@ class Activity extends React.Component {
         }
     }
 
-    componentDidUpdate() {
-        if(this._isMounted) {
-            Firebase.firestore().collection(DB.activity).get()
-            .then(result => {
-                if (result.docs.length > 0) {
-                    let activity = [];
-                    result.docs.forEach(doc => activity.push(doc.data()));
-                    this.setState({ activity })
-                }
-            })
-        }
-    }
-
     componentWillUnmount() {
+        //this.props.processMounting(false)
         this._isMounted = false;
     }
 

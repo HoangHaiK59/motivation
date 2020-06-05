@@ -4,8 +4,12 @@ import Constants from 'expo-constants';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
 import { FontAwesome } from '@expo/vector-icons';
+import Animated from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
+
+import Cover from '../../common/cover';
+import Content from './content';
 
 const Item = ({ id, title }) => (
     <View key={id} style={styles.item}>
@@ -18,6 +22,7 @@ const Day = ({ route }) => {
     console.log(params)
     const firebaseRef = Firebase.firestore().collection(DB.diary).doc(params.year).collection(params.collectionId).doc(params.id);
     const [item, setItem] = React.useState({});
+    const [style, setStyle] = React.useState({});
     const [visible, setVisible] = React.useState(false);
     const [text, setText] = React.useState('');
     const [update, setUpdate] = React.useState(false);
@@ -28,6 +33,11 @@ const Day = ({ route }) => {
             .then(result => {
                 if (result.exists) {
                     setItem(result.data());
+                    setStyle({
+                        header: params.id.slice(params.id.indexOf('-') + 1, params.id.length) + ' ' + params.id.slice(0, params.id.indexOf('-')) + ',' + params.name + '/' + params.year,
+                        cover: result.data().url !== '' ? { uri: result.data().url } : require('../../../assets/default-image.jpg'),
+                        items: result.data().diaries
+                    })
                     setUpdate(false);
                 }
             })
@@ -44,26 +54,16 @@ const Day = ({ route }) => {
             .catch(err => console.log(err))
     }
 
+    const animatedValue = new Animated.Value(0);
+
     return (
         <View style={styles.main}>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Image source={item?.url ? { uri: item?.url } : require('../../../assets/default-image.jpg')} style={styles.image} resizeMethod={'resize'} resizeMode={'cover'} />
-                    <View style={{ marginVertical: 15, flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={[styles.text, {fontWeight: 'bold'}]}>{params.id.slice(params.id.indexOf('-') + 1, params.id.length) + ' ' + params.id.slice(0, params.id.indexOf('-')) + ',' + params.name + '/' + params.year}</Text>
-                        <Text style={[styles.text, {fontWeight: 'bold'}]}>{item?.title}</Text>
-                    </View>
+            {
+                Object.keys(style).length > 0 && <View style={styles.container}>
+                    <Cover {...{ animatedValue, style }} />
+                    <Content {...{ animatedValue, style }} />
                 </View>
-                <SafeAreaView style={styles.content}>
-                    <FlatList
-                        data={item?.diaries ? item.diaries.map((val, id) => ({ id, val })) : []}
-                        renderItem={({ item }) => <Item
-                            id={item.id.toString()}
-                            title={item.val}
-                        />}>
-                    </FlatList>
-                </SafeAreaView>
-            </View>
+            }
             <View style={styles.bottom}>
                 <TouchableOpacity onPress={() => setVisible(true)}>
                     <FontAwesome name='pencil' size={25} color='#d13430' />

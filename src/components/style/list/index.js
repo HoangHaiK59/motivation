@@ -23,44 +23,7 @@ export default function List() {
                     </TouchableOpacity>
                 </View>
             </View>
-            <View style={styles.content}>
-                <View style={styles.childLeft}>
-                    <View style={styles.childLeftUp}>
-                        <TouchableOpacity onPress={() => { }}>
-                            <Image source={require('../../../assets/memory.jpg')} style={{ width: 175, height: 100 }} />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.childLeftDown}>
-                        <TouchableOpacity onPress={() => { }}>
-                            <Image source={require('../../../assets/street.jpg')} style={{ width: 175, height: 100 }} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.childRight}>
-                    <TouchableOpacity onPress={() => { }}>
-                        <Image source={require('../../../assets/style.jpg')} style={{ width: 175, height: '100%' }} />
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View style={styles.content}>
-                <View style={styles.childLeft}>
-                    <View style={styles.childLeftUp}>
-                        <TouchableOpacity onPress={() => { }}>
-                            <Image source={require('../../../assets/memory.jpg')} style={{ width: 175, height: 100 }} />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.childLeftDown}>
-                        <TouchableOpacity onPress={() => { }}>
-                            <Image source={require('../../../assets/street.jpg')} style={{ width: 175, height: 100 }} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.childRight}>
-                    <TouchableOpacity onPress={() => { }}>
-                        <Image source={require('../../../assets/style.jpg')} style={{ width: 175, height: '100%' }} />
-                    </TouchableOpacity>
-                </View>
-            </View>
+
         </View>
     )
 }

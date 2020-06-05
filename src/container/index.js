@@ -22,6 +22,7 @@ import DetailBook from '../components/book/detail';
 import DetailTravel from '../components/travel/detail';
 import Month from '../components/diary/detail';
 import Day from '../components/diary/detail-day';
+import Settings from '../components/settings';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,17 +31,17 @@ function HomeStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Book" component={Book} options={{headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Sport" component={Sport} options={{headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Task" component={Task} options={{headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Creative" component={Creative} options={{headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Diary" component={Diary} options={{headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Relax" component={Relax} options={{headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Maxim" component={Maxim} options={{headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Book" component={Book} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Sport" component={Sport} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Task" component={Task} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Creative" component={Creative} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Diary" component={Diary} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Relax" component={Relax} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Maxim" component={Maxim} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Travel" component={Travel} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Style" component={Style} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Detail Book" component={DetailBook} options={({route, navigation}) => ({ data: route.params.data, headerShown: false, headerTitleAlign: 'center' })} />
+            <Stack.Screen name="Detail Book" component={DetailBook} options={({ route, navigation }) => ({ data: route.params.data, headerShown: false, headerTitleAlign: 'center' })} />
             <Stack.Screen name="Detail Travel" component={DetailTravel} options={({ route }) => ({ headerShown: true, headerTitleAlign: 'center', title: route.params.title })} />
             <Stack.Screen name="Month" component={Month} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Day" component={Day} options={{ headerShown: false, headerTitleAlign: 'center' }} />
@@ -56,7 +57,22 @@ function StatisticStack() {
     )
 }
 
+function SettingsStack(props) {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="Settings" {...props} component={Settings} options={{ headerTitleAlign: 'center' }} />
+        </Stack.Navigator>
+    )
+}
+
 export default function Container() {
+
+    const [darkMode, setDarkMode] = React.useState(true);
+
+    const handleDarkMode = () => {
+        setDarkMode(!darkMode)
+    }
+
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor='#050504' />
@@ -67,32 +83,40 @@ export default function Container() {
                 }
             }}>
                 <Tab.Navigator
-                tabBarOptions={{
-                    style: {
-                        backgroundColor: '#050504'
-                    },
-                    tabStyle: {
-                        height: 45
-                    },
-                    labelStyle: {
-                        color: '#c4c0c0'
-                    },
-                    keyboardHidesTabBar: true
-                }}
-                screenOptions={( {route} ) => ({tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
-                    if(route.name === 'Home') {
-                        iconName = focused ? 'home': 'home'
-                    } else if ((route.name === 'Statistic')) {
-                        iconName = focused
-                        ? 'line-chart'
-                        : 'line-chart';
-                    }
-                    return <FontAwesome name={iconName} size={size} color={focused? '#e33310':  color} />;
-                } })}
+                    tabBarOptions={{
+                        style: {
+                            backgroundColor: '#050504'
+                        },
+                        tabStyle: {
+                            height: 45
+                        },
+                        labelStyle: {
+                            color: '#c4c0c0'
+                        },
+                        keyboardHidesTabBar: true
+                    }}
+                    screenOptions={({ route, navigation }) => ({
+                        tabBarIcon: ({ focused, color, size }) => {
+                            let iconName;
+                            if (route.name === 'Home') {
+                                iconName = focused ? 'home' : 'home'
+                            } else if ((route.name === 'Statistic')) {
+                                iconName = focused
+                                    ? 'line-chart'
+                                    : 'line-chart';
+                            } else if ((route.name === 'Settings')) {
+                                iconName = focused
+                                    ? 'cog'
+                                    : 'cog';
+                                //navigation.setParams({handleDarkMode: handleDarkMode()})
+                            }
+                            return <FontAwesome name={iconName} size={size} color={focused ? '#e33310' : color} />;
+                        }
+                    })}
                 >
                     <Tab.Screen name="Home" component={HomeStack} />
                     <Tab.Screen name="Statistic" component={StatisticStack} />
+                    <Tab.Screen name="Settings" component={SettingsStack} />
                 </Tab.Navigator>
             </NavigationContainer>
         </View>

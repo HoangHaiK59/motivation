@@ -2,8 +2,14 @@ import * as React from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, ImageBackground } from 'react-native';
 import { AreaChart, LineChart, Grid } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
+
+const { interpolate, Extrapolate } = Animated;
+
+import { MAX_HEADER_HEIGHT } from '../../model/constants';
 
 class Sport extends React.Component {
     constructor(props) {
@@ -12,6 +18,8 @@ class Sport extends React.Component {
         this.state = {
 
         }
+
+        this.animatedValue = new Animated.Value(0);
     }
 
     render() {
@@ -27,35 +35,43 @@ class Sport extends React.Component {
                 svg: { stroke: 'green' },
             }
         ]
+        const height = interpolate(this.animatedValue, {
+            inputRange: [- MAX_HEADER_HEIGHT, - 48 / 2],
+            outputRange: [0, MAX_HEADER_HEIGHT + 48],
+            extrapolate: Extrapolate.CLAMP
+        });
         return (
             <View style={styles.main}>
                 <View style={styles.header}>
-                    <ImageBackground source={require('../../assets/default-image.jpg')} style={{width: width, height: 250, justifyContent: 'center', resizeMode: 'cover'}}>
-                        <View style={styles.headerAvatar}>
-                            <Image source={require('../../assets/street.jpg')} style={[styles.image, {alignSelf: 'center'}]} />
-                            <Text style={[styles.text, styles.headerName]}>
-                                Justin
-                            </Text>
+                    <Image source={require('../../assets/default-image.jpg')} style={[styles.background]} />
+                    <View style={styles.headerAvatar}>
+                        <Image source={require('../../assets/street.jpg')} style={[styles.image, { alignSelf: 'center' }]} />
+                        <Text style={[styles.text, styles.headerName]}>
+                            Justin
+                    </Text>
+                    </View>
+                    <View style={styles.headerGoal}>
+                        <View style={styles.headerGoalChild}>
+                            <Text style={styles.wrapTextCenter}>Goal</Text>
                         </View>
-                        <View style={styles.headerGoal}>
-                            <View style={styles.headerGoalChild}>
-                                <Text style={styles.wrapTextCenter}>Goal</Text>
-                            </View>
-                            <View style={styles.headerGoalChild}>
-                                <Text style={styles.wrapTextCenter}>Goal</Text>
-                            </View>
-                            <View style={styles.headerGoalChild}>
-                                <Text style={styles.wrapTextCenter}>Goal</Text>
-                            </View>
+                        <View style={styles.headerGoalChild}>
+                            <Text style={styles.wrapTextCenter}>Goal</Text>
                         </View>
-                    </ImageBackground>
+                        <View style={styles.headerGoalChild}>
+                            <Text style={styles.wrapTextCenter}>Goal</Text>
+                        </View>
+                    </View>
                 </View>
                 <View style={styles.most}>
                     <View style={styles.left}>
-                        <Text>Text</Text>
+                        <View style={styles.avt}>
+                            <Image source={require('../../assets/style.jpg')} style={[{width: 120, height: 120,alignSelf: 'center' }]} />
+                        </View>
+                    </View>
+                    <View style={styles.center}>
                     </View>
                     <View style={styles.right}>
-                        <Text>Text</Text>
+                        <Text style={styles.text}>Text</Text>
                     </View>
                 </View>
                 <View style={styles.content}>
@@ -88,13 +104,22 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     headerAvatar: {
+        position: 'absolute',
         flex: .6,
-        flexDirection: 'column'
+        flexDirection: 'column',
+        top: 30
     },
     image: {
         width: 100,
         height: 100,
         borderRadius: 50
+    },
+    background: {
+        width: width,
+        height: 250,
+        justifyContent: 'center',
+        resizeMode: 'cover',
+        opacity: .5
     },
     headerName: {
         marginVertical: 10,
@@ -107,6 +132,7 @@ const styles = StyleSheet.create({
         flex: .2,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingTop: 24
     },
     headerGoalChild: {
         flex: 1,
@@ -116,14 +142,26 @@ const styles = StyleSheet.create({
         width: width - 30,
         height: 120,
         flexDirection: 'row',
-        marginHorizontal: 15
+        marginHorizontal: 15,
+        backgroundColor: 'white'
     },
     left: {
         width: 120,
-        height: 50
+        height: 120
+    },
+    center: {
+        width: 15,
     },
     right: {
-        height: 50
+        height: 120
+    },
+    avt: {
+        position: 'absolute',
+        top: -10,
+        width: 120,
+        height: 120,
+        left: 10,
+        backgroundColor: 'yellow'
     },
     content: {
         flex: 1,
@@ -137,7 +175,14 @@ const styles = StyleSheet.create({
     text: {
         color: '#c4c0c0',
         fontSize: 14
-    }
+    },
+    gradient: {
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        right: 0,
+        alignItems: 'center',
+    },
 });
 
 export default Sport;

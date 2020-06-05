@@ -1,17 +1,21 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { cos } from 'react-native-reanimated';
 import { onScrollEvent } from 'react-native-redash';
 
 import Header from '../../common/header';
-import List from '../list';
 import { MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT } from '../../../model/constants';
 
 const { interpolate, Extrapolate } = Animated;
 
-export default function Content({ animatedValue , style: {header} }) {
+const Item = ({ id, title }) => (
+    <View key={id} style={styles.item}>
+        <Text style={styles.text}>{title}</Text>
+    </View>
+)
 
+export default function Content({ animatedValue , style: {header, items} }) {
     const height = interpolate(animatedValue, {
         inputRange: [- MAX_HEADER_HEIGHT, - 48/2],
         outputRange: [0, MAX_HEADER_HEIGHT + 48],
@@ -49,7 +53,9 @@ export default function Content({ animatedValue , style: {header} }) {
                 <Header animatedValue={animatedValue} header={header} />
             </View>
             <View style={styles.list}>
-                <List />
+                {
+                    items.map((item, id)=> <Item key={id} title={item}/>)
+                }
             </View>
         </Animated.ScrollView>
     )
@@ -58,10 +64,11 @@ export default function Content({ animatedValue , style: {header} }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: MIN_HEADER_HEIGHT -  24 //48/2,
+        paddingTop: MIN_HEADER_HEIGHT -  24, //48/2,
+        
     },
     cover: {
-        height: MAX_HEADER_HEIGHT - 48//48
+        height: MAX_HEADER_HEIGHT - 48
     },
     gradient: {
         position: 'absolute',
@@ -87,6 +94,19 @@ const styles = StyleSheet.create({
     list: {
         paddingTop: 32,
         backgroundColor: 'black',
-        flex: 1
+        flex: 1,
+        paddingBottom: 24,
+        marginBottom: 10
+    },
+    item: {
+        //backgroundColor: '#f9c2ff',
+        backgroundColor: '#2d4269',
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 8,
+    },
+    text: {
+        color: '#c4c0c0',
+        fontSize: 14
     }
 })

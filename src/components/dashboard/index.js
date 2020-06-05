@@ -26,40 +26,15 @@ export default function Dashboard(props) {
     ]);
 
     const renderScene = SceneMap({
-        Monday: () => <Activity {...props} />,
-        Tuesday: () => <Activity {...props} />,
-        Wednesday: () => <Activity {...props} />,
-        Thursday: () => <Activity {...props} />,
-        Friday: () => <Activity {...props} />,
-        Saturday: () => <Activity {...props} />,
-        Sunday: () => <Activity {...props} />,
+        Monday: () => <Activity  {...props} />,
+        Tuesday: () => <Activity  {...props} />,
+        Wednesday: () => <Activity  {...props} />,
+        Thursday: () => <Activity  {...props} />,
+        Friday: () => <Activity  {...props} />,
+        Saturday: () => <Activity  {...props} />,
+        Sunday: () => <Activity  {...props} />,
     })
 
-    let y, i, k, m, n, o;
-    y = new Animated.Value(1);
-    i = new Animated.Value(1);
-    k = new Animated.Value(1);
-    m = new Animated.Value(1);
-    n = new Animated.Value(1);
-    o = new Animated.Value(1);
-    // const scale = interpolate(y, {
-    //     inputRange: [0, 1],
-    //     outputRange: [0, 0.2],
-    //     extrapolate: Extrapolate.CLAMP
-    // });
-    const handlePressIn = (animatedValue, componentName) => {
-        Animated.spring(animatedValue, {
-            toValue: .95
-        }).start();
-        props.navigation.navigate(componentName);
-    }
-    const handlePressOut = (animatedValue) => {
-        Animated.spring(animatedValue, {
-            toValue: 1,
-            tension: 40,
-            friction: 3
-        }).start()
-    }
     const handlePress = (componentName) => {
         props.navigation.navigate(componentName);
     }
@@ -75,7 +50,7 @@ export default function Dashboard(props) {
                             indicatorContainerStyle={styles.tabBar}
                             renderLabel={({ route }) => {
                                 return (
-                                    <View >
+                                    <View key={route.key}>
                                         <Text style={styles.labelText}>
                                             {route.title}
                                         </Text>
@@ -95,7 +70,7 @@ export default function Dashboard(props) {
 
                     <LinearGradient colors={['rgb(35, 107, 96)', 'rgb(35, 145, 128)']} style={[styles.item]}>
                         <TouchableWithoutFeedback onPress={() => handlePress('Book')}>
-                            <Animated.View style={[styles.button, { transform: [{ scale: y }] }]}>
+                            <Animated.View style={[styles.button]}>
                                 <Text style={[styles.text, {padding: 5} ]}>Book</Text>
                             </Animated.View>
                         </TouchableWithoutFeedback>
@@ -103,7 +78,7 @@ export default function Dashboard(props) {
 
                     <LinearGradient colors={['rgb(195, 102, 8)', 'rgb(195, 122, 22)']} style={[styles.item]}>
                         <TouchableWithoutFeedback onPress={() => handlePress('Sport')}>
-                            <Animated.View style={[styles.button, { transform: [{ scale: i }] }]}>
+                            <Animated.View style={[styles.button]}>
                                 <Text style={[styles.text, {padding: 5} ]}>Sport</Text>
                             </Animated.View>
                         </TouchableWithoutFeedback>
@@ -111,7 +86,7 @@ export default function Dashboard(props) {
 
                     <LinearGradient colors={['rgb(191, 44, 36)', 'rgb(237, 35, 24)']} style={[styles.item]}>
                         <TouchableWithoutFeedback onPress={() => handlePress('Task')}>
-                            <Animated.View style={[styles.button, { transform: [{ scale: k }] }]}>
+                            <Animated.View style={[styles.button]}>
                                 <Text style={[styles.text, {padding: 5} ]}>Task</Text>
                             </Animated.View>
                         </TouchableWithoutFeedback>
@@ -119,7 +94,7 @@ export default function Dashboard(props) {
 
                     <LinearGradient colors={['rgb(37, 148, 131)', 'rgb(35, 168, 148)']} style={[styles.item]}>
                         <TouchableWithoutFeedback onPress={() => handlePress('Creative')}>
-                            <Animated.View style={[styles.button, { transform: [{ scale: m }] }]}>
+                            <Animated.View style={[styles.button]}>
                                 <Text style={[styles.text, {padding: 5} ]}>Creative</Text>
                             </Animated.View>
                         </TouchableWithoutFeedback>
@@ -127,7 +102,7 @@ export default function Dashboard(props) {
 
                     <LinearGradient colors={['rgb(25, 135, 166)', 'rgb(25, 143, 176)']} style={[styles.item]}>
                         <TouchableWithoutFeedback onPress={() => handlePress('Diary')}>
-                            <Animated.View style={[styles.button, { transform: [{ scale: n }] }]}>
+                            <Animated.View style={[styles.button]}>
                                 <Text style={[styles.text, {padding: 5} ]}>Diary</Text>
                             </Animated.View>
                         </TouchableWithoutFeedback>
@@ -135,7 +110,7 @@ export default function Dashboard(props) {
 
                     <LinearGradient colors={['rgb(32, 80, 201)', 'rgb(28, 87, 235)']} style={[styles.item]}>
                         <TouchableWithoutFeedback onPress={() => handlePress('Relax')}>
-                            <Animated.View style={[styles.button, { transform: [{ scale: o }] }]}>
+                            <Animated.View style={[styles.button]}>
                                 <Text style={[styles.text, {padding: 5} ]}>Relax</Text>
                             </Animated.View>
                         </TouchableWithoutFeedback>
@@ -143,7 +118,7 @@ export default function Dashboard(props) {
 
                     <LinearGradient colors={['rgb(123, 141, 186)', 'rgb(128, 150, 207)']} style={[styles.item]}>
                         <TouchableWithoutFeedback onPress={() => handlePress('Maxim')}>
-                            <Animated.View style={[styles.button, { transform: [{ scale: o }] }]}>
+                            <Animated.View style={[styles.button]}>
                                 <Text style={[styles.text, {padding: 5} ]}>Maxim</Text>
                             </Animated.View>
                         </TouchableWithoutFeedback>
@@ -151,7 +126,7 @@ export default function Dashboard(props) {
 
                     <LinearGradient colors={['rgb(217, 91, 63)', 'rgb(240, 91, 58)']} style={[styles.item]}>
                         <TouchableWithoutFeedback onPress={() => handlePress('Travel')}>
-                            <Animated.View style={[styles.button, { transform: [{ scale: o }] }]}>
+                            <Animated.View style={[styles.button]}>
                                 <Text style={[styles.text, {padding: 5} ]}>Travel</Text>
                             </Animated.View>
                         </TouchableWithoutFeedback>
@@ -159,7 +134,7 @@ export default function Dashboard(props) {
 
                     <LinearGradient colors={['rgb(173, 122, 194)', 'rgb(187, 127, 212)']} style={[styles.item]}>
                         <TouchableWithoutFeedback onPress={() => handlePress('Style')}>
-                            <Animated.View style={[styles.button, { transform: [{ scale: o }] }]}>
+                            <Animated.View style={[styles.button]}>
                                 <Text style={[styles.text, {padding: 5} ]}>Style</Text>
                             </Animated.View>
                         </TouchableWithoutFeedback>
