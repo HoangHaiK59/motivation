@@ -10,10 +10,10 @@ import { MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT } from '../../../model/constants';
 
 const { interpolate, Extrapolate } = Animated;
 
-export default function Content({ animatedValue , style: {header} }) {
+export default function Content({ animatedValue, style: { header } }) {
 
     const height = interpolate(animatedValue, {
-        inputRange: [- MAX_HEADER_HEIGHT, - 48/2],
+        inputRange: [- MAX_HEADER_HEIGHT, - 48 / 2],
         outputRange: [0, MAX_HEADER_HEIGHT + 48],
         extrapolate: Extrapolate.CLAMP
     });
@@ -27,18 +27,18 @@ export default function Content({ animatedValue , style: {header} }) {
     return (
         <Animated.ScrollView
             style={styles.container}
-            onScroll={onScrollEvent({y: animatedValue})}
+            onScroll={onScrollEvent({ y: animatedValue })}
             showsVerticalScrollIndicator={false}
             scrollEventThrottle={1}
             stickyHeaderIndices={[1]}
         >
             <View style={styles.cover}>
-                <Animated.View style={[styles.gradient, {height}]}>
-                    <LinearGradient 
-                    colors={['transparent', 'rgba(0,0,0,.2)', 'black']}
-                    start={[0, 0.3]}
-                    end={[0, 1]}
-                    style={StyleSheet.absoluteFill}
+                <Animated.View style={[styles.gradient, { height }]}>
+                    <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,.2)', 'black']}
+                        start={[0, 0.3]}
+                        end={[0, 1]}
+                        style={StyleSheet.absoluteFill}
                     />
                 </Animated.View>
                 <View style={styles.headerContainer}>
@@ -58,7 +58,7 @@ export default function Content({ animatedValue , style: {header} }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: MIN_HEADER_HEIGHT -  24 //48/2,
+        paddingTop: MIN_HEADER_HEIGHT - 24 //48/2,
     },
     cover: {
         height: MAX_HEADER_HEIGHT - 48//48

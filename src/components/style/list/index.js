@@ -23,7 +23,6 @@ export default function List() {
                     </TouchableOpacity>
                 </View>
             </View>
-
         </View>
     )
 }
@@ -37,7 +36,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 25,
         flexDirection: 'row',
-        flexWrap: 'wrap'
     },
     childLeft: {
         flex: 1,
