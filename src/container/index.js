@@ -1,7 +1,7 @@
 import * as React from 'react';
 // import { View, StyleSheet } from 'react-native';
 //import { Navigation } from 'react-native-navigation';
-import { View, StatusBar, StyleSheet, Dimensions } from 'react-native';
+import { View, StatusBar, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -23,6 +23,7 @@ import DetailTravel from '../components/travel/detail';
 import Month from '../components/diary/detail';
 import Day from '../components/diary/detail-day';
 import Settings from '../components/settings';
+import ViewImage from '../components/travel/detail/view';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -42,7 +43,13 @@ function HomeStack() {
             <Stack.Screen name="Style" component={Style} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail Book" component={DetailBook} options={({ route, navigation }) => ({ data: route.params.data, headerShown: false, headerTitleAlign: 'center' })} />
-            <Stack.Screen name="Detail Travel" component={DetailTravel} options={({ route }) => ({ headerShown: true, headerTitleAlign: 'center', title: route.params.title })} />
+            <Stack.Screen name="Detail Travel" component={DetailTravel} options={({ route, navigation }) => ({headerLeft: () => (
+                <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
+                    <FontAwesome name='arrow-left' size={20} color='white'/>
+                </TouchableOpacity>
+            )
+                , headerShown: true, headerTitleAlign: 'center', title: route.params.title })} />
+            <Stack.Screen name="View Image" component={ViewImage} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Month" component={Month} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Day" component={Day} options={{ headerShown: false, headerTitleAlign: 'center' }} />
         </Stack.Navigator>
@@ -75,7 +82,7 @@ export default function Container() {
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor='#050504' />
+            <StatusBar backgroundColor='transparent' translucent />
             <NavigationContainer theme={{
                 colors: {
                     background: '#050504',

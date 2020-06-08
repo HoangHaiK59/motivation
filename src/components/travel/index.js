@@ -6,6 +6,7 @@ import { DB } from '../../helper/db';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { map } from '../../helper/map';
+import Constants from 'expo-constants';
 
 
 class Travel extends React.Component {
@@ -156,7 +157,8 @@ class Travel extends React.Component {
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        flexDirection: 'column'
+        flexDirection: 'column',
+        marginTop: Constants.statusBarHeight
     },
     container: {
         flex: 1

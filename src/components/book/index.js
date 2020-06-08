@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, CheckBox, Dimensions, TouchableHighlight } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, TextInput, CheckBox, Dimensions, TouchableHighlight } from 'react-native';
+import Modal from 'react-native-modal';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
 import { FontAwesome } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 
 console.ignoredYellowBox = ['Setting a timer'];
 
@@ -50,7 +52,7 @@ class Book extends React.Component {
     }
 
     handleViewDetail(router, options) {
-        this.props.navigation.navigate(router, {data: options});
+        this.props.navigation.navigate(router, { data: options });
     }
 
     handleChangeText(text, modelField) {
@@ -102,7 +104,7 @@ class Book extends React.Component {
 
     render() {
         return (
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ marginTop: 10, flexGrow: 1 }}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ marginTop: Constants.statusBarHeight, flexGrow: 1 }}>
                 <View style={styles.mainContainer}>
                     <View style={styles.container}>
                         {
@@ -118,28 +120,35 @@ class Book extends React.Component {
                             </View>) : null
                         }
                     </View>
-                    <TouchableOpacity style={[styles.buttonBottom]} onPress={() => this.setState({ visible: true, model: {
-                        name: '',
-                        image: '',
-                        category: 0,
-                        is_farvorite: false,
-                        note: [],
-                        num_of_page_read: 0,
-                        total_page: 0
-                    } })}>
+                    <TouchableOpacity style={[styles.buttonBottom]} onPress={() => this.setState({
+                        visible: true, model: {
+                            name: '',
+                            image: '',
+                            category: 0,
+                            is_farvorite: false,
+                            note: [],
+                            num_of_page_read: 0,
+                            total_page: 0
+                        }
+                    })}>
                         <FontAwesome name='plus-circle' size={25} color='#cc3112' />
                     </TouchableOpacity>
                 </View>
                 <Modal
-                    visible={this.state.visible}
-                    animationType="slide"
-                    transparent={true}
-                    onRequestClose={() => {}}>
+                    isVisible={this.state.visible}
+                    swipeDirection='down'
+                    onBackdropPress={() => this.setState({visible: false})}
+                    onBackButtonPress={() => {
+                        this.setState({visible: false});
+                        this.props.navigation.goBack();
+                    }}
+                    >
                     <View style={styles.centerView}>
                         <View style={styles.modalView}>
-                            <Text style={styles.marginLeft}>Name</Text>
+                            <Text style={{ fontSize: 18, fontWeight: '400', color: 'black', alignSelf: 'center' }}>ADD BOOK</Text>
                             <TextInput
-                                style={[styles.textInput, styles.marginLeft]}
+                                placeholder='Name'
+                                style={[styles.textInput, styles.marginLeft, { marginTop: 5 }]}
                                 selectTextOnFocus={true}
                                 multiline={true}
                                 onChangeText={text => this.handleChangeText(text, 'name')}
@@ -149,38 +158,38 @@ class Book extends React.Component {
                                 style={{ marginLeft: 5 }}
                                 onValueChange={value => this.handleChangeText(value, 'is_farvorite')}
                                 value={this.state.model.is_farvorite} />
-                            <Text style={styles.marginLeft}>Image</Text>
                             <TextInput
+                                placeholder='Image'
                                 style={[styles.textInput, styles.marginLeft]}
                                 selectTextOnFocus={true}
                                 multiline={true}
                                 onChangeText={text => this.handleChangeText(text, 'image')}
                                 value={this.state.model.image} />
-                            <Text style={styles.marginLeft}>Category</Text>
                             <TextInput
+                                placeholder='Category'
                                 style={[styles.textInput, styles.marginLeft]}
                                 keyboardType={"numeric"}
                                 selectTextOnFocus={true}
                                 multiline={true}
                                 onChangeText={text => this.handleChangeText(parseInt(text), 'category')}
-                                />
-                            <Text style={styles.marginLeft}>Note</Text>
+                            />
                             <TextInput
+                                placeholder='Note'
                                 style={[styles.textInput, styles.marginLeft]}
                                 selectTextOnFocus={true}
                                 multiline={true}
                                 onChangeText={text => this.handleChangeText(text, 'note')}
                             />
-                            <Text style={styles.marginLeft}>Num of page read</Text>
                             <TextInput
+                                placeholder='Num of page read'
                                 style={[styles.textInput, styles.marginLeft]}
                                 selectTextOnFocus={true}
                                 keyboardType={"numeric"}
                                 multiline={true}
                                 onChangeText={text => this.handleChangeText(parseInt(text), 'num_of_page_read')}
                             />
-                            <Text style={styles.marginLeft}>Total page</Text>
                             <TextInput
+                                placeholder='Total page'
                                 style={[styles.textInput, styles.marginLeft]}
                                 selectTextOnFocus={true}
                                 keyboardType={"numeric"}
@@ -190,7 +199,7 @@ class Book extends React.Component {
                             <View style={styles.buttonGroup}>
                                 <TouchableHighlight
                                     style={(this.state.model.name === '' || this.state.model.image === '') ? { ...styles.buttonSave, opacity: .8 } : styles.buttonSave}
-                                    onPress={() => this.createBook()} disabled={(this.state.model.name === '' || this.state.model.image === '')? true: false}>
+                                    onPress={() => this.createBook()} disabled={(this.state.model.name === '' || this.state.model.image === '') ? true : false}>
                                     <Text style={[styles.text, styles.buttonText]}>Save</Text>
                                 </TouchableHighlight>
                                 <TouchableHighlight style={styles.buttonClose} onPress={() => this.setState({ visible: false })}>
@@ -263,7 +272,6 @@ const styles = StyleSheet.create({
     },
     modalView: {
         backgroundColor: '#fff',
-        borderRadius: 20,
         alignItems: 'flex-start',
         shadowOffset: {
             width: 0,
@@ -290,9 +298,11 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     textInput: {
-        borderBottomWidth: 2,
-        borderBottomColor: 'red',
-        width: width - 15
+        borderWidth: 2,
+        borderColor: '#323330',
+        width: width - 15, 
+        padding: 3,
+        marginVertical: 5
     },
     marginLeft: {
         marginLeft: 10

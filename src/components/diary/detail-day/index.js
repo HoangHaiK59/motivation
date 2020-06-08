@@ -102,8 +102,7 @@ const Day = ({ route }) => {
 const styles = StyleSheet.create({
     main: {
         flex: 1,
-        flexDirection: 'column',
-        marginTop: Constants.statusBarHeight
+        flexDirection: 'column'
     },
     container: {
         flex: 1,

@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Modal, TextInput, TouchableHighlight, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput, TouchableHighlight } from 'react-native';
+import Modal from 'react-native-modal';
 import { FontAwesome } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
 
@@ -43,11 +45,11 @@ export default function DetailBook({ route, navigation }) {
     }
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ marginTop: Constants.statusBarHeight }}>
             {
                 Object.keys(bookInfo).length > 0 && <View style={styles.container}>
                     <View style={styles.header}>
-                        <Image resizeMode="contain" source={{ uri: bookInfo.image }} style={styles.image} />
+                        <Image source={{ uri: bookInfo.image }} style={styles.image} />
                     </View>
                     <View style={styles.label}>
                         {
@@ -88,10 +90,14 @@ export default function DetailBook({ route, navigation }) {
                 </View>
             }
             <Modal
-                visible={visible}
-                animationType="slide"
-                transparent={true}
-                onRequestClose={() => { }}
+                isVisible={visible}
+                onBackdropPress={() => setVisible(false)}
+                onBackButtonPress={() => {
+                    setVisible(false);
+                    navigation.goBack();
+                }}
+                animationIn='slideInLeft'
+                animationOut='slideOutLeft'
             >
                 <View style={styles.centerView}>
                     <View style={styles.modalView}>
@@ -129,14 +135,12 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start'
     },
     header: {
-        marginLeft: 30,
-        marginTop: 10,
-        width: width - 60,
-        height: 'auto'
+        flex: 1
     },
     image: {
-        width: '100%',
-        height: 250
+        width: width,
+        height: 300,
+        resizeMode: "contain"
     },
     label: {
         flexDirection: 'row',

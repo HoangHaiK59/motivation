@@ -18,7 +18,7 @@ const options = {
     },
 }
 
-export default function DetailTravel({ route }) {
+export default function DetailTravel({ route, navigation }) {
     const [items, setItems] = React.useState([]);
     const [urls, setUrls] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
@@ -40,15 +40,15 @@ export default function DetailTravel({ route }) {
         let items = [];
         //const name = map(params.ref);
         Firebase.firestore()
-        .collection(`${DB.travel}/${params.ref}/albums`)
-        .get()
-        .then(result => {
-            if(result.docs.length > 0) {
-                result.docs.forEach(doc => items.push({ id:doc.id ,...doc.data()}));
-                setItems(items);
-            }
-            setUpdate(false);
-        })
+            .collection(`${DB.travel}/${params.ref}/albums`)
+            .get()
+            .then(result => {
+                if (result.docs.length > 0) {
+                    result.docs.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+                    setItems(items);
+                }
+                setUpdate(false);
+            })
         // firebase.storage(getAppName()).ref(params.ref)
         //     .listAll()
         //     .then(result => {
@@ -81,35 +81,35 @@ export default function DetailTravel({ route }) {
         const blob = await response.blob();
         const name = map(params.ref);
         Firebase.storage().ref()
-        .child(ref + `/${file.name}`)
-        .put(blob)
-        .then(snapShot=> {
-            Firebase.storage().ref()
-            .child(snapShot.metadata.fullPath)
-            .getDownloadURL()
-            .then(url => {
-                Firebase.firestore().collection(`${DB.travel}/${name}/albums`)
-                .add({ 
-                    contentType: snapShot.metadata.contentType,
-                    fullPath: snapShot.metadata.fullPath,
-                    name: snapShot.metadata.name,
-                    size: snapShot.metadata.size,
-                    timeCreated: snapShot.metadata.timeCreated,
-                    updated: snapShot.metadata.updated,
-                    url
-                })
-                .then(refer => {
-                    console.log(refer.id);
-                    setUpdate(true);
-                    setVisible(false);
-                })
-                .catch(error => console.log(error))
-            })
+            .child(ref + `/${file.name}`)
+            .put(blob)
+            .then(snapShot => {
+                Firebase.storage().ref()
+                    .child(snapShot.metadata.fullPath)
+                    .getDownloadURL()
+                    .then(url => {
+                        Firebase.firestore().collection(`${DB.travel}/${name}/albums`)
+                            .add({
+                                contentType: snapShot.metadata.contentType,
+                                fullPath: snapShot.metadata.fullPath,
+                                name: snapShot.metadata.name,
+                                size: snapShot.metadata.size,
+                                timeCreated: snapShot.metadata.timeCreated,
+                                updated: snapShot.metadata.updated,
+                                url
+                            })
+                            .then(refer => {
+                                console.log(refer.id);
+                                setUpdate(true);
+                                setVisible(false);
+                            })
+                            .catch(error => console.log(error))
+                    })
 
-        },
-        reject => {
-            console.log(reject.message);
-        })
+            },
+                reject => {
+                    console.log(reject.message);
+                })
     }
 
     const pickImage = async () => {
@@ -143,7 +143,9 @@ export default function DetailTravel({ route }) {
                 <View style={styles.container}>
                     {
                         items.length > 0 ? items.map((item, id) => <View key={id} style={styles.item}>
-                            <Image style={styles.image} source={{ uri: item.url }} />
+                            <TouchableOpacity onPress={() => navigation.navigate('View Image', item)}>
+                                <Image style={styles.image} source={{ uri: item.url }} />
+                            </TouchableOpacity>
 
                         </View>) :
                             <View style={styles.emptyContainer}>
@@ -181,7 +183,7 @@ export default function DetailTravel({ route }) {
                             </TouchableOpacity>
                         </View>
                         <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
-                            <TouchableOpacity disabled={Object.keys(file).length <=0 ? true: false} style={Object.keys(file).length >0 ? [styles.buttonModal, { alignItems: 'center' }]: [styles.buttonModal, { alignItems: 'center', opacity: .6 }]} onPress={() => upload(params.ref, file)}>
+                            <TouchableOpacity disabled={Object.keys(file).length <= 0 ? true : false} style={Object.keys(file).length > 0 ? [styles.buttonModal, { alignItems: 'center' }] : [styles.buttonModal, { alignItems: 'center', opacity: .6 }]} onPress={() => upload(params.ref, file)}>
                                 <Text style={styles.text}>Upload</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.buttonClose, { alignItems: 'center' }]} onPress={() => setVisible(false)}>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, ImageBackground } from 'react-native';
-import { AreaChart, LineChart, Grid } from 'react-native-svg-charts';
+import { AreaChart, LineChart, Grid, XAxis, YAxis } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
@@ -65,7 +65,7 @@ class Sport extends React.Component {
                 <View style={styles.most}>
                     <View style={styles.left}>
                         <View style={styles.avt}>
-                            <Image source={require('../../assets/style.jpg')} style={[{width: 120, height: 120,alignSelf: 'center' }]} />
+                            <Image source={require('../../assets/style.jpg')} style={[{ width: 120, height: 120, alignSelf: 'center' }]} />
                         </View>
                     </View>
                     <View style={styles.center}>
@@ -75,15 +75,32 @@ class Sport extends React.Component {
                     </View>
                 </View>
                 <View style={styles.content}>
-                    <LineChart
-                        style={{ height: 200, backgroundColor: 'white' }}
-                        data={data}
-                        contentInset={{ top: 30, bottom: 30 }}
-                        curve={shape.curveNatural}
-                        svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
-                    >
-                        <Grid />
-                    </LineChart>
+                    <YAxis
+                        data={data_1}
+                        formatLabel={(value) => value}
+                        numberOfTicks={10}
+                        contentInset={{ top: 20, bottom: 20 }}
+                        svg={{ fontSize: 10, fill: 'white' }}
+                    />
+                    <View style={{ flexDirection: 'column', width: width - 30 }}>
+                        <LineChart
+
+                            style={{ flex: 1, marginRight: 15, backgroundColor: '#3d403d' }}
+                            data={data}
+                            contentInset={{ top: 30, bottom: 30 }}
+                            curve={shape.curveNatural}
+                            svg={{ fill: 'rgb(53, 55, 94)' }}
+                        >
+                            <Grid />
+                        </LineChart>
+                        <XAxis
+                            style={{ marginHorizontal: -10 }}
+                            data={data_1}
+                            formatLabel={(value, index) => index}
+                            contentInset={{ left: 20, right: 20 }}
+                            svg={{ fontSize: 10, fill: 'white' }}
+                        />
+                    </View>
                 </View>
             </View>
         )
@@ -94,20 +111,17 @@ const styles = StyleSheet.create({
     main: {
         flex: 1,
         flexDirection: 'column',
-        paddingVertical: 10
     },
     header: {
-        padding: 15,
-        flex: 1.4,
+        flex: 1,
         flexDirection: 'column',
-        justifyContent: 'center',
         alignItems: 'center'
     },
     headerAvatar: {
         position: 'absolute',
         flex: .6,
         flexDirection: 'column',
-        top: 30
+        top: 60
     },
     image: {
         width: 100,
@@ -116,9 +130,9 @@ const styles = StyleSheet.create({
     },
     background: {
         width: width,
-        height: 250,
+        height: 320,
         justifyContent: 'center',
-        resizeMode: 'cover',
+        resizeMode: "cover",
         opacity: .5
     },
     headerName: {
@@ -143,7 +157,7 @@ const styles = StyleSheet.create({
         height: 120,
         flexDirection: 'row',
         marginHorizontal: 15,
-        backgroundColor: 'white'
+        backgroundColor: '#3a5c8c'
     },
     left: {
         width: 120,
@@ -164,8 +178,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'yellow'
     },
     content: {
-        flex: 1,
+        height: 200,
         padding: 15,
+        flexDirection: 'row'
     },
     wrapTextCenter: {
         color: '#c4c0c0',
