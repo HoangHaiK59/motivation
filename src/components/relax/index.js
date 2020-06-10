@@ -8,6 +8,7 @@ import Firebase from '../../firebase';
 import Cover from '../common/cover';
 import Content from './content';
 import Animated from 'react-native-reanimated';
+import { DB } from '../../helper/db';
 
 const { width, height } = Dimensions.get('window');
 
@@ -16,12 +17,14 @@ class Relax extends React.Component {
         super(props);
 
         this.state = {
+            items: [],
             urls: [],
             hour: new Date().getHours(),
             uri: 'https://firebasestorage.googleapis.com/v0/b/motivation-b2dcb.appspot.com/o/Relax%2Frelax-image.jpg?alt=media&token=788fd555-b87f-42e3-98cb-8885f7f2ba5a'
         }
 
         this.storageRef = Firebase.storage().ref('Relax');
+        this.firebaseRef = Firebase.firestore().collection(DB.relax);
         this.animatedValue = new Animated.Value(0);
     }
 
@@ -37,7 +40,20 @@ class Relax extends React.Component {
         }
     }
 
+    getFavourites() {
+        this.firebaseRef.where('is_farvorite', '==', true)
+        .get()
+        .then(result => {
+            let items = [];
+            if(result.docs.length > 0) {
+                result.docs.forEach(doc => items.push({id: doc.id, ...doc.data()}));
+                this.setState({ items })
+            }
+        })
+    }
+
     componentDidMount() {
+        this.getFavourites();
         // this.storageRef.listAll()
         //     .then(result => {
         //         var promises = [];
@@ -67,23 +83,15 @@ class Relax extends React.Component {
     render() {
         const style = {
             cover : {uri: this.state.uri},
-            header: 'Good ' + this.getStringFromHour()
+            header: 'Good ' + this.getStringFromHour(),
+            items: this.state.items.length > 0 ? this.state.items: []
         }
         return (
             <View style={styles.main}>
 
                 <Cover style={style} animatedValue={this.animatedValue} />
-                <Content style={style} animatedValue={this.animatedValue} />
-                <ScrollView showsHorizontalScrollIndicator={false} horizontal contentContainerStyle={{ marginTop: 50, flexGrow: 1 }}>
-                    <View style={styles.type}>
-                        <View style={styles.typeItem}>
-                        </View>
-                        <View style={styles.typeItem}>
-                        </View>
-                        <View style={styles.typeItem}>
-                        </View>
-                    </View>
-                </ScrollView>
+                <Content navigation={this.props.navigation} style={style} animatedValue={this.animatedValue} />
+
             </View>
         )
     }

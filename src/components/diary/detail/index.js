@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, FlatList, SafeAreaView, TouchableOpacity, Modal, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
+import Modal from 'react-native-modal';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
 import Constants from 'expo-constants';
@@ -16,7 +17,7 @@ const Mapday = (day) => {
     return arr.find((val, id) => id === valueId)
 }
 
-const Item = ({ id, year, collectionId, image,  title,name, selected, onSelect }) => {
+const Item = ({ id, year, collectionId, image, title, name, selected, onSelect }) => {
     return <TouchableOpacity
         onPress={() => onSelect(id, year, collectionId, name)}
         style={[
@@ -26,18 +27,18 @@ const Item = ({ id, year, collectionId, image,  title,name, selected, onSelect }
         ]}>
         <View style={styles.itemLeft}>
             <View style={styles.textInLeft}>
-                <Text style={[styles.text, {fontWeight: 'bold'}]}>{id.slice(0, id.indexOf('-'))}</Text>
-                <Text style={[styles.text, {fontWeight: 'bold'}]}>{id.slice(id.indexOf('-') + 1, id.length)}</Text>
+                <Text style={[styles.text, { fontWeight: 'bold' }]}>{id.slice(0, id.indexOf('-'))}</Text>
+                <Text style={[styles.text, { fontWeight: 'bold' }]}>{id.slice(id.indexOf('-') + 1, id.length)}</Text>
             </View>
         </View>
         <View style={styles.itemRight}>
             {
-                image !== '' ? <Image source={{uri: image }} style={styles.image} />:
-                <View style={{width: width - 70, height: 'auto' }}>
-                    <Text style={[styles.textStyle, {fontWeight: 'bold'}]}>&#8221;</Text>
-                    <Text style={[styles.textStyle, {alignSelf: 'center'}]}>{title}</Text>
-                    <Text style={[styles.textStyle, {alignSelf: 'flex-end', fontWeight: 'bold'}]}>&#8221;</Text>
-                </View>
+                image !== '' ? <Image source={{ uri: image }} style={styles.image} /> :
+                    <View style={{ width: width - 70, height: 'auto' }}>
+                        <Text style={[styles.textStyle, { fontWeight: 'bold' }]}>&#8221;</Text>
+                        <Text style={[styles.textStyle, { alignSelf: 'center' }]}>{title}</Text>
+                        <Text style={[styles.textStyle, { alignSelf: 'flex-end', fontWeight: 'bold' }]}>&#8221;</Text>
+                    </View>
             }
         </View>
     </TouchableOpacity>
@@ -60,25 +61,25 @@ export default function Month({ route, navigation }) {
         newSelected.set(id, !selected.get(id));
 
         setSelected(newSelected);
-        navigation.navigate('Day', {id, year, collectionId, name})
+        navigation.navigate('Day', { id, year, collectionId, name })
     }, [selected]);
 
     React.useEffect(() => {
         Firebase.firestore().collection(`${DB.diary}/${params.year}/${params.id}`)
-        .get()
-        .then(result => {
-            if(result.docs.length > 0) {
-                let items = [];
-                result.forEach(doc => items.push({id: doc.id, ...doc.data()}));
-                setItems(items);
-            }
-        })
-    },[])
+            .get()
+            .then(result => {
+                if (result.docs.length > 0) {
+                    let items = [];
+                    result.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+                    setItems(items);
+                }
+            })
+    }, [])
 
 
     const upload = async (date, file) => {
-        let response, blob ;
-        if(Object.keys(file).length > 0 ) {
+        let response, blob;
+        if (Object.keys(file).length > 0) {
             response = await fetch(file.uri);
             blob = await response.blob();
         }
@@ -87,7 +88,7 @@ export default function Month({ route, navigation }) {
         if (is_input_date) {
             dateInp = moment(date, 'DD/MM/YYYY').toDate().getDate().toString();
         }
-        if(Object.keys(file).length > 0) {
+        if (Object.keys(file).length > 0) {
             storageRef
                 .child(`Diary/${params.year}/${params.id}` + `/${file.name}`)
                 .put(blob)
@@ -115,8 +116,8 @@ export default function Month({ route, navigation }) {
                     reject => {
                         console.log(reject.message);
                     })
-            } else {
-                Firebase.firestore().collection(DB.diary).doc(params.year).collection(params.id).doc(is_input_date ? dateInp + '-' + Mapday(date) :
+        } else {
+            Firebase.firestore().collection(DB.diary).doc(params.year).collection(params.id).doc(is_input_date ? dateInp + '-' + Mapday(date) :
                 new Date().getDate() + '-' + Mapday(new Date()))
                 .set({
                     title: title,
@@ -129,12 +130,35 @@ export default function Month({ route, navigation }) {
                     setVisible(false);
                 })
                 .catch(error => console.log(error))
-            }
+        }
     }
 
     const pickImage = async () => {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [2, 3],
+                quality: 2
+            });
+
+            if (!result.cancelled) {
+                let fileName = result.uri.split('/').pop();
+                let match = /\.(\w+)$/.exec(fileName);
+                let type = match ? `image/${match[1]}` : `image`;
+                setFile({ uri: result.uri, name: fileName, type, width: result.width, height: result.height })
+            }
+
+            //console.log(result);
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
+    const cameraShot = async () => {
+        try {
+            let result = await ImagePicker.launchCameraAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [2, 3],
@@ -159,57 +183,63 @@ export default function Month({ route, navigation }) {
         <View style={styles.main}>
             <SafeAreaView style={styles.container}>
                 <FlatList
-                data={items}
-                renderItem={({item}) => (<Item 
-                    id={item.id}
-                    collectionId={params.id}
-                    year={params.year}
-                    image={item.url}
-                    title={item.title}
-                    name={params.name}
-                    selected={!!selected.get(item.id)}
-                    onSelect={onSelect}
+                    data={items}
+                    renderItem={({ item }) => (<Item
+                        id={item.id}
+                        collectionId={params.id}
+                        year={params.year}
+                        image={item.url}
+                        title={item.title}
+                        name={params.name}
+                        selected={!!selected.get(item.id)}
+                        onSelect={onSelect}
                     />)}
                 >
-                
+
                 </FlatList>
             </SafeAreaView>
             <View style={styles.bottom}>
-                <TouchableOpacity onPress={() => {setVisible(true); setFile({})}}>
-                    <FontAwesome name='plus-circle' size={30} color='#ed881c'/>
+                <TouchableOpacity onPress={() => { setVisible(true); setFile({}) }}>
+                    <FontAwesome name='plus-circle' size={30} color='#ed881c' />
                 </TouchableOpacity>
             </View>
-            <Modal 
-            animationType='slide'
-            transparent={true}
-            onRequestClose={() => {}}
-            visible={visible}
+            <Modal
+                swipeDirection={['down', 'left', 'right', 'up']}
+                onSwipeComplete={() => setVisible(false)}
+                onBackButtonPress={() => {
+                    setVisible(false);
+                    navigation.goBack()
+                }}
+                onBackdropPress={() => setVisible(false)}
+                isVisible={visible}
             >
                 <View style={styles.centerView}>
                     <View style={styles.modalView}>
-                        <TextInput placeholder='DD/MM/YYYY' style={styles.input} onChangeText={date => setDate(date)} selectTextOnFocus={true} multiline={true}/>
-                        <TextInput placeholder='Title...' style={styles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true}/>
-                        <TextInput placeholder='Extra...' style={styles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true}/>
-                        <TextInput placeholder='Diary...' style={styles.input} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true}/>
-                        {
-                            file !== null && <View style={{ alignSelf: 'center' }}>
-                                <Image source={{ uri: file.uri }} style={{ width: 50, height: 50 }} />
+                        <TextInput placeholder='DD/MM/YYYY' style={styles.input} onChangeText={date => setDate(date)} selectTextOnFocus={true} multiline={true} />
+                        <TextInput placeholder='Title...' style={styles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true} />
+                        <TextInput placeholder='Extra...' style={styles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true} />
+                        <TextInput placeholder='Diary...' style={styles.input} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} />
+                        <View style={{ flexDirection: 'row', backgroundColor: 'blue', width: width, height: 70, justifyContent: 'flex-start' }}>
+                            <View style={{ backgroundColor: 'red', alignItems: 'center', alignSelf: 'flex-start', flexDirection: 'column' }}>
+                                <TouchableOpacity onPress={() => pickImage()}>
+                                    <FontAwesome name="image" size={25} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => cameraShot()}>
+                                    <FontAwesome name="camera" size={25} />
+                                </TouchableOpacity>
                             </View>
-                        }
-                        <View style={{ alignItems: 'center', alignSelf: 'center' }}>
-                            <TouchableOpacity onPress={() => pickImage()}>
-                                <FontAwesome name="image" size={20} />
-                            </TouchableOpacity>
+                            {
+                                file !== null && <View style={{ alignSelf: 'center' }}>
+                                    <Image source={{ uri: file.uri }} style={{ width: 50, height: 50, backgroundColor: 'red' }} />
+                                </View>
+                            }
                         </View>
                         <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
                             <TouchableOpacity
-                                disabled={(title === '' || extra === '' || diary === '') ? true: false}
+                                disabled={(title === '' || extra === '' || diary === '') ? true : false}
                                 style={title !== '' || extra !== '' || diary !== '' ? [styles.buttonModal, { alignItems: 'center' }] : [styles.buttonModal, { alignItems: 'center', opacity: .6 }]}
                                 onPress={() => upload(date, file)}>
-                                <Text style={styles.text}>Create</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.buttonClose, { alignItems: 'center' }]} onPress={() => setVisible(false)}>
-                                <Text style={styles.text}>Close</Text>
+                                <Text style={[styles.text, { fontSize: 18 }, { marginTop: 5 }]}>Create</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -281,19 +311,22 @@ const styles = StyleSheet.create({
         shadowOpacity: .25,
         shadowRadius: 3.5,
         elevation: 5,
-        width: width
+        width: width,
+        padding: 10
     },
     buttonModal: {
         borderRadius: 30,
         backgroundColor: '#f2400f',
-        width: 60
+        width: 120,
+        height: 40
     },
     buttonClose: {
         width: 60
     },
     input: {
-        borderBottomColor: '#173f6e',
+        borderBottomColor: '#7b82a6',
         borderBottomWidth: 2,
-        width: width
+        width: width,
+        marginVertical: 10
     }
 })

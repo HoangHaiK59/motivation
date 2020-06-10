@@ -24,6 +24,8 @@ import Month from '../components/diary/detail';
 import Day from '../components/diary/detail-day';
 import Settings from '../components/settings';
 import ViewImage from '../components/travel/detail/view';
+import Focus from '../components/relax/focus';
+import Sleep from '../components/relax/sleep';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -52,6 +54,8 @@ function HomeStack() {
             <Stack.Screen name="View Image" component={ViewImage} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Month" component={Month} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Day" component={Day} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Focus" component={Focus} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Sleep" component={Sleep} options={{ headerShown: false, headerTitleAlign: 'center' }} />
         </Stack.Navigator>
     )
 }
@@ -64,21 +68,8 @@ function StatisticStack() {
     )
 }
 
-function SettingsStack(props) {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen name="Settings" {...props} component={Settings} options={{ headerTitleAlign: 'center' }} />
-        </Stack.Navigator>
-    )
-}
-
 export default function Container() {
 
-    const [darkMode, setDarkMode] = React.useState(true);
-
-    const handleDarkMode = () => {
-        setDarkMode(!darkMode)
-    }
 
     return (
         <View style={styles.container}>
@@ -123,7 +114,6 @@ export default function Container() {
                 >
                     <Tab.Screen name="Home" component={HomeStack} />
                     <Tab.Screen name="Statistic" component={StatisticStack} />
-                    <Tab.Screen name="Settings" component={SettingsStack} />
                 </Tab.Navigator>
             </NavigationContainer>
         </View>

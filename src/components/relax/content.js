@@ -1,15 +1,16 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
 import { onScrollEvent } from 'react-native-redash';
 
 import Header from '../common/header';
 import { MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT } from '../../model/constants';
+import Item from './item';
 
 const { interpolate, Extrapolate } = Animated;
 
-export default function Content({ animatedValue, style: { header } }) {
+export default function Content({ animatedValue, style: { header, items }, navigation }) {
 
     const height = interpolate(animatedValue, {
         inputRange: [- MAX_HEADER_HEIGHT, - 48 / 2],
@@ -48,6 +49,52 @@ export default function Content({ animatedValue, style: { header } }) {
                 <Header animatedValue={animatedValue} header={header} />
             </View>
             <View style={styles.list}>
+                <ScrollView
+                    showsHorizontalScrollIndicator={false}
+                    horizontal
+                    contentContainerStyle={{ marginTop: 20, flexGrow: 1 }}>
+                    <View style={styles.type}>
+                        <LinearGradient
+                            start={[0, .3]}
+                            end={[0, 1]}
+                            colors={['#ad4339', 'rgba(181, 93, 69,.2)', '#3c6bbd']}
+                            style={styles.gradientItem}
+                        >
+                            <TouchableOpacity style={styles.typeItem} onPress={() => navigation.navigate('Focus')}>
+                                <Text style={[styles.text, { fontSize: 27, fontWeight: '500' }, styles.textIn]}>Focus</Text>
+                            </TouchableOpacity>
+                        </LinearGradient>
+                        <LinearGradient
+                            start={[0, .3]}
+                            end={[0, 1]}
+                            colors={['#ad4339', 'rgba(181, 93, 69,.2)', '#3c6bbd']}
+                            style={styles.gradientItem}
+                        >
+                            <TouchableOpacity style={styles.typeItem} onPress={() => navigation.navigate('Sleep')}>
+                                <Text style={[styles.text, { fontSize: 27, fontWeight: '500' }, styles.textIn]}>Sleep</Text>
+                            </TouchableOpacity>
+                        </LinearGradient>
+                        <LinearGradient
+                            start={[0, .3]}
+                            end={[0, 1]}
+                            colors={['#ad4339', 'rgba(181, 93, 69,.2)', '#3c6bbd']}
+                            style={styles.gradientItem}
+                        >
+                            <TouchableOpacity style={styles.typeItem}>
+                                <Text style={[styles.text, { fontSize: 27, fontWeight: '500' }, styles.textIn]}>Other</Text>
+                            </TouchableOpacity>
+                        </LinearGradient>
+                    </View>
+                </ScrollView>
+            </View>
+            <View style={styles.list}>
+                <Text style={{ fontSize: 28, color: '#c4c0c0', fontWeight: '400', marginLeft: 15 }}>Favourite</Text>
+                <View style={styles.itemsList}>
+                    {
+                        items.length > 0 ? items.map((item, id) => <Item key={id} index={id + 1} item={item} />) :
+                            <Text style={styles.text}>Loading</Text>
+                    }
+                </View>
             </View>
         </Animated.ScrollView>
     )
@@ -56,7 +103,7 @@ export default function Content({ animatedValue, style: { header } }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: MIN_HEADER_HEIGHT - 24 //48/2,
+        paddingTop: MIN_HEADER_HEIGHT - 48 / 2
     },
     cover: {
         height: MAX_HEADER_HEIGHT - 48//48
@@ -86,5 +133,45 @@ const styles = StyleSheet.create({
         paddingTop: 32,
         backgroundColor: 'black',
         flex: 1
+    },
+    itemsList: {
+        backgroundColor: 'black',
+        flex: 1,
+        paddingVertical: 32
+    },
+    type: {
+        flex: 1,
+        flexDirection: 'row'
+    },
+    gradientItem: {
+        width: 200,
+        height: 200,
+        marginHorizontal: 10,
+        borderWidth: 1,
+        borderRadius: 10
+    },
+    typeItem: {
+        width: 200,
+        height: 200,
+        borderWidth: 1,
+        borderRadius: 10
+    },
+    textIn: {
+        position: 'absolute',
+        left: '35%',
+        top: '40%'
+    },
+    typeVertical: {
+        flex: 1,
+        flexDirection: 'column'
+    },
+    typeItemVertical: {
+        width: 200,
+        height: 200,
+        marginVertical: 10
+    },
+    text: {
+        color: '#c4c0c0',
+        fontSize: 14
     }
 })

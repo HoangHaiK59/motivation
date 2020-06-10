@@ -12,7 +12,9 @@ export default function DetailBook({ route, navigation }) {
     const { book } = route.params.data;
     const [state, setState] = React.useState(book.is_farvorite);
     const [visible, setVisible] = React.useState(false);
+    const [modal, setModal] = React.useState(false);
     const [comment, setComment] = React.useState('');
+    const [page, setPage] = React.useState(0);
     const [bookInfo, setBookInfo] = React.useState({});
     const [update, setUpdate] = React.useState(false);
     const firebaseRef = Firebase.firestore().collection(DB.book);
@@ -33,6 +35,13 @@ export default function DetailBook({ route, navigation }) {
     function createCommentNote(docId, comments, comment) {
         firebaseRef.doc(docId).update({
             note: [...comments, comment]
+        }).then(setUpdate(true))
+            .catch(err => console.log(err))
+    }
+
+    const updatePageRead = (docId, page) => {
+        firebaseRef.doc(docId).update({
+            num_of_page_read: page
         }).then(setUpdate(true))
             .catch(err => console.log(err))
     }
@@ -71,7 +80,9 @@ export default function DetailBook({ route, navigation }) {
                                 </TouchableOpacity>
 
                         }
-                        <Text style={[styles.text, styles.labelItem, { textAlign: 'right' }]}>{bookInfo.num_of_page_read}/{bookInfo.total_page}</Text>
+                        <TouchableOpacity style={styles.labelItem} onPress={() => setModal(true)}>
+                            <Text style={[styles.text, { textAlign: 'right' }]}>{bookInfo.num_of_page_read}/{bookInfo.total_page}</Text>
+                        </TouchableOpacity>
                         <View style={styles.labelItemRight}>
                             <TouchableOpacity onPress={() => setVisible(true)}>
                                 <Text style={[styles.text, { textAlign: 'right' }]}>
@@ -96,20 +107,21 @@ export default function DetailBook({ route, navigation }) {
                     setVisible(false);
                     navigation.goBack();
                 }}
-                animationIn='slideInLeft'
-                animationOut='slideOutLeft'
+                swipeDirection={['down', 'left', 'right', 'up']}
+                onSwipeComplete={() => setVisible(false)}
             >
-                <View style={styles.centerView}>
+                <View style={styles.swipeView}>
                     <View style={styles.modalView}>
                         <TextInput
                             selectTextOnFocus={true}
-                            autoFocus={true}
+                            placeholder='Comment'
+                            placeholderTextColor='#000'
                             multiline={true}
-                            style={styles.textInput}
+                            style={[styles.textInput, { marginTop: 10 }]}
                             onChangeText={comment => setComment(comment)}
                             value={comment}
                         />
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={{ flexDirection: 'row', marginVertical: 15 }}>
                             <TouchableHighlight style={comment !== '' ? styles.buttonModal : { ...styles.buttonModal, opacity: .8 }} onPress={() => {
                                 createCommentNote(book.id, book.note, comment);
                                 book.note = [...book.note, comment];
@@ -117,8 +129,37 @@ export default function DetailBook({ route, navigation }) {
                             }} disabled={comment === '' ? true : false}>
                                 <Text style={styles.buttonText}>Create</Text>
                             </TouchableHighlight>
-                            <TouchableHighlight style={[styles.buttonClose, { marginLeft: 5 }]} onPress={() => setVisible(false)}>
-                                <Text style={styles.buttonText}>Close</Text>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+            <Modal
+                isVisible={modal}
+                onBackdropPress={() => setModal(false)}
+                onBackButtonPress={() => {
+                    setModal(false);
+                    navigation.goBack();
+                }}
+                swipeDirection={['down', 'left', 'right', 'up']}
+                onSwipeComplete={() => setModal(false)}
+            >
+                <View style={styles.swipeView}>
+                    <View style={styles.modalView}>
+                        <TextInput
+                            selectTextOnFocus={true}
+                            placeholder='Page'
+                            placeholderTextColor='#000'
+                            keyboardType={'numeric'}
+                            multiline={true}
+                            style={[styles.textInput, { marginTop: 10 }]}
+                            onChangeText={page => setPage(parseInt(page))}
+                        />
+                        <View style={{ flexDirection: 'row', marginVertical: 15 }}>
+                            <TouchableHighlight style={comment !== '' ? styles.buttonModal : { ...styles.buttonModal, opacity: .8 }} onPress={() => {
+                                updatePageRead(book.id, page);
+                                setModal(false);
+                            }} disabled={page >= bookInfo.total_page  ? true : false}>
+                                <Text style={styles.buttonText}>Update</Text>
                             </TouchableHighlight>
                         </View>
                     </View>
@@ -176,15 +217,14 @@ const styles = StyleSheet.create({
     button: {
         alignItems: 'center'
     },
-    centerView: {
+    swipeView: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         marginTop: 15,
     },
     modalView: {
-        backgroundColor: '#fff',
-        borderRadius: 20,
+        backgroundColor: '#bcbdc2',
         alignItems: 'center',
         shadowOffset: {
             width: 0,
@@ -196,14 +236,17 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width
     },
     textInput: {
-        height: 50,
+        height: 30,
         width: width - 10,
-        borderColor: 'rgb(199, 121, 105)'
+        marginHorizontal: 16,
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        paddingLeft: 15
     },
     buttonModal: {
         borderRadius: 30,
-        backgroundColor: '#f2400f',
-        width: 60
+        backgroundColor: '#fff',
+        width: 100
     },
     buttonClose: {
         borderRadius: 30,
@@ -211,7 +254,7 @@ const styles = StyleSheet.create({
         width: 60
     },
     buttonText: {
-        color: '#c4c0c0',
+        color: '#000',
         fontSize: 15,
         textAlign: 'center'
     }

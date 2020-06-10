@@ -136,30 +136,27 @@ class Book extends React.Component {
                 </View>
                 <Modal
                     isVisible={this.state.visible}
-                    swipeDirection='down'
-                    onBackdropPress={() => this.setState({visible: false})}
+                    onSwipeComplete={() => this.setState({ visible: false })}
+                    swipeDirection={['up', 'left', 'right', 'down']}
+                    onBackdropPress={() => this.setState({ visible: false })}
                     onBackButtonPress={() => {
-                        this.setState({visible: false});
+                        this.setState({ visible: false });
                         this.props.navigation.goBack();
                     }}
-                    >
-                    <View style={styles.centerView}>
+                >
+                    <View style={styles.swipeView}>
                         <View style={styles.modalView}>
-                            <Text style={{ fontSize: 18, fontWeight: '400', color: 'black', alignSelf: 'center' }}>ADD BOOK</Text>
                             <TextInput
                                 placeholder='Name'
+                                placeholderTextColor='black'
                                 style={[styles.textInput, styles.marginLeft, { marginTop: 5 }]}
                                 selectTextOnFocus={true}
                                 multiline={true}
                                 onChangeText={text => this.handleChangeText(text, 'name')}
                                 value={this.state.model.name} />
-                            <Text style={styles.marginLeft}>Farvorite</Text>
-                            <CheckBox
-                                style={{ marginLeft: 5 }}
-                                onValueChange={value => this.handleChangeText(value, 'is_farvorite')}
-                                value={this.state.model.is_farvorite} />
                             <TextInput
                                 placeholder='Image'
+                                placeholderTextColor='black'
                                 style={[styles.textInput, styles.marginLeft]}
                                 selectTextOnFocus={true}
                                 multiline={true}
@@ -167,6 +164,7 @@ class Book extends React.Component {
                                 value={this.state.model.image} />
                             <TextInput
                                 placeholder='Category'
+                                placeholderTextColor='black'
                                 style={[styles.textInput, styles.marginLeft]}
                                 keyboardType={"numeric"}
                                 selectTextOnFocus={true}
@@ -175,6 +173,7 @@ class Book extends React.Component {
                             />
                             <TextInput
                                 placeholder='Note'
+                                placeholderTextColor='black'
                                 style={[styles.textInput, styles.marginLeft]}
                                 selectTextOnFocus={true}
                                 multiline={true}
@@ -182,6 +181,7 @@ class Book extends React.Component {
                             />
                             <TextInput
                                 placeholder='Num of page read'
+                                placeholderTextColor='black'
                                 style={[styles.textInput, styles.marginLeft]}
                                 selectTextOnFocus={true}
                                 keyboardType={"numeric"}
@@ -190,20 +190,25 @@ class Book extends React.Component {
                             />
                             <TextInput
                                 placeholder='Total page'
+                                placeholderTextColor='black'
                                 style={[styles.textInput, styles.marginLeft]}
                                 selectTextOnFocus={true}
                                 keyboardType={"numeric"}
                                 multiline={true}
                                 onChangeText={text => this.handleChangeText(parseInt(text), 'total_page')}
                             />
+                            <View style={{ flexDirection: 'row', padding: 5 }}>
+                                <Text style={styles.marginLeft}>Farvorite</Text>
+                                <CheckBox
+                                    style={{ marginLeft: 5 }}
+                                    onValueChange={value => this.handleChangeText(value, 'is_farvorite')}
+                                    value={this.state.model.is_farvorite} />
+                            </View>
                             <View style={styles.buttonGroup}>
                                 <TouchableHighlight
                                     style={(this.state.model.name === '' || this.state.model.image === '') ? { ...styles.buttonSave, opacity: .8 } : styles.buttonSave}
                                     onPress={() => this.createBook()} disabled={(this.state.model.name === '' || this.state.model.image === '') ? true : false}>
-                                    <Text style={[styles.text, styles.buttonText]}>Save</Text>
-                                </TouchableHighlight>
-                                <TouchableHighlight style={styles.buttonClose} onPress={() => this.setState({ visible: false })}>
-                                    <Text style={[styles.text, styles.buttonText]}>Close</Text>
+                                    <Text style={[styles.buttonText, {fontSize: 16, fontWeight: 'bold'}]}>SAVE</Text>
                                 </TouchableHighlight>
                             </View>
                         </View>
@@ -264,14 +269,14 @@ const styles = StyleSheet.create({
         right: 35,
         zIndex: 2
     },
-    centerView: {
+    swipeView: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         marginTop: 15,
     },
     modalView: {
-        backgroundColor: '#fff',
+        backgroundColor: '#d7d8de',
         alignItems: 'flex-start',
         shadowOffset: {
             width: 0,
@@ -287,22 +292,20 @@ const styles = StyleSheet.create({
         backgroundColor: '#f2400f',
         width: 60
     },
-    buttonClose: {
-        borderRadius: 30,
-        backgroundColor: '#124dcc',
-        width: 60
-    },
     buttonText: {
         color: '#c4c0c0',
         fontSize: 15,
         textAlign: 'center'
     },
     textInput: {
-        borderWidth: 2,
-        borderColor: '#323330',
-        width: width - 15, 
+        // borderWidth: 2,
+        // borderColor: '#323330',
+        width: width - 15,
         padding: 3,
-        marginVertical: 5
+        marginVertical: 5,
+        borderRadius: 25,
+        backgroundColor: '#fff',
+        paddingLeft: 10
     },
     marginLeft: {
         marginLeft: 10
@@ -310,16 +313,23 @@ const styles = StyleSheet.create({
     buttonGroup: {
         flexDirection: 'row',
         width: width,
-        marginVertical: 10
+        marginVertical: 10,
+        justifyContent: 'center'
     },
     buttonSave: {
-        width: 50,
+        width: 150,
+        height: 40,
         marginLeft: 10,
-        backgroundColor: '#f2400f'
+        backgroundColor: '#fff',
+        alignSelf: 'center',
+        borderRadius: 50,
+        alignItems: 'center'
     },
     buttonClose: {
         width: 50,
-        marginLeft: 10
+        position: 'absolute',
+        top: 10,
+        left: '50%'
     },
     buttonText: {
         textAlign: 'center'
