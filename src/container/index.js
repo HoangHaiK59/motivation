@@ -26,6 +26,7 @@ import Settings from '../components/settings';
 import ViewImage from '../components/travel/detail/view';
 import Focus from '../components/relax/focus';
 import Sleep from '../components/relax/sleep';
+import RelaxAction from '../components/relax/action';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,6 +57,7 @@ function HomeStack() {
             <Stack.Screen name="Day" component={Day} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Focus" component={Focus} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Sleep" component={Sleep} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Relax Action" component={RelaxAction} options={{ headerShown: false, headerTitleAlign: 'center' }} />
         </Stack.Navigator>
     )
 }

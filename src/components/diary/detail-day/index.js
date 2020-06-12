@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { View, Text, Image, Dimensions, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, Modal, TextInput } from 'react-native';
+import { View, Text, Image, Dimensions, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, TextInput } from 'react-native';
 import Constants from 'expo-constants';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons as Icon } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
+import Modal from 'react-native-modal';
 
 const { width, height } = Dimensions.get('window');
 
@@ -17,9 +18,8 @@ const Item = ({ id, title }) => (
     </View>
 )
 
-const Day = ({ route }) => {
+const Day = ({ route, navigation }) => {
     const { params } = route;
-    console.log(params)
     const firebaseRef = Firebase.firestore().collection(DB.diary).doc(params.year).collection(params.collectionId).doc(params.id);
     const [item, setItem] = React.useState({});
     const [style, setStyle] = React.useState({});
@@ -69,27 +69,34 @@ const Day = ({ route }) => {
                     <FontAwesome name='pencil' size={25} color='#d13430' />
                 </TouchableOpacity>
             </View>
-            <Modal visible={visible} onRequestClose={() => { }} transparent={true} animationType='slide'>
-                <View style={styles.centerView}>
+            <Modal isVisible={visible}
+                swipeDirection={['down', 'left', 'right', 'up']}
+                onSwipeComplete={() => setVisible(false)}
+                onBackdropPress={() => setVisible(false)}
+                onBackButtonPress={() => navigation.goBack()}
+            >
+                <View style={styles.swipeView}>
                     <View style={styles.modalView}>
-                        <TextInput
-                            multiline={true}
-                            autoFocus={true}
-                            selectTextOnFocus={true}
-                            style={styles.textInput}
-                            onChangeText={text => setText(text)} />
 
-                        <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <TextInput
+                                underlineColorAndroid={'rgba(0,0,0,0)'}
+                                multiline={true}
+                                autoFocus={true}
+                                placeholder='type here'
+                                selectTextOnFocus={true}
+                                style={styles.textInput}
+                                onChangeText={text => setText(text)} />
 
-                            <TouchableOpacity disabled={text !== '' ? false : true}
-                                style={text !== '' ? styles.buttonModal : styles.buttonOpacity}
-                                onPress={() => updateDoc(item?.diaries)}>
-                                <Text style={styles.text}>Add</Text>
-                            </TouchableOpacity>
+                            <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
 
-                            <TouchableOpacity style={styles.buttonClose} onPress={() => setVisible(false)}>
-                                <Text style={styles.text}>Close</Text>
-                            </TouchableOpacity>
+                                <TouchableOpacity disabled={text !== '' ? false : true}
+                                    style={text !== '' ? styles.buttonModal : styles.buttonOpacity}
+                                    onPress={() => updateDoc(item?.diaries)}>
+                                    <Icon name='md-send' size={25} />
+                                </TouchableOpacity>
+
+                            </View>
                         </View>
 
                     </View>
@@ -132,9 +139,9 @@ const styles = StyleSheet.create({
         bottom: 30,
         right: 25
     },
-    centerView: {
+    swipeView: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         marginTop: 15,
     },
@@ -148,26 +155,34 @@ const styles = StyleSheet.create({
         shadowOpacity: .25,
         shadowRadius: 3.5,
         elevation: 5,
-        width: width
+        width: width,
+        paddingHorizontal: 8
     },
     buttonModal: {
+        width: 50,
         borderRadius: 30,
-        backgroundColor: '#f2400f',
-        width: 60,
+        alignItems: 'center',
+        height: 25,
     },
     buttonOpacity: {
         borderRadius: 30,
-        backgroundColor: '#f2400f',
-        width: 60,
-        opacity: .6
+        width: 50,
+        opacity: .6,
+        alignItems: 'center',
+        height: 25,
     },
     buttonClose: {
-        width: 60,
-        marginHorizontal: 5
+        width: 80,
+        marginHorizontal: 5,
+        alignItems: 'center',
+        height: 25,
     },
     textInput: {
-        width: width - 20,
-        height: 'auto'
+        width: width - 50,
+        height: 50,
+        borderBottomColor: '#bd4a20',
+        borderBottomWidth: 1,
+        marginVertical: 8
     },
     text: {
         color: '#c4c0c0',

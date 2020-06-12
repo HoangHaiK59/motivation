@@ -97,6 +97,10 @@ export default function Month({ route, navigation }) {
                         .child(snapShot.metadata.fullPath)
                         .getDownloadURL()
                         .then(url => {
+
+                            // avoid intalics
+                            Firebase.firestore().collection(DB.diary).doc(params.year).set({});
+
                             Firebase.firestore().collection(DB.diary).doc(params.year).collection(params.id).doc(is_input_date ? dateInp + '-' + Mapday(date) :
                                 new Date().getDate() + '-' + Mapday(new Date()))
                                 .set({
@@ -137,10 +141,12 @@ export default function Month({ route, navigation }) {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
+                allowsEditing: false,
                 aspect: [2, 3],
-                quality: 2
+                quality: 1
             });
+
+            console.log(result);
 
             if (!result.cancelled) {
                 let fileName = result.uri.split('/').pop();
@@ -160,7 +166,7 @@ export default function Month({ route, navigation }) {
         try {
             let result = await ImagePicker.launchCameraAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
+                allowsEditing: false,
                 aspect: [2, 3],
                 quality: 1
             });
@@ -219,20 +225,22 @@ export default function Month({ route, navigation }) {
                         <TextInput placeholder='Title...' style={styles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true} />
                         <TextInput placeholder='Extra...' style={styles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true} />
                         <TextInput placeholder='Diary...' style={styles.input} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} />
-                        <View style={{ flexDirection: 'row', backgroundColor: 'blue', width: width, height: 70, justifyContent: 'flex-start' }}>
-                            <View style={{ backgroundColor: 'red', alignItems: 'center', alignSelf: 'flex-start', flexDirection: 'column' }}>
-                                <TouchableOpacity onPress={() => pickImage()}>
-                                    <FontAwesome name="image" size={25} />
+                        <View style={{ flexDirection: 'row', width: width, height: 70, justifyContent: 'flex-start' }}>
+                            <View style={{ alignItems: 'center', flexDirection: 'column', padding: 5 }}>
+                                <TouchableOpacity onPress={() => pickImage()} style={{ alignSelf: 'center' }}>
+                                    <FontAwesome name="image" size={25} color='#bd4a20' />
                                 </TouchableOpacity>
-                                <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => cameraShot()}>
-                                    <FontAwesome name="camera" size={25} />
+                                <TouchableOpacity style={{ marginVertical: 10, alignSelf: 'center' }} onPress={() => cameraShot()}>
+                                    <FontAwesome name="camera" size={25} color='#bd4a20' />
                                 </TouchableOpacity>
                             </View>
-                            {
-                                file !== null && <View style={{ alignSelf: 'center' }}>
-                                    <Image source={{ uri: file.uri }} style={{ width: 50, height: 50, backgroundColor: 'red' }} />
-                                </View>
-                            }
+                            <View style={{width: 60, height: 60, alignSelf: 'center'}}>
+                                {
+                                    file !== null && <View style={{ alignSelf: 'center', marginLeft: 50 }}>
+                                        <Image source={{ uri: file.uri }} style={{ width: 60, height: 60 }} />
+                                    </View>
+                                }
+                            </View>
                         </View>
                         <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
                             <TouchableOpacity

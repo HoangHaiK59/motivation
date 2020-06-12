@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { View, ScrollView, StyleSheet, Text, Image, Modal, Dimensions, TouchableOpacity, TextInput } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { View, ScrollView, StyleSheet, Text, Image, Dimensions, TouchableOpacity, TextInput } from 'react-native';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
 //import ImagePicker from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { map } from '../../../helper/map';
+import Modal from 'react-native-modal';
 
 const { width } = Dimensions.get('window');
 
@@ -24,6 +25,7 @@ export default function DetailTravel({ route, navigation }) {
     const [visible, setVisible] = React.useState(false);
     const [file, setFile] = React.useState({});
     const [update, setUpdate] = React.useState(false);
+    const [name, setName] = React.useState('');
     const { params } = route;
 
     // React.useEffect(() => {
@@ -76,19 +78,38 @@ export default function DetailTravel({ route, navigation }) {
         //     )
     }, [update === true]);
 
+    React.useEffect(() => {
+        getName();
+    }, [])
+
+    const getName = () => {
+        Firebase.storage().ref()
+        .listAll()
+        .then(result => {
+            for(const item of result.prefixes) {
+                if(map(item.name) === params.ref) {
+                    setName(item.name);
+                }
+            }
+        })
+    }
+
     const upload = async (ref, file) => {
         const response = await fetch(file.uri);
         const blob = await response.blob();
-        const name = map(params.ref);
         Firebase.storage().ref()
-            .child(ref + `/${file.name}`)
+            .child(name + `/${file.name}`)
             .put(blob)
             .then(snapShot => {
                 Firebase.storage().ref()
                     .child(snapShot.metadata.fullPath)
                     .getDownloadURL()
                     .then(url => {
-                        Firebase.firestore().collection(`${DB.travel}/${name}/albums`)
+
+                        //avoid intalic in firestore
+                        Firebase.firestore().collection(DB.travel).doc(params.ref).set({});
+
+                        Firebase.firestore().collection(DB.travel).doc(params.ref).collection('albums')
                             .add({
                                 contentType: snapShot.metadata.contentType,
                                 fullPath: snapShot.metadata.fullPath,
@@ -116,8 +137,31 @@ export default function DetailTravel({ route, navigation }) {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [3, 3],
+                allowsEditing: false,
+                aspect: [2, 3],
+                quality: 1
+            });
+
+            if (!result.cancelled) {
+                let fileName = result.uri.split('/').pop();
+                let match = /\.(\w+)$/.exec(fileName);
+                let type = match ? `image/${match[1]}` : `image`;
+                setFile({ uri: result.uri, name: fileName, type, width: result.width, height: result.height })
+            }
+
+            //console.log(result);
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
+    const cameraShot = async () => {
+        try {
+            let result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: false,
+                aspect: [2, 3],
                 quality: 1
             });
 
@@ -165,29 +209,34 @@ export default function DetailTravel({ route, navigation }) {
                 </View>
             </View>
             <Modal
-                visible={visible}
-                onRequestClose={() => { }}
-                animationType={'slide'}
-                transparent={true}
+                isVisible={visible}
+                swipeDirection={['down', 'left', 'right', 'up']}
+                onSwipeComplete={() => setVisible(false)}
+                onBackdropPress={() => setVisible(false)}
+                onBackButtonPress={() => setVisible(false)}
             >
-                <View style={styles.centerView}>
+                <View style={styles.swipeView}>
                     <View style={styles.modalView}>
-                        {
-                            file !== null && <View style={{ alignSelf: 'center' }}>
-                                <Image source={{ uri: file.uri }} style={{ width: 50, height: 50 }} />
+                        <View style={{ flexDirection: 'row', padding: 5 }}>
+                            <View style={{ alignItems: 'flex-start', alignSelf: 'flex-start', flexDirection: 'column' }}>
+                                <TouchableOpacity onPress={() => pickImage()}>
+                                    <FontAwesome name="image" size={40} color='#205fbd' />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{ marginVertical: 10 }} onPress={() => pickImage()}>
+                                    <FontAwesome name="camera" size={40} color='#205fbd' />
+                                </TouchableOpacity>
                             </View>
-                        }
-                        <View style={{ alignItems: 'center', alignSelf: 'center' }}>
-                            <TouchableOpacity onPress={() => pickImage()}>
-                                <FontAwesome name="image" size={20} />
-                            </TouchableOpacity>
+                            <View style={{ width: 100, height: 100, marginLeft: 100 }}>
+                                {
+                                    file !== null && <View style={{ alignSelf: 'center' }}>
+                                        <Image source={{ uri: file.uri }} style={{ width: 100, height: 100 }} />
+                                    </View>
+                                }
+                            </View>
                         </View>
-                        <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
+                        <View style={{ alignSelf: 'center', flexDirection: 'row', marginVertical: 10 }}>
                             <TouchableOpacity disabled={Object.keys(file).length <= 0 ? true : false} style={Object.keys(file).length > 0 ? [styles.buttonModal, { alignItems: 'center' }] : [styles.buttonModal, { alignItems: 'center', opacity: .6 }]} onPress={() => upload(params.ref, file)}>
-                                <Text style={styles.text}>Upload</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.buttonClose, { alignItems: 'center' }]} onPress={() => setVisible(false)}>
-                                <Text style={styles.text}>Close</Text>
+                                <Ionicons name='md-cloud-upload' size={20}/>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -207,7 +256,8 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'center'
+        justifyContent: 'flex-start',
+        marginHorizontal: 40
     },
     childContainer: {
         marginVertical: 10,
@@ -241,9 +291,9 @@ const styles = StyleSheet.create({
         color: '#c4c0c0',
         fontSize: 14
     },
-    centerView: {
+    swipeView: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         marginTop: 15,
     },
@@ -261,8 +311,9 @@ const styles = StyleSheet.create({
     },
     buttonModal: {
         borderRadius: 30,
-        backgroundColor: '#f2400f',
-        width: 60
+        backgroundColor: '#bd2a20',
+        width: 80,
+        height: 25
     },
     buttonClose: {
         width: 60

@@ -91,7 +91,7 @@ export default function Content({ animatedValue, style: { header, items }, navig
                 <Text style={{ fontSize: 28, color: '#c4c0c0', fontWeight: '400', marginLeft: 15 }}>Favourite</Text>
                 <View style={styles.itemsList}>
                     {
-                        items.length > 0 ? items.map((item, id) => <Item key={id} index={id + 1} item={item} />) :
+                        items.length > 0 ? items.map((item, id) => <Item key={id} index={id + 1} item={item} navigation={navigation} />) :
                             <Text style={styles.text}>Loading</Text>
                     }
                 </View>

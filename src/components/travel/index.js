@@ -1,12 +1,13 @@
 import * as React from 'react';
 
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Dimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, Image } from 'react-native';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { map } from '../../helper/map';
 import Constants from 'expo-constants';
+import Modal from 'react-native-modal';
 
 
 class Travel extends React.Component {
@@ -17,7 +18,8 @@ class Travel extends React.Component {
             medias: [],
             visible: false,
             name: '',
-            file: {}
+            file: {},
+            folderName: ''
         }
 
         this.storageRef = Firebase.storage().ref();
@@ -35,7 +37,10 @@ class Travel extends React.Component {
                     .child(snapShot.metadata.fullPath)
                     .getDownloadURL()
                     .then(url => {
-                        Firebase.firestore().collection(`${DB.travel}/${name}/albums`)
+                        Firebase.firestore().collection(`${DB.travel}`).doc(name)
+                        .set({});
+
+                        Firebase.firestore().collection(`${DB.travel}`).doc(name).collection('albums')
                             .add({
                                 contentType: snapShot.metadata.contentType,
                                 fullPath: snapShot.metadata.fullPath,
@@ -63,8 +68,8 @@ class Travel extends React.Component {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [3, 3],
+                allowsEditing: false,
+                aspect: [2, 3],
                 quality: 1
             });
 
@@ -107,7 +112,7 @@ class Travel extends React.Component {
                             {
                                 this.state.medias.map((media, id) => <View key={id} style={styles.item}>
                                     <View style={{ alignItems: 'center' }}>
-                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail Travel', { ref: media, title: media })}>
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail Travel', { ref: media, title: media, name: this.state.folderName })}>
                                             <FontAwesome name="folder" size={55} color='#eda32b' />
                                         </TouchableOpacity>
                                     </View>
@@ -122,28 +127,41 @@ class Travel extends React.Component {
                         <FontAwesome name='plus-circle' size={30} color='#ed881c' />
                     </TouchableOpacity>
                 </View>
-                <Modal visible={this.state.visible} transparent={true} animationType="fade" onRequestClose={() => { }}>
-                    <View style={styles.centerView}>
+                <Modal
+                    isVisible={this.state.visible}
+                    swipeDirection={['down', 'left', 'right', 'up']}
+                    onSwipeComplete={() => this.setState({ visible: false })}
+                    onBackdropPress={() => this.setState({ visible: false })}
+                    onBackButtonPress={() => this.setState({ visible: false })}
+                >
+                    <View style={styles.swipeView}>
                         <View style={styles.modalView}>
-                            <TextInput placeholder='Folder name' style={styles.textInput} onChangeText={name => this.setState({ name })} selectTextOnFocus={true} />
-                            {
-                                this.state.file !== null && <View style={{ alignSelf: 'center' }}>
-                                    <Image source={{ uri: this.state.file.uri }} style={{ width: 50, height: 50 }} />
+                            <View style={{ flexDirection: 'row', padding: 5 }}>
+                                <View style={{ alignItems: 'flex-start', alignSelf: 'flex-start', flexDirection: 'column' }}>
+                                    <TouchableOpacity onPress={() => this.pickImage()}>
+                                        <FontAwesome name="image" size={40} color='#205fbd' />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={{ marginVertical: 10 }} onPress={() => this.pickImage()}>
+                                        <FontAwesome name="camera" size={40} color='#205fbd' />
+                                    </TouchableOpacity>
                                 </View>
-                            }
-                            <View style={{ alignItems: 'center', alignSelf: 'center' }}>
-                                <TouchableOpacity onPress={() => this.pickImage()}>
-                                    <FontAwesome name="image" size={20} />
-                                </TouchableOpacity>
+                                <View style={{ width: 100, height: 100, marginLeft: 100 }}>
+                                    {
+                                        this.state.file !== null && <View style={{ alignSelf: 'center' }}>
+                                            <Image source={{ uri: this.state.file.uri }} style={{ width: 100, height: 100 }} />
+                                        </View>
+                                    }
+                                </View>
                             </View>
+                            <TextInput placeholder='Folder name'  
+                            placeholderTextColor='#565785'
+                            style={[styles.textInput, { marginVertical: 10 }]} 
+                            onChangeText={name => this.setState({ name })} selectTextOnFocus={true} />
                             <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
                                 <TouchableOpacity disabled={(Object.keys(this.state.file).length <= 0 || this.state.name === '') ? true : false}
                                     style={(Object.keys(this.state.file).length > 0 || this.state.name !== '') ? [styles.buttonModal, { alignItems: 'center' }] : [styles.buttonModal, { alignItems: 'center', opacity: .6 }]}
                                     onPress={() => this.upload(this.state.name, this.state.file)}>
                                     <Text style={styles.text}>Create</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.buttonClose, { alignItems: 'center' }]} onPress={() => this.setState({ visible: false })}>
-                                    <Text style={styles.text}>Close</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -176,9 +194,9 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 5
     },
-    centerView: {
+    swipeView: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         marginTop: 15,
     },
@@ -192,12 +210,15 @@ const styles = StyleSheet.create({
         shadowOpacity: .25,
         shadowRadius: 3.5,
         elevation: 5,
-        width: Dimensions.get('window').width
+        width: Dimensions.get('window').width,
+        paddingHorizontal: 8,
+        paddingVertical: 8
     },
     buttonModal: {
         borderRadius: 30,
-        backgroundColor: '#f2400f',
-        width: 60
+        backgroundColor: '#bd2a20',
+        width: 80,
+        height: 25
     },
     buttonClose: {
         width: 60

@@ -26,6 +26,13 @@ class Activity extends React.Component {
         })
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if(nextProps.day !== this.props.day || nextState !== this.state) {
+            return true;
+        }
+        return false;
+    }   
+
     componentDidMount() {
         this._isMounted = true;
         if(this._isMounted) {
@@ -39,10 +46,24 @@ class Activity extends React.Component {
                 })
         }
     }
+    
+    componentDidUpdate() {
+        Firebase.firestore().collection(DB.activity).get()
+        .then(result => {
+            if (result.docs.length > 0) {
+                let activity = [];
+                result.docs.forEach(doc => activity.push(doc.data()));
+                this.setState({ activity })
+            }
+        })
+    }
 
     componentWillUnmount() {
         //this.props.processMounting(false)
         this._isMounted = false;
+        this.setState = (state,callback) => {
+            return;
+        };
     }
 
     render() {

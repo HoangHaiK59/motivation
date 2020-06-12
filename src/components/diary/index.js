@@ -87,7 +87,7 @@ class Diary extends React.Component {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
+                allowsEditing: false,
                 aspect: [2, 3],
                 quality: 1
             });
