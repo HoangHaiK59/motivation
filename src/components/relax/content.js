@@ -10,8 +10,7 @@ import Item from './item';
 
 const { interpolate, Extrapolate } = Animated;
 
-export default function Content({ animatedValue, style: { header, items }, navigation }) {
-
+export default function Content({ animatedValue, style: { header, items }, navigation, handleChangeFarvourite }) {
     const height = interpolate(animatedValue, {
         inputRange: [- MAX_HEADER_HEIGHT, - 48 / 2],
         outputRange: [0, MAX_HEADER_HEIGHT + 48],
@@ -88,11 +87,16 @@ export default function Content({ animatedValue, style: { header, items }, navig
                 </ScrollView>
             </View>
             <View style={styles.list}>
-                <Text style={{ fontSize: 28, color: '#c4c0c0', fontWeight: '400', marginLeft: 15 }}>Favourite</Text>
+                <Text style={{ fontSize: 28, color: '#c4c0c0', fontWeight: '400', marginLeft: 15 }}>{items.length > 0 ? 'Favourite': ''}</Text>
                 <View style={styles.itemsList}>
                     {
-                        items.length > 0 ? items.map((item, id) => <Item key={id} index={id + 1} item={item} navigation={navigation} />) :
-                            <Text style={styles.text}>Loading</Text>
+                        items.length > 0 ? items.map((item, id) => <Item
+                            key={id} 
+                            handleChangeFarvourite={handleChangeFarvourite}
+                            index={id + 1}
+                            item={item}
+                            navigation={navigation} />) :
+                            null
                     }
                 </View>
             </View>

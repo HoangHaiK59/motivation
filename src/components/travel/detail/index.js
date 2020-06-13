@@ -187,7 +187,7 @@ export default function DetailTravel({ route, navigation }) {
                 <View style={styles.container}>
                     {
                         items.length > 0 ? items.map((item, id) => <View key={id} style={styles.item}>
-                            <TouchableOpacity onPress={() => navigation.navigate('View Image', item)}>
+                            <TouchableOpacity onPress={() => navigation.navigate('View Image', {item: item, items: items})}>
                                 <Image style={styles.image} source={{ uri: item.url }} />
                             </TouchableOpacity>
 

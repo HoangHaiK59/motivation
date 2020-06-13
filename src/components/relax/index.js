@@ -20,6 +20,7 @@ class Relax extends React.Component {
             items: [],
             urls: [],
             hour: new Date().getHours(),
+            update: false,
             uri: 'https://firebasestorage.googleapis.com/v0/b/motivation-b2dcb.appspot.com/o/Relax%2Frelax-image.jpg?alt=media&token=788fd555-b87f-42e3-98cb-8885f7f2ba5a'
         }
 
@@ -42,14 +43,24 @@ class Relax extends React.Component {
 
     getFavourites() {
         this.firebaseRef.where('is_farvorite', '==', true)
-        .get()
-        .then(result => {
-            let items = [];
-            if(result.docs.length > 0) {
-                result.docs.forEach(doc => items.push({id: doc.id, ...doc.data()}));
-                this.setState({ items })
-            }
-        })
+            .get()
+            .then(result => {
+                let items = [];
+                if (result.docs.length > 0) {
+                    result.docs.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+                    this.setState({ items, update: false })
+                }
+            })
+    }
+
+    handleChangeFarvourite(id, state) {
+        this.firebaseRef.doc(id)
+            .get()
+            .then(snapShot => {
+                this.firebaseRef.doc(id)
+                .update({...snapShot.data(), is_farvorite: state});
+                this.setState({ update: true })
+            })
     }
 
     componentDidMount() {
@@ -69,28 +80,38 @@ class Relax extends React.Component {
         //     })
     }
 
-//     <View style={styles.container}>
-//     <ImageBackground source={{uri: this.state.uri}} style={[styles.image]}>
-//         <Text style={[{ marginBottom: 120, marginLeft: 15, fontSize: 26, color: 'white' }]}>Good {this.getStringFromHour()}</Text>
-//     </ImageBackground>
-//     <LinearGradient
-//         start={[0, .3]}
-//         end={[0, 1]}
-//         colors={['transparent', 'rgba(0,0,0,.2)', 'black']}
-//         style={styles.gradient} />
-// </View>
+    //     <View style={styles.container}>
+    //     <ImageBackground source={{uri: this.state.uri}} style={[styles.image]}>
+    //         <Text style={[{ marginBottom: 120, marginLeft: 15, fontSize: 26, color: 'white' }]}>Good {this.getStringFromHour()}</Text>
+    //     </ImageBackground>
+    //     <LinearGradient
+    //         start={[0, .3]}
+    //         end={[0, 1]}
+    //         colors={['transparent', 'rgba(0,0,0,.2)', 'black']}
+    //         style={styles.gradient} />
+    // </View>
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.state.update) {
+            this.getFavourites();
+        }
+    }
 
     render() {
         const style = {
-            cover : {uri: this.state.uri},
+            cover: { uri: this.state.uri },
             header: 'Good ' + this.getStringFromHour(),
-            items: this.state.items.length > 0 ? this.state.items: []
+            items: this.state.items.length > 0 ? this.state.items : []
         }
         return (
             <View style={styles.main}>
 
                 <Cover style={style} animatedValue={this.animatedValue} />
-                <Content navigation={this.props.navigation} style={style} animatedValue={this.animatedValue} />
+                <Content
+                    handleChangeFarvourite={this.handleChangeFarvourite.bind(this)}
+                    navigation={this.props.navigation}
+                    style={style}
+                    animatedValue={this.animatedValue} />
 
             </View>
         )
@@ -103,15 +124,15 @@ const styles = StyleSheet.create({
         flexDirection: 'column'
     },
     container: {
-       width: width,
-       height: height/2
+        width: width,
+        height: height / 2
     },
     type: {
         flex: 1,
         flexDirection: 'row'
     },
     typeItem: {
-        width: 200, 
+        width: 200,
         height: 200,
         backgroundColor: 'red',
         marginHorizontal: 10
@@ -129,10 +150,10 @@ const styles = StyleSheet.create({
     },
     buttonInBackdrop: {
         position: 'absolute',
-        top:50, 
-        right: 20, 
+        top: 50,
+        right: 20,
         alignSelf: 'flex-end',
-        borderColor: 'white', 
+        borderColor: 'white',
         borderWidth: 2,
         backgroundColor: '#cdd1d1',
         zIndex: 3,
