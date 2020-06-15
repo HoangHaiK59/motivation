@@ -85,7 +85,22 @@ class Book extends React.Component {
     }
 
     componentDidMount() {
-        this.getBooks()
+        this.getBooks();
+        this.props.navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity style={styles.button} onPress={() => this.setState({visible: true, model: {
+                    name: '',
+                    image: '',
+                    category: 0,
+                    is_farvorite: false,
+                    note: [],
+                    num_of_page_read: 0,
+                    total_page: 0
+                }})}>
+                    <Text style={{ fontSize: 12, color: '#fff' }}>THÊM SÁCH</Text>
+                </TouchableOpacity>
+            )
+        })
     }
 
     // shouldComponentUpdate(nextProps, nextState) {
@@ -102,9 +117,23 @@ class Book extends React.Component {
         }
     }
 
+    // <TouchableOpacity style={[styles.buttonBottom]} onPress={() => this.setState({
+    //     visible: true, model: {
+    //         name: '',
+    //         image: '',
+    //         category: 0,
+    //         is_farvorite: false,
+    //         note: [],
+    //         num_of_page_read: 0,
+    //         total_page: 0
+    //     }
+    // })}>
+    //     <FontAwesome name='plus-circle' size={25} color='#cc3112' />
+    // </TouchableOpacity>
+
     render() {
         return (
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ marginTop: Constants.statusBarHeight, flexGrow: 1 }}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
                 <View style={styles.mainContainer}>
                     <View style={styles.container}>
                         {
@@ -120,19 +149,6 @@ class Book extends React.Component {
                             </View>) : null
                         }
                     </View>
-                    <TouchableOpacity style={[styles.buttonBottom]} onPress={() => this.setState({
-                        visible: true, model: {
-                            name: '',
-                            image: '',
-                            category: 0,
-                            is_farvorite: false,
-                            note: [],
-                            num_of_page_read: 0,
-                            total_page: 0
-                        }
-                    })}>
-                        <FontAwesome name='plus-circle' size={25} color='#cc3112' />
-                    </TouchableOpacity>
                 </View>
                 <Modal
                     isVisible={this.state.visible}
@@ -333,6 +349,12 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         textAlign: 'center'
+    },
+    button: {
+        padding: 3,
+        backgroundColor: 'rgba(92, 110, 191, .5)',
+        borderRadius: 3,
+        marginHorizontal: 3
     }
 });
 

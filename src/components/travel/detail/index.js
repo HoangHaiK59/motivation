@@ -80,7 +80,20 @@ export default function DetailTravel({ route, navigation }) {
 
     React.useEffect(() => {
         getName();
-    }, [])
+    }, []);
+
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity style={styles.button} onPress={() => {
+                    setVisible(true);
+                    setFile({});
+                }}>
+                    <Text style={{ fontSize:12, color: '#fff' }}>THÊM ẢNH</Text>
+                </TouchableOpacity>
+            )
+        })
+    }, [navigation])
 
     const getName = () => {
         Firebase.storage().ref()
@@ -179,6 +192,15 @@ export default function DetailTravel({ route, navigation }) {
 
     }
 
+//     <View style={styles.bottom}>
+//     <TouchableOpacity onPress={() => {
+//         setVisible(true);
+//         setFile({});
+//     }}>
+//         <FontAwesome name='plus-circle' size={30} color='#e0531b' />
+//     </TouchableOpacity>
+// </View>
+
     return (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ marginTop: 10, flexGrow: 1 }} >
             <View style={styles.mainContainer}>
@@ -198,15 +220,6 @@ export default function DetailTravel({ route, navigation }) {
                     }
                 </View>
 
-
-                <View style={styles.bottom}>
-                    <TouchableOpacity onPress={() => {
-                        setVisible(true);
-                        setFile({});
-                    }}>
-                        <FontAwesome name='plus-circle' size={30} color='#e0531b' />
-                    </TouchableOpacity>
-                </View>
             </View>
             <Modal
                 isVisible={visible}
@@ -321,5 +334,11 @@ const styles = StyleSheet.create({
     textInput: {
         borderBottomColor: 'tomato',
         borderWidth: 2
+    },
+    button: {
+        padding: 3,
+        backgroundColor: 'rgba(92, 110, 191, .5)',
+        borderRadius: 3,
+        marginHorizontal: 3
     }
 })

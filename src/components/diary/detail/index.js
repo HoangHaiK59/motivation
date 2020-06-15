@@ -64,6 +64,16 @@ export default function Month({ route, navigation }) {
         navigation.navigate('Day', { id, year, collectionId, name })
     }, [selected]);
 
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity style={styles.button} onPress={() => setVisible(true)}>
+                    <Text style={{ fontSize: 12, color: '#fff' }}>THÊM NHẬT KÝ</Text>
+                </TouchableOpacity>
+            )
+        })
+    })
+
     React.useEffect(() => {
         Firebase.firestore().collection(`${DB.diary}/${params.year}/${params.id}`)
             .get()
@@ -185,6 +195,12 @@ export default function Month({ route, navigation }) {
 
     }
 
+//     <View style={styles.bottom}>
+//     <TouchableOpacity onPress={() => { setVisible(true); setFile({}) }}>
+//         <FontAwesome name='plus-circle' size={30} color='#ed881c' />
+//     </TouchableOpacity>
+// </View>
+
     return (
         <View style={styles.main}>
             <SafeAreaView style={styles.container}>
@@ -204,11 +220,6 @@ export default function Month({ route, navigation }) {
 
                 </FlatList>
             </SafeAreaView>
-            <View style={styles.bottom}>
-                <TouchableOpacity onPress={() => { setVisible(true); setFile({}) }}>
-                    <FontAwesome name='plus-circle' size={30} color='#ed881c' />
-                </TouchableOpacity>
-            </View>
             <Modal
                 swipeDirection={['down', 'left', 'right', 'up']}
                 onSwipeComplete={() => setVisible(false)}
@@ -336,5 +347,11 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         width: width,
         marginVertical: 10
+    },
+    button: {
+        padding: 3,
+        backgroundColor: 'rgba(92, 110, 191, .5)',
+        borderRadius: 3,
+        marginHorizontal: 3
     }
 })

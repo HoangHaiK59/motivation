@@ -101,7 +101,20 @@ class Travel extends React.Component {
 
     componentDidMount() {
         this.getAll();
+        this.props.navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity style={styles.button} onPress={() => this.setState({visible: true, file: {}})}>
+                    <Text style={{ fontSize: 12, color: '#fff' }}>THÊM ĐỊA DANH</Text>
+                </TouchableOpacity>
+            )
+        })
     }
+
+    // <View style={styles.bottomContainer}>
+    //     <TouchableOpacity onPress={() => this.setState({ visible: true, file: {} })}>
+    //         <FontAwesome name='plus-circle' size={30} color='#ed881c' />
+    //     </TouchableOpacity>
+    // </View>
 
     render() {
         return (
@@ -121,11 +134,6 @@ class Travel extends React.Component {
                             }
                         </View>
                     }
-                </View>
-                <View style={styles.bottomContainer}>
-                    <TouchableOpacity onPress={() => this.setState({ visible: true, file: {} })}>
-                        <FontAwesome name='plus-circle' size={30} color='#ed881c' />
-                    </TouchableOpacity>
                 </View>
                 <Modal
                     isVisible={this.state.visible}
@@ -176,7 +184,7 @@ const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
         flexDirection: 'column',
-        marginTop: Constants.statusBarHeight
+        //marginTop: Constants.statusBarHeight
     },
     container: {
         flex: 1
@@ -241,6 +249,12 @@ const styles = StyleSheet.create({
     textStyle: {
         overflow: 'hidden',
         textAlign: 'center'
+    },
+    button: {
+        padding: 3,
+        backgroundColor: 'rgba(92, 110, 191, .5)',
+        borderRadius: 3,
+        marginHorizontal: 3
     }
 })
 

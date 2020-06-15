@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView, Dimensions } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView, Dimensions, Image } from 'react-native';
+import Modal from 'react-native-modal';
+import { FontAwesome, Ionicons as Icon } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import Firebase from '../../firebase';
@@ -20,7 +21,10 @@ class Relax extends React.Component {
             items: [],
             urls: [],
             hour: new Date().getHours(),
-            update: false,
+            showAction: false,
+            idSelected: 0,
+            message: '',
+            item: null,
             uri: 'https://firebasestorage.googleapis.com/v0/b/motivation-b2dcb.appspot.com/o/Relax%2Frelax-image.jpg?alt=media&token=788fd555-b87f-42e3-98cb-8885f7f2ba5a'
         }
 
@@ -48,18 +52,9 @@ class Relax extends React.Component {
                 let items = [];
                 if (result.docs.length > 0) {
                     result.docs.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
-                    this.setState({ items, update: false })
+                    console.log(items);
+                    this.setState({ items })
                 }
-            })
-    }
-
-    handleChangeFarvourite(id, state) {
-        this.firebaseRef.doc(id)
-            .get()
-            .then(snapShot => {
-                this.firebaseRef.doc(id)
-                .update({...snapShot.data(), is_farvorite: state});
-                this.setState({ update: true })
             })
     }
 
@@ -92,9 +87,33 @@ class Relax extends React.Component {
     // </View>
 
     componentDidUpdate(prevProps, prevState) {
-        if(this.state.update) {
-            this.getFavourites();
-        }
+    }
+
+    showAction = (isShow, idSelected) => {
+        let item = this.state.items.find((item, id) => id === idSelected);
+
+        this.setState({ showAction: isShow, idSelected, item })
+    }
+
+    displayAlert = (message) => {
+        this.setState({ message })
+        setTimeout(() => {
+            this.setState({ visible: false })
+        }, 1500)
+    }
+
+    handleChangeFarvourite = (id, state) => {
+        this.firebaseRef.doc(id).update({is_farvorite: state})
+        .then(res => {
+            this.setState({visible: true, showAction: false});
+        })
+        // this.firebaseRef.doc(id)
+        //     .get()
+        //     .then(snapShot => {
+        //         this.firebaseRef.doc(id)
+        //         .update({...snapShot.data(), is_farvorite: state});
+        //         this.setState({visible: true, showAction: false, update: true});
+        //     })
     }
 
     render() {
@@ -106,12 +125,74 @@ class Relax extends React.Component {
         return (
             <View style={styles.main}>
 
-                <Cover style={style} animatedValue={this.animatedValue} />
-                <Content
-                    handleChangeFarvourite={this.handleChangeFarvourite.bind(this)}
-                    navigation={this.props.navigation}
-                    style={style}
-                    animatedValue={this.animatedValue} />
+                {
+                    !this.state.showAction ?
+                        <>
+                            <Cover style={style} animatedValue={this.animatedValue} />
+                            <Content
+                                showAction={this.showAction.bind(this)}
+                                navigation={this.props.navigation}
+                                style={style}
+                                animatedValue={this.animatedValue} />
+                        </> :
+                        <View style={styles.actionContainer}>
+                            <View style={styles.actionBackdrop}>
+                                <Image source={{ uri: this.state.item.image_url }} resizeMode="contain" style={{ width: 200, height: 200 }} />
+                            </View>
+                            <View style={styles.actionContent}>
+                                <TouchableOpacity style={styles.actionRow} onPress={() => {
+                                    this.handleChangeFarvourite(this.state.item.id, !this.state.item.is_farvorite);
+                                    this.displayAlert('Message');
+                                    //navigation.goBack();
+                                }}>
+                                    <View style={styles.actionCell}>
+                                        <Icon name={this.state.item.is_farvorite ? 'ios-heart' : 'ios-heart-empty'} size={24} color={this.state.item.is_farvorite ? '#a6392d' : '#fff'} />
+                                    </View>
+                                    <View style={[styles.actionCell, { flex: 1 }]}>
+                                        <Text style={styles.text}>{this.state.item.is_farvorite ? 'Đã thích' : 'Thích'}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.actionRow}>
+                                    <View style={[styles.actionCell, { alignItems: 'center' }]}>
+                                        <Icon name='ios-add' size={40} color='#a6392d' />
+                                    </View>
+                                    <View style={[styles.actionCell, { flex: 1 }]}>
+                                        <Text style={styles.text}>Tạo mới</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.actionRow}>
+                                    <View style={[styles.actionCell, { marginLeft: 3 }]}>
+                                        <Icon name='ios-trash' size={26} color='#a6392d' />
+                                    </View>
+                                    <View style={[styles.actionCell, { flex: 1 }]}>
+                                        <Text style={[styles.text, { marginLeft: 3 }]}>Xóa khỏi danh sách</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.actionRow} onPress={() => this.setState({showAction: false})}>
+                                    <View style={[styles.actionCell, { marginLeft: 4 }]}>
+                                        <Icon name='ios-arrow-back' size={30} color='#a6392d' />
+                                    </View>
+                                    <View style={[styles.actionCell, { flex: 1 }]}>
+                                        <Text style={[styles.text, { marginLeft: 4 }]}>Quay lại</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                }
+
+                <Modal
+                    isVisible={this.state.visible}
+                    animationIn={'slideInUp'}
+                    animationOut={'slideOutDown'}
+                    onBackdropPress={() => this.setState({visible: false})}
+                >
+                    <View style={styles.swipeView}>
+                        <View style={styles.modalView}>
+                            <Text style={[styles.text, {color: '#000'}]}>{this.state.message}</Text>
+                        </View>
+                    </View>
+
+                </Modal>
 
             </View>
         )
@@ -164,6 +245,54 @@ const styles = StyleSheet.create({
     text: {
         color: '#c4c0c0',
         fontSize: 14
+    },
+    swipeView: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        marginTop: 15,
+    },
+    modalView: {
+        backgroundColor: '#fff',
+        alignItems: 'flex-start',
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: .25,
+        shadowRadius: 3.5,
+        elevation: 5,
+        width: width
+    },
+    actionContainer: {
+        flex: 1,
+        marginTop: Constants.statusBarHeight,
+        flexDirection: 'column',
+        padding: 8
+    },
+    actionBackdrop: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    actionContent: {
+        flex: 1,
+        padding: 8,
+        justifyContent: 'flex-start',
+        flexDirection: 'column'
+    },
+    actionRow: {
+        flexDirection: "row",
+        backgroundColor: "black",
+        height: 40
+    },
+    actionCell: {
+        padding: 16,
+        justifyContent: "center",
+    },
+    actionIcon: {
+        width: 50,
+        height: 45
     }
 });
 

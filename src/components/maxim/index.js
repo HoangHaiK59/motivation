@@ -14,12 +14,12 @@ const Item = ({ id, title, url, author, horizontal }) => (
     <View style={horizontal ? styles.itemHorizoltal : styles.item}>
         {
             horizontal ? <View style={styles.itemList}>
-                <Image source={{ uri: url }} style={{ width: width, height: height - 130, margin: 0 }} />
-                <LinearGradient colors={['#190A05','#870000']} start={[0.7, 0.2]} style={styles.maxim}>
-                        <Text style={styles.text}>{title}</Text>
-                        <View style={{ alignItems: 'flex-end' }}>
-                            <Text style={styles.text}>{author}</Text>
-                        </View>
+                <Image source={{ uri: url }} style={{ width: width, height: height, margin: 0 }} />
+                <LinearGradient colors={['#190A05', '#870000']} start={[0.7, 0.2]} style={styles.maxim}>
+                    <Text style={styles.text}>{title}</Text>
+                    <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={styles.text}>{author}</Text>
+                    </View>
                 </LinearGradient>
             </View> : <View style={{ flex: 1, flexDirection: 'column' }}>
                     <Text style={styles.text}>{title}</Text>
@@ -116,6 +116,13 @@ class Maxim extends React.Component {
 
     componentDidMount() {
         this.getMaxims();
+        this.props.navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity style={styles.button} onPress={() => this.setState({ visible: true })}>
+                    <Text style={[{ fontSize: 12, color: '#fff' }]}>THÊM MỚI</Text>
+                </TouchableOpacity>
+            )
+        })
     }
 
     componentDidUpdate(prevState, prevProps) {
@@ -136,37 +143,37 @@ class Maxim extends React.Component {
             .catch(error => console.log(error))
     }
 
+    //     <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end', marginTop: 20, marginHorizontal: 5 }}>
+    //     <TouchableOpacity onPress={() => this.setState(state => ({ horizontal: !state.horizontal }))}>
+    //         {
+    //             this.state.horizontal ? <Feather name='list' size={20} color='#fff' /> :
+    //                 <Feather name='grid' size={20} color='#fff' />
+    //         }
+    //     </TouchableOpacity>
+    // </View>
+
+    // <View style={styles.bottom}>
+    // <TouchableOpacity onPress={() => this.setState({ visible: true, file: {} })}>
+    //     <Feather name='plus-circle' size={25} color='#db3514' />
+    // </TouchableOpacity>
+    // </View>
+
     render() {
         return (
-            <View style={styles.main}>
-                <SafeAreaView style={styles.container}>
-                    <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end', marginTop: 20, marginHorizontal: 5 }}>
-                        <TouchableOpacity onPress={() => this.setState(state => ({ horizontal: !state.horizontal }))}>
-                            {
-                                this.state.horizontal ? <Feather name='list' size={20} color='#fff' /> :
-                                    <Feather name='grid' size={20} color='#fff' />
-                            }
-                        </TouchableOpacity>
-                    </View>
-                    <FlatList
-                        showsVerticalScrollIndicator={false}
-                        showsHorizontalScrollIndicator={false}
+            <SafeAreaView style={styles.main}>
+                <FlatList
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    horizontal={this.state.horizontal}
+                    data={this.state.maxims}
+                    renderItem={({ item }) => <Item
                         horizontal={this.state.horizontal}
-                        data={this.state.maxims}
-                        renderItem={({ item }) => <Item
-                            horizontal={this.state.horizontal}
-                            id={item.id}
-                            title={item.maxim}
-                            author={item.author}
-                            url={item.url}
-                        />}
-                    />
-                </SafeAreaView>
-                <View style={styles.bottom}>
-                    <TouchableOpacity onPress={() => this.setState({ visible: true, file: {} })}>
-                        <Feather name='plus-circle' size={25} color='#db3514' />
-                    </TouchableOpacity>
-                </View>
+                        id={item.id}
+                        title={item.maxim}
+                        author={item.author}
+                        url={item.url}
+                    />}
+                />
                 <Modal
                     isVisible={this.state.visible}
                     backdropOpacity={0.8}
@@ -219,7 +226,7 @@ class Maxim extends React.Component {
                         </View>
                     </View>
                 </Modal>
-            </View>
+            </SafeAreaView>
         )
     }
 }
@@ -228,7 +235,7 @@ const styles = StyleSheet.create({
     main: {
         flex: 1,
         flexDirection: 'column',
-        marginTop: Constants.statusBarHeight
+        //marginTop: Constants.statusBarHeight
     },
     container: {
         flex: 1,
@@ -255,16 +262,16 @@ const styles = StyleSheet.create({
     },
     item: {
         backgroundColor: '#2d4269',
-        padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 8,
+        //padding: 20,
+        //marginVertical: 8,
+        //marginHorizontal: 8,
         width: Dimensions.get('window').width - 20
     },
     itemHorizoltal: {
         //backgroundColor: '#2d4269',
-        padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 8,
+        //padding: 20,
+        //marginVertical: 8,
+        //marginHorizontal: 8,
         flex: 1
     },
     title: {
@@ -314,6 +321,12 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width - 20,
         borderBottomColor: 'tomato',
         borderBottomWidth: 2
+    },
+    button: {
+        padding: 3,
+        backgroundColor: 'rgba(173, 163, 163, .5)',
+        borderRadius: 3,
+        marginHorizontal: 3
     }
 });
 

@@ -10,7 +10,7 @@ import Item from './item';
 
 const { interpolate, Extrapolate } = Animated;
 
-export default function Content({ animatedValue, style: { header, items }, navigation, handleChangeFarvourite }) {
+export default function Content({ animatedValue, style: { header, items }, navigation, showAction }) {
     const height = interpolate(animatedValue, {
         inputRange: [- MAX_HEADER_HEIGHT, - 48 / 2],
         outputRange: [0, MAX_HEADER_HEIGHT + 48],
@@ -91,9 +91,9 @@ export default function Content({ animatedValue, style: { header, items }, navig
                 <View style={styles.itemsList}>
                     {
                         items.length > 0 ? items.map((item, id) => <Item
+                            showAction={showAction}
                             key={id} 
-                            handleChangeFarvourite={handleChangeFarvourite}
-                            index={id + 1}
+                            index={id}
                             item={item}
                             navigation={navigation} />) :
                             null

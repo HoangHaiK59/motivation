@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
+import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import { Ionicons as Icon } from '@expo/vector-icons';
 import Firebase from '../../../firebase';
@@ -9,9 +10,33 @@ const { width } = Dimensions.get('window');
 
 const Action = ({ route, navigation }) => {
     const { params } = route;
-    const { item, handleChangeFarvourite } = params;
-    //const [item, setItem] = React.useState({});
-    const [fa, setFa] = React.useState(item.is_farvorite);
+    const { id, displayAlert } = params;
+    const [item, setItem] = React.useState(null);
+    const [fa, setFa] = React.useState(false);
+    const [visible, setVisible] = React.useState(false);
+    const [text, setText] = React.useState('');
+    const firebaseRef= Firebase.firestore().collection(DB.relax);
+
+    React.useEffect(() => {
+        firebaseRef.doc(id)
+        .get()
+        .then(doc => {
+            if(doc.exists) {
+                setItem({id:doc.id, ...doc.data()});
+                setFa(doc.data().is_farvorite)
+            }
+        })
+    }, [])
+
+    const handleChangeFarvourite = (id, state) => {
+        firebaseRef.doc(id)
+            .get()
+            .then(snapShot => {
+                firebaseRef.doc(id)
+                .update({...snapShot.data(), is_farvorite: state});
+                setVisible(true);
+            })
+    }
 
     // React.useEffect(() => {
     //     Firebase.firestore().collection(DB.relax).doc(params.id)
@@ -24,18 +49,19 @@ const Action = ({ route, navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.backdrop}>
-                <Image source={{ uri: item.image_url }} resizeMode="contain" style={{ width: 200, height: 200 }} />
+                <Image source={{ uri: item?.image_url }} resizeMode="contain" style={{ width: 200, height: 200 }} />
             </View>
             <View style={styles.content}>
                 <TouchableOpacity style={styles.row} onPress={() => {
-                    handleChangeFarvourite(item.id, !fa);
+                    handleChangeFarvourite(item?.id, !fa);
+                    displayAlert('Message');
                     navigation.goBack();
                 }}>
                     <View style={styles.cell}>
-                        <Icon name='ios-heart' size={24} color={item.is_farvorite ? '#a6392d' : 'transparent'} />
+                        <Icon name={item?.is_farvorite ?'ios-heart': 'ios-heart-empty'} size={24} color={item?.is_farvorite ? '#a6392d' : '#fff'} />
                     </View>
                     <View style={[styles.cell, { flex: 1 }]}>
-                        <Text style={styles.text}>{item.is_farvorite ? 'Đã thích' : 'Thích'}</Text>
+                        <Text style={styles.text}>{item?.is_farvorite ? 'Đã thích' : 'Thích'}</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.row}>
@@ -93,7 +119,7 @@ const styles = StyleSheet.create({
     icon: {
         width: 50,
         height: 45
-    },
+    }
 })
 
 export default Action;

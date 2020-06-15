@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import { Feather as Icon } from '@expo/vector-icons';
 
-const Item = ({ index, item, navigation, handleChangeFarvourite }) => (
+const Item = ({ index, item, navigation, showAction }) => (
     <View style={styles.row}>
         <View style={styles.cell}>
             <Image source={{ uri: item.image_url }} resizeMode='cover' style={styles.index} />
@@ -12,7 +12,7 @@ const Item = ({ index, item, navigation, handleChangeFarvourite }) => (
             <Text style={styles.farvorite}>{item.is_farvorite ? 'Remove' : 'Add'}</Text>
         </View>
         <View style={styles.cell}>
-            <TouchableOpacity onPress={() => navigation.navigate('Relax Action', {item: item, handleChangeFarvourite: handleChangeFarvourite})}>
+            <TouchableOpacity onPress={() => showAction(true, index)}>
                 <Icon name="more-vertical" color="#b2b3b4" size={24} />
             </TouchableOpacity>
         </View>

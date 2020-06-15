@@ -35,14 +35,14 @@ function HomeStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Book" component={Book} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Book" component={Book} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
             <Stack.Screen name="Sport" component={Sport} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Task" component={Task} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Creative" component={Creative} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Diary" component={Diary} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Relax" component={Relax} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Maxim" component={Maxim} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Travel" component={Travel} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Maxim" component={Maxim} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '', headerTransparent: true}} />
+            <Stack.Screen name="Travel" component={Travel} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
             <Stack.Screen name="Style" component={Style} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail Book" component={DetailBook} options={({ route, navigation }) => ({ data: route.params.data, headerShown: false, headerTitleAlign: 'center' })} />
@@ -53,7 +53,7 @@ function HomeStack() {
             )
                 , headerShown: true, headerTitleAlign: 'center', title: route.params.title })} />
             <Stack.Screen name="View Image" component={ViewImage} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Month" component={Month} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Month" component={Month} options={({route, navigation}) => ({headerShown: true, headerTitleAlign: 'center' , title: route.params.month + `/${route.params.year}`})} />
             <Stack.Screen name="Day" component={Day} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Focus" component={Focus} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Sleep" component={Sleep} options={{ headerShown: false, headerTitleAlign: 'center' }} />
