@@ -1,12 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, SectionList } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, SectionList, Dimensions } from 'react-native';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
 import Constants from 'expo-constants';
+import { Feather as Icon } from '@expo/vector-icons';
 
-const Item = ({title}) => (
-    <View style={styles.item}>
-        <Text style={[ styles.title]}>{title}</Text>
+const Item = ({ title, index, created }) => (
+    <View style={styles.row}>
+        <View style={styles.cell}>
+            <Text style={[styles.text, {fontSize: 15}, styles.index]}>{index}</Text>
+        </View>
+        <View style={[styles.cell, {flex: 1}]}>
+            <Text style={[styles.title]}>{title}</Text>
+            <Text style={[styles.title]}>{created}</Text>
+        </View>
+        <View style={[styles.cell]}>
+            <Icon  name='more-vertical' size={20} color='#fff' />
+        </View>
     </View>
 )
 
@@ -23,22 +33,22 @@ class Focus extends React.Component {
 
     getFocus() {
         this.firebaseRef.where('type', '==', 'focus')
-        .get()
-        .then(result => {
-            let items = [];
-            if(result.docs.length > 0) {
-                result.forEach(doc => items.push({id: doc.id, ...doc.data()}));
-                this.setState({ items })
-            }
-        })
+            .get()
+            .then(result => {
+                let items = [];
+                if (result.docs.length > 0) {
+                    result.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+                    this.setState({ items })
+                }
+            })
     }
 
     componentDidMount() {
         this.getFocus();
     }
-    
+
     render() {
-        return(
+        return (
             <SafeAreaView style={styles.container}>
                 <SectionList
                     sections={[
@@ -48,7 +58,7 @@ class Focus extends React.Component {
                         }
                     ]}
                     keyExtractor={(item, index) => item.id}
-                    renderItem={({ item }) => <Item title={item.name} />}
+                    renderItem={({ item, index }) => <Item index={index + 1} title={item.name} created={item.created} />}
                     renderSectionHeader={({ section: { title } }) => (<Text style={[styles.text, styles.header]}>{title}</Text>)}
                 />
             </SafeAreaView>
@@ -69,7 +79,7 @@ const styles = StyleSheet.create({
         fontSize: 14
     },
     item: {
-        backgroundColor: '#93a0f5',
+        //backgroundColor: '#93a0f5',
         padding: 20,
         marginVertical: 8
     },
@@ -78,6 +88,18 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent'
     },
     title: {
-        fontSize: 24
-    }
+        fontSize: 15,
+        color: "#b2b3b4"
+    },
+    row: {
+        flexDirection: "row",
+        backgroundColor: "transparent",
+    },
+    cell: {
+        padding: 16,
+        justifyContent: "center",
+    },
+    index: {
+        color: "#b2b3b4"
+    },
 })

@@ -54,9 +54,9 @@ export default function Content({ animatedValue, style: { header, items }, navig
                     contentContainerStyle={{ marginTop: 20, flexGrow: 1 }}>
                     <View style={styles.type}>
                         <LinearGradient
-                            start={[0, .3]}
+                            start={[1.5, .6]}
                             end={[0, 1]}
-                            colors={['#ad4339', 'rgba(181, 93, 69,.2)', '#3c6bbd']}
+                            colors={['#c94b4b', '#4b134f']}
                             style={styles.gradientItem}
                         >
                             <TouchableOpacity style={styles.typeItem} onPress={() => navigation.navigate('Focus')}>
@@ -64,9 +64,9 @@ export default function Content({ animatedValue, style: { header, items }, navig
                             </TouchableOpacity>
                         </LinearGradient>
                         <LinearGradient
-                            start={[0, .3]}
+                            start={[1.5, .6]}
                             end={[0, 1]}
-                            colors={['#ad4339', 'rgba(181, 93, 69,.2)', '#3c6bbd']}
+                            colors={['#355C7D', '#6C5B7B', '#C06C84']}
                             style={styles.gradientItem}
                         >
                             <TouchableOpacity style={styles.typeItem} onPress={() => navigation.navigate('Sleep')}>
@@ -74,9 +74,9 @@ export default function Content({ animatedValue, style: { header, items }, navig
                             </TouchableOpacity>
                         </LinearGradient>
                         <LinearGradient
-                            start={[0, .3]}
+                            start={[1.5, .6]}
                             end={[0, 1]}
-                            colors={['#ad4339', 'rgba(181, 93, 69,.2)', '#3c6bbd']}
+                            colors={['#0f0c29', '#302b63', '#24243e']}
                             style={styles.gradientItem}
                         >
                             <TouchableOpacity style={styles.typeItem}>
@@ -87,12 +87,12 @@ export default function Content({ animatedValue, style: { header, items }, navig
                 </ScrollView>
             </View>
             <View style={styles.list}>
-                <Text style={{ fontSize: 28, color: '#c4c0c0', fontWeight: '400', marginLeft: 15 }}>{items.length > 0 ? 'Favourite': ''}</Text>
+                <Text style={{ fontSize: 28, color: '#c4c0c0', fontWeight: '400', marginLeft: 15 }}>{items.length > 0 ? 'Favourite' : ''}</Text>
                 <View style={styles.itemsList}>
                     {
                         items.length > 0 ? items.map((item, id) => <Item
                             showAction={showAction}
-                            key={id} 
+                            key={id}
                             index={id}
                             item={item}
                             navigation={navigation} />) :

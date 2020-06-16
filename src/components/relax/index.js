@@ -95,17 +95,30 @@ class Relax extends React.Component {
         this.setState({ showAction: isShow, idSelected, item })
     }
 
-    displayAlert = (message) => {
-        this.setState({ message })
+    displayAlert = () => {
         setTimeout(() => {
             this.setState({ visible: false })
         }, 1500)
     }
 
-    handleChangeFarvourite = (id, state) => {
+    handleChangeFarvourite = (id, state, message) => {
         this.firebaseRef.doc(id).update({is_farvorite: state})
-        .then(res => {
-            this.setState({visible: true, showAction: false});
+        .then(()=> {
+            this.firebaseRef.where('is_farvorite', '==', true)
+            .get()
+            .then(result => {
+                let items = [];
+                if (result.docs.length > 0) {
+                    result.docs.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+                    console.log(items);
+                    this.setState({ visible: true,showAction: false, items, message });
+                    this.displayAlert()
+                } else {
+                    this.setState({ visible: true,showAction: false, message, items: [] });
+                    this.displayAlert()
+                }
+            })
+            //this.setState({visible: true, showAction: false});
         })
         // this.firebaseRef.doc(id)
         //     .get()
@@ -141,8 +154,8 @@ class Relax extends React.Component {
                             </View>
                             <View style={styles.actionContent}>
                                 <TouchableOpacity style={styles.actionRow} onPress={() => {
-                                    this.handleChangeFarvourite(this.state.item.id, !this.state.item.is_farvorite);
-                                    this.displayAlert('Message');
+                                    this.handleChangeFarvourite(this.state.item.id, !this.state.item.is_farvorite, 'Message');
+                                    //this.displayAlert('Message');
                                     //navigation.goBack();
                                 }}>
                                     <View style={styles.actionCell}>

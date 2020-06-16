@@ -1,6 +1,8 @@
 import React from 'react';
+import Constants from 'expo-constants';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 
-import { View, Text, StyleSheet } from 'react-native';
+const { width, height } = Dimensions.get('window');
 
 class Creative extends React.Component {
     constructor(props) {
@@ -12,9 +14,22 @@ class Creative extends React.Component {
     }
 
     render() {
-        return(
+        return (
             <View style={styles.container}>
-                <Text style={styles.text}>Creative</Text>
+                <View style={styles.content}>
+                    <TouchableOpacity style={styles.item}>
+                        <Text style={styles.text}>Text</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.item}>
+                        <Text style={styles.text}>Text</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.item}>
+                        <Text style={styles.text}>Text</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.item}>
+                        <Text style={styles.text}>Text</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }
@@ -22,7 +37,22 @@ class Creative extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        marginTop: Constants.statusBarHeight
+    },
+    content: {
+        flex: 1,
+        flexDirection: 'row',
+        flexWrap: 'wrap'
+    },
+    item: {
+        width: width / 2 - 20,
+        height: 50,
+        padding: 8,
+        backgroundColor: '#8c3323',
+        marginHorizontal: 10,
+        marginVertical: 5,
+        borderRadius: 5
     },
     text: {
         color: '#c4c0c0',

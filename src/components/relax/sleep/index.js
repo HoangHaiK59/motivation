@@ -3,15 +3,22 @@ import { View, Text, StyleSheet, SectionList, SafeAreaView } from 'react-native'
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
 import Constants from 'expo-constants';
+import { Feather as Icon } from '@expo/vector-icons';
 
-const Item = ({ title }) => {
-    console.log(title)
-    return (
-        <View style={styles.item}>
-            <Text style={[ styles.title]}>{title}</Text>
+const Item = ({ title, index, created }) => (
+    <View style={styles.row}>
+        <View style={styles.cell}>
+            <Text style={[styles.text, {fontSize: 15}, styles.index]}>{index}</Text>
         </View>
-    )
-}
+        <View style={[styles.cell, {flex: 1}]}>
+            <Text style={[styles.title]}>{title}</Text>
+            <Text style={[styles.title]}>{created}</Text>
+        </View>
+        <View style={[styles.cell]}>
+            <Icon  name='more-vertical' size={20} color='#fff' />
+        </View>
+    </View>
+)
 
 class Sleep extends React.Component {
     constructor(props) {
@@ -50,7 +57,7 @@ class Sleep extends React.Component {
                         }
                     ]}
                     keyExtractor={(item, index) => item.id}
-                    renderItem={({ item }) => <Item title={item.name} />}
+                    renderItem={({ item, index }) => <Item index={index + 1} title={item.name} created={item.created} />}
                     renderSectionHeader={({ section: { title } }) => (<Text style={[styles.text, styles.header]}>{title}</Text>)}
                 />
             </SafeAreaView>
@@ -80,6 +87,18 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent'
     },
     title: {
-        fontSize: 24
-    }
+        fontSize: 15,
+        color: "#b2b3b4"
+    },
+    row: {
+        flexDirection: "row",
+        backgroundColor: "transparent",
+    },
+    cell: {
+        padding: 16,
+        justifyContent: "center",
+    },
+    index: {
+        color: "#b2b3b4"
+    },
 })
