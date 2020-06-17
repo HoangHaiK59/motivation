@@ -16,13 +16,13 @@ export default function Dashboard(props) {
     const [index, setIndex] = React.useState(new Date().getDay() - 1);
     const [data, setData] = React.useState(null);
     const [routes] = React.useState([
-        { key: 'Monday', title: 'Monday', day: 1 },
-        { key: 'Tuesday', title: 'Tuesday', day: 2 },
-        { key: 'Wednesday', title: 'Wednesday', day: 3 },
-        { key: 'Thursday', title: 'Thursday', day: 4 },
-        { key: 'Friday', title: 'Friday', day: 5 },
-        { key: 'Saturday', title: 'Saturday', day: 6 },
-        { key: 'Sunday', title: 'Sunday', day: 7 },
+        { key: 'Monday', title: 'MON', day: 1 },
+        { key: 'Tuesday', title: 'TUE', day: 2 },
+        { key: 'Wednesday', title: 'WED', day: 3 },
+        { key: 'Thursday', title: 'THU', day: 4 },
+        { key: 'Friday', title: 'FRI', day: 5 },
+        { key: 'Saturday', title: 'SAT', day: 6 },
+        { key: 'Sunday', title: 'SUN', day: 7 },
     ]);
 
     const renderScene = ({ route }) => {
