@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, TextInput,
 import Modal from 'react-native-modal';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Entypo as Icon } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 
 console.ignoredYellowBox = ['Setting a timer'];
@@ -84,6 +84,10 @@ class Book extends React.Component {
         }
     }
 
+    back() {
+        this.props.navigation.goBack();
+    }
+
     componentDidMount() {
         this.getBooks();
         this.props.navigation.setOptions({
@@ -98,6 +102,11 @@ class Book extends React.Component {
                     total_page: 0
                 }})}>
                     <Text style={{ fontSize: 12, color: '#fff' }}>THÊM SÁCH</Text>
+                </TouchableOpacity>
+            ),
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => this.back()}>
+                    <Icon name='chevron-left' size={25} color='#fff'/>
                 </TouchableOpacity>
             )
         })

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, Image } from 'react-native';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome , Entypo as Icon } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { map } from '../../helper/map';
 import Constants from 'expo-constants';
@@ -99,12 +99,21 @@ class Travel extends React.Component {
             .catch(error => console.log(error))
     }
 
+    back() {
+        this.props.navigation.goBack();
+    }
+
     componentDidMount() {
         this.getAll();
         this.props.navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity style={styles.button} onPress={() => this.setState({visible: true, file: {}})}>
                     <Text style={{ fontSize: 12, color: '#fff' }}>THÊM ĐỊA DANH</Text>
+                </TouchableOpacity>
+            ),
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => this.back()}>
+                    <Icon name='chevron-left' size={25} color='#fff'/>
                 </TouchableOpacity>
             )
         })

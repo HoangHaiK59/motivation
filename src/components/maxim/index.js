@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, Animated, Easing, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Image } from 'react-native';
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather, FontAwesome, Entypo as Icon } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import Modal from 'react-native-modal';
 import Firebase from '../../firebase';
@@ -11,7 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 const { width } = Dimensions.get('window');
 
 const WIDTH = width * 0.9;
-const RATIO = 228 / 362;
+const RATIO = 100 / 362;
 const HEIGHT = WIDTH * RATIO;
 export const MARGIN = 16;
 
@@ -112,6 +112,10 @@ class Maxim extends React.Component {
             })
     }
 
+    back() {
+        this.props.navigation.goBack();
+    }
+
     upload = async (ref, file) => {
         const response = await fetch(file.uri);
         const blob = await response.blob();
@@ -183,6 +187,11 @@ class Maxim extends React.Component {
                         </TouchableOpacity>
                     </View>
                 </View>
+            ),
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => this.back()}>
+                    <Icon name='chevron-left' size={25} color='#fff'/>
+                </TouchableOpacity>
             )
         })
     }

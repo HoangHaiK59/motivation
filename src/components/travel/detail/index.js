@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { View, ScrollView, StyleSheet, Text, Image, Dimensions, TouchableOpacity, TextInput } from 'react-native';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { View, ScrollView, StyleSheet, Text, Image, Dimensions, TouchableOpacity, TextInput, Animated } from 'react-native';
+import { FontAwesome, Ionicons, Entypo as Icon } from '@expo/vector-icons';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
 //import ImagePicker from 'react-native-image-picker';
@@ -26,6 +26,7 @@ export default function DetailTravel({ route, navigation }) {
     const [file, setFile] = React.useState({});
     const [update, setUpdate] = React.useState(false);
     const [name, setName] = React.useState('');
+    const animatedValue = new Animated.Value(1);
     const { params } = route;
 
     // React.useEffect(() => {
@@ -91,9 +92,30 @@ export default function DetailTravel({ route, navigation }) {
                 }}>
                     <Text style={{ fontSize:12, color: '#fff' }}>THÊM ẢNH</Text>
                 </TouchableOpacity>
+            ),
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => back()}>
+                    <Icon name='chevron-left' size={25} color='#fff'/>
+                </TouchableOpacity>
             )
         })
     }, [navigation])
+
+    const handlePressIn = () => {
+        Animated.spring(animatedValue, {
+            toValue: .5
+        })
+        .start();
+    }
+
+    const handlePressOut = () => {
+        Animated.spring(animatedValue, {
+            toValue: 1,
+            tension: 40,
+            friction: 3
+        })
+        .start();
+    }
 
     const getName = () => {
         Firebase.storage().ref()
@@ -169,6 +191,12 @@ export default function DetailTravel({ route, navigation }) {
 
     }
 
+    const animationStyle = {
+        transform: [{
+            scale: animatedValue
+        }]
+    }
+
     const cameraShot = async () => {
         try {
             let result = await ImagePicker.launchCameraAsync({
@@ -201,6 +229,10 @@ export default function DetailTravel({ route, navigation }) {
 //     </TouchableOpacity>
 // </View>
 
+    const back = () => {
+        navigation.goBack()
+    }
+
     return (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ marginTop: 10, flexGrow: 1 }} >
             <View style={styles.mainContainer}>
@@ -208,12 +240,12 @@ export default function DetailTravel({ route, navigation }) {
 
                 <View style={styles.container}>
                     {
-                        items.length > 0 ? items.map((item, id) => <View key={id} style={styles.item}>
-                            <TouchableOpacity onPress={() => navigation.navigate('View Image', {item: item, items: items})}>
+                        items.length > 0 ? items.map((item, id) => <Animated.View key={id} style={[styles.item, animationStyle]}>
+                            <TouchableOpacity onPress={() => navigation.navigate('View Image', {item: item, items: items})} >
                                 <Image style={styles.image} source={{ uri: item.url }} />
                             </TouchableOpacity>
 
-                        </View>) :
+                        </Animated.View>) :
                             <View style={styles.emptyContainer}>
                                 <Text style={[styles.text]}>No image to show</Text>
                             </View>

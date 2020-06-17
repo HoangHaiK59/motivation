@@ -5,8 +5,9 @@ import { FontAwesome } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
+import Animated from 'react-native-reanimated';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default function DetailBook({ route, navigation }) {
     const { book } = route.params.data;
@@ -17,6 +18,14 @@ export default function DetailBook({ route, navigation }) {
     const [page, setPage] = React.useState(0);
     const [bookInfo, setBookInfo] = React.useState({});
     const [update, setUpdate] = React.useState(false);
+    const scrollY = new Animated.Value(0);
+    const onScroll = Animated.event([ {
+        nativeEvent: {
+            contentOffset: {
+                y: scrollY
+            }
+        }
+    }])
     const firebaseRef = Firebase.firestore().collection(DB.book);
 
     React.useEffect(() => {
@@ -53,11 +62,18 @@ export default function DetailBook({ route, navigation }) {
             .catch(err => console.log(err))
     }
 
+    const threshold = height - 100 //- Constants.statusBarHeight;
+
+    const backgroundColor = scrollY.interpolate({
+        inputRange: [0 , threshold - 10, threshold],
+        outputRange: [0 , .3, 1]
+    })
+
     return (
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ marginTop: Constants.statusBarHeight }}>
+        <ScrollView showsVerticalScrollIndicator={false} scrollEventThrottle={1}  style={{ marginTop: Constants.statusBarHeight }}>
             {
                 Object.keys(bookInfo).length > 0 && <View style={styles.container}>
-                    <View style={styles.header}>
+                    <View style={[styles.header, {backgroundColor}]}>
                         <Image source={{ uri: bookInfo.image }} style={styles.image} />
                     </View>
                     <View style={styles.label}>
@@ -91,7 +107,7 @@ export default function DetailBook({ route, navigation }) {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={styles.commentContainer}>
+                    <View style={styles.commentContainer} >
                         {
                             bookInfo.note.map((note, id) => <View key={id} style={styles.commentContent}>
                                 <Text style={styles.text}>{note}</Text>

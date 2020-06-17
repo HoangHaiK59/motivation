@@ -6,7 +6,7 @@ import { DB } from '../../../helper/db';
 import Constants from 'expo-constants';
 import moment from 'moment';
 import * as ImagePicker from 'expo-image-picker';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Entypo as Icon } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -69,6 +69,11 @@ export default function Month({ route, navigation }) {
             headerRight: () => (
                 <TouchableOpacity style={styles.button} onPress={() => setVisible(true)}>
                     <Text style={{ fontSize: 12, color: '#fff' }}>THÊM NHẬT KÝ</Text>
+                </TouchableOpacity>
+            ),
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Icon name='chevron-left' size={25} color='#fff'/>
                 </TouchableOpacity>
             )
         })
