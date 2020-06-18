@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { cos } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { onScrollEvent } from 'react-native-redash';
 
-import Header from '../../common/header';
 import { MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT } from '../../../model/constants';
 
 const { interpolate, Extrapolate } = Animated;
@@ -15,26 +14,34 @@ const Item = ({ id, title }) => (
     </View>
 )
 
-export default function Content({ animatedValue , style: {header, items} }) {
-    const height = interpolate(animatedValue, {
+export default function Content({ y , item: { items } }) {
+    const height = interpolate(y, {
         inputRange: [- MAX_HEADER_HEIGHT, - 48/2],
         outputRange: [0, MAX_HEADER_HEIGHT + 48],
         extrapolate: Extrapolate.CLAMP
     });
 
-    const opacity = interpolate(animatedValue, {
+    const opacity = interpolate(y, {
         inputRange: [- MAX_HEADER_HEIGHT / 2, 0, MAX_HEADER_HEIGHT / 2],
         outputRange: [0, 1, 0],
         extrapolate: Extrapolate.CLAMP
     });
 
+//     <View style={styles.headerContainer}>
+//     <Animated.Text style={[styles.headerName, { opacity }]}>{header}</Animated.Text>
+// </View>
+// <View style={styles.header}>
+// <Header animatedValue={animatedValue} header={header} />
+// </View>
+
     return (
         <Animated.ScrollView
-            style={styles.container}
-            onScroll={onScrollEvent({y: animatedValue})}
-            bounces={false}
+            contentContainerStyle={styles.container}
+            onScroll={onScrollEvent({ y })}
             showsVerticalScrollIndicator={false}
             scrollEventThrottle={1}
+            bounces={false}
+            decelerationRate={'fast'}
             //stickyHeaderIndices={[1]}
         >
             <View style={styles.cover}>
@@ -46,12 +53,6 @@ export default function Content({ animatedValue , style: {header, items} }) {
                     style={StyleSheet.absoluteFill}
                     />
                 </Animated.View>
-                <View style={styles.headerContainer}>
-                    <Animated.Text style={[styles.headerName, { opacity }]}>{header}</Animated.Text>
-                </View>
-            </View>
-            <View style={styles.header}>
-                <Header animatedValue={animatedValue} header={header} />
             </View>
             <View style={styles.list}>
                 {
@@ -64,7 +65,7 @@ export default function Content({ animatedValue , style: {header, items} }) {
 
 const styles = StyleSheet.create({
     container: {
-        //flex: 1,
+        flexGrow: 1,
         paddingTop: MIN_HEADER_HEIGHT -  24, //48/2,
         
     },

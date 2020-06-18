@@ -6,12 +6,14 @@ import Constants from 'expo-constants';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
 import Animated from 'react-native-reanimated';
+import Cover from './cover';
+import Content from './content';
 
 const { width, height } = Dimensions.get('window');
 
 export default function DetailBook({ route, navigation }) {
     const { book } = route.params.data;
-    const [state, setState] = React.useState(book.is_farvorite);
+    const [state, setState] = React.useState(false);
     const [visible, setVisible] = React.useState(false);
     const [modal, setModal] = React.useState(false);
     const [comment, setComment] = React.useState('');
@@ -19,7 +21,7 @@ export default function DetailBook({ route, navigation }) {
     const [bookInfo, setBookInfo] = React.useState({});
     const [update, setUpdate] = React.useState(false);
     const scrollY = new Animated.Value(0);
-    const onScroll = Animated.event([ {
+    const onScroll = Animated.event([{
         nativeEvent: {
             contentOffset: {
                 y: scrollY
@@ -32,6 +34,7 @@ export default function DetailBook({ route, navigation }) {
         firebaseRef.doc(book.id).get()
             .then(result => {
                 if (result.exists) {
+                    setState(result.data().is_farvorite)
                     setBookInfo({
                         id: result.id,
                         ...result.data()
@@ -40,6 +43,43 @@ export default function DetailBook({ route, navigation }) {
                 }
             })
     }, [update === true])
+
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            headerLeft: () => {
+
+                if (state) {
+                    return (<TouchableOpacity style={[styles.button, {marginLeft: 5}]} onPress={() => {
+                        setState(false);
+                        handleChangeFarvorite(bookInfo.id, false)
+                    }}>
+                        <FontAwesome style={{ textAlign: 'left' }} name='heart' size={15} color='rgb(214, 49, 19)' />
+                    </TouchableOpacity>)
+                } else {
+                    return (
+                        <TouchableOpacity style={[styles.button ,{marginLeft: 5}]} onPress={() => {
+                            setState(true)
+                            handleChangeFarvorite(bookInfo.id, true)
+                        }}>
+                            <FontAwesome style={{ textAlign: 'left' }} name='heart' size={15} color='rgb(168, 165, 165)' />
+                        </TouchableOpacity>
+                    )
+                }
+            },
+            headerTitle: () => (
+                <TouchableOpacity style={[styles.labelItem]} onPress={() => setModal(true)}>
+                    <Text style={[styles.text, { textAlign: 'right' }]}>{bookInfo.num_of_page_read}/{bookInfo.total_page}</Text>
+                </TouchableOpacity>
+            ),
+            headerRight: () => (
+                <TouchableOpacity style={{marginRight: 5}} onPress={() => setVisible(true)}>
+                    <Text style={[styles.text, { textAlign: 'right' }]}>
+                        <FontAwesome name="comment" size={15} color="#fff" />
+                    </Text>
+                </TouchableOpacity>
+            )
+        })
+    }, [navigation, bookInfo])
 
     function createCommentNote(docId, comments, comment) {
         firebaseRef.doc(docId).update({
@@ -62,58 +102,21 @@ export default function DetailBook({ route, navigation }) {
             .catch(err => console.log(err))
     }
 
-    const threshold = height - 100 //- Constants.statusBarHeight;
+    const item = {
+        cover: {
+            uri: bookInfo?.image
+        },
+        items: bookInfo?.note
+    }
 
-    const backgroundColor = scrollY.interpolate({
-        inputRange: [0 , threshold - 10, threshold],
-        outputRange: [0 , .3, 1]
-    })
+    const y = new Animated.Value(0);
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false} scrollEventThrottle={1}  style={{ marginTop: Constants.statusBarHeight }}>
+        <View style={{ marginTop: Constants.statusBarHeight, flex: 1 }}>
             {
                 Object.keys(bookInfo).length > 0 && <View style={styles.container}>
-                    <View style={[styles.header, {backgroundColor}]}>
-                        <Image source={{ uri: bookInfo.image }} style={styles.image} />
-                    </View>
-                    <View style={styles.label}>
-                        {
-                            state ? <TouchableOpacity style={[styles.button]} onPress={() => {
-                                setState(false)
-                                handleChangeFarvorite(bookInfo.id, false)
-                            }}>
-                                <View >
-                                    <FontAwesome style={{ textAlign: 'left' }} name='heart' size={15} color='rgb(214, 49, 19)' />
-                                </View>
-                            </TouchableOpacity> :
-                                <TouchableOpacity style={[styles.button]} onPress={() => {
-                                    setState(true)
-                                    handleChangeFarvorite(bookInfo.id, true)
-                                }}>
-                                    <View >
-                                        <FontAwesome style={{ textAlign: 'left' }} name='heart' size={15} color='rgb(168, 165, 165)' />
-                                    </View>
-                                </TouchableOpacity>
-
-                        }
-                        <TouchableOpacity style={styles.labelItem} onPress={() => setModal(true)}>
-                            <Text style={[styles.text, { textAlign: 'right' }]}>{bookInfo.num_of_page_read}/{bookInfo.total_page}</Text>
-                        </TouchableOpacity>
-                        <View style={styles.labelItemRight}>
-                            <TouchableOpacity onPress={() => setVisible(true)}>
-                                <Text style={[styles.text, { textAlign: 'right' }]}>
-                                    <FontAwesome name="comment" size={15} color="#fff" />
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    <View style={styles.commentContainer} >
-                        {
-                            bookInfo.note.map((note, id) => <View key={id} style={styles.commentContent}>
-                                <Text style={styles.text}>{note}</Text>
-                            </View>)
-                        }
-                    </View>
+                    <Cover {...{ y, item }} />
+                    <Content  {...{ y, item }} />
                 </View>
             }
             <Modal
@@ -139,8 +142,8 @@ export default function DetailBook({ route, navigation }) {
                         />
                         <View style={{ flexDirection: 'row', marginVertical: 15 }}>
                             <TouchableHighlight style={comment !== '' ? styles.buttonModal : { ...styles.buttonModal, opacity: .8 }} onPress={() => {
-                                createCommentNote(book.id, book.note, comment);
-                                book.note = [...book.note, comment];
+                                createCommentNote(bookInfo.id, bookInfo.note, comment);
+                                bookInfo.note = [...bookInfo.note, comment];
                                 setVisible(false);
                             }} disabled={comment === '' ? true : false}>
                                 <Text style={styles.buttonText}>Create</Text>
@@ -174,14 +177,14 @@ export default function DetailBook({ route, navigation }) {
                             <TouchableHighlight style={comment !== '' ? styles.buttonModal : { ...styles.buttonModal, opacity: .8 }} onPress={() => {
                                 updatePageRead(book.id, page);
                                 setModal(false);
-                            }} disabled={page >= bookInfo.total_page  ? true : false}>
+                            }} disabled={page >= bookInfo.total_page ? true : false}>
                                 <Text style={styles.buttonText}>Update</Text>
                             </TouchableHighlight>
                         </View>
                     </View>
                 </View>
             </Modal>
-        </ScrollView>
+        </View>
     )
 }
 
@@ -207,10 +210,8 @@ const styles = StyleSheet.create({
         marginTop: 15
     },
     labelItem: {
-        width: '50%'
     },
     labelItemRight: {
-        width: '45%'
     },
     commentContainer: {
         flexDirection: 'column',

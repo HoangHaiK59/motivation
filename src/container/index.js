@@ -45,7 +45,7 @@ function HomeStack() {
             <Stack.Screen name="Travel" component={Travel} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
             <Stack.Screen name="Style" component={Style} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Detail Book" component={DetailBook} options={({ route, navigation }) => ({ data: route.params.data, headerShown: false, headerTitleAlign: 'center' })} />
+            <Stack.Screen name="Detail Book" component={DetailBook} options={({ route, navigation }) => ({ data: route.params.data, headerShown: true, headerTitleAlign: 'center', headerTransparent: true })} />
             <Stack.Screen name="Detail Travel" component={DetailTravel} options={({ route, navigation }) => ({headerLeft: () => (
                 <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
                     <FontAwesome name='arrow-left' size={20} color='white'/>
@@ -53,7 +53,7 @@ function HomeStack() {
             )
                 , headerShown: true, headerTitleAlign: 'center', title: route.params.title })} />
             <Stack.Screen name="View Image" component={ViewImage} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Month" component={Month} options={({route, navigation}) => ({headerShown: true, headerTitleAlign: 'center' , title: route.params.month + `/${route.params.year}`})} />
+            <Stack.Screen name="Month" component={Month} options={({route, navigation}) => ({headerShown: true, headerTitleAlign: 'center', headerTransparent: true , headerTitleStyle:{color: 'white'}, title: route.params.month + `/${route.params.year}`})} />
             <Stack.Screen name="Day" component={Day} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Focus" component={Focus} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Sleep" component={Sleep} options={{ headerShown: false, headerTitleAlign: 'center' }} />

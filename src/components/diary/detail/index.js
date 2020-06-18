@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Animated } from 'react-native';
 import Modal from 'react-native-modal';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
@@ -15,6 +15,68 @@ const Mapday = (day) => {
     const valueId = moment(day, 'DD/MM/YYYY').toDate().getDay() - 1;
     console.log(valueId);
     return arr.find((val, id) => id === valueId)
+}
+
+const WIDTH = width * 0.9;
+const RATIO = 100 / 362;
+const HEIGHT = WIDTH * RATIO;
+export const MARGIN = 16;
+
+export const CARD_HEIGHT = HEIGHT + MARGIN * 2;
+const { height: wHeight } = Dimensions.get('window');
+const height = wHeight - 64;
+
+
+const AnimatedFlatlist = Animated.createAnimatedComponent(FlatList);
+
+const Wallet = ({ y, id, index, year, collectionId, image, title, name, selected, onSelect }) => {
+    const position = Animated.subtract(index * CARD_HEIGHT, y);
+    const isDisappearing = -CARD_HEIGHT;
+    const isTop = 0;
+    const isBottom = height - CARD_HEIGHT;
+    const isAppearing = height;
+
+    const translateY = Animated.add(Animated.add(y,
+        y.interpolate({
+            inputRange: [0, 0.00001 + index * CARD_HEIGHT],
+            outputRange: [0, - index * CARD_HEIGHT],
+            extrapolateRight: 'clamp',
+        })
+    ),
+        position.interpolate({
+            inputRange: [isBottom, isAppearing],
+            outputRange: [0, -CARD_HEIGHT / 4],
+            extrapolate: 'clamp',
+        })
+    )
+
+    const scale = position.interpolate({
+        inputRange: [isDisappearing, isTop, isBottom, isAppearing],
+        outputRange: [0.5, 1, 1, 0.5],
+        extrapolate: 'clamp',
+    });
+    const opacity = position.interpolate({
+        inputRange: [isDisappearing, isTop, isBottom, isAppearing],
+        outputRange: [0.5, 1, 1, 0.5],
+    });
+
+    return (
+        <Animated.View
+            style={[styles.cardWall, { opacity, transform: [{ translateY }, { scale }] }]}
+            key={index}
+        >
+            <Item
+                id={id}
+                collectionId={collectionId}
+                year={year}
+                image={image}
+                title={title}
+                name={name}
+                selected={selected}
+                onSelect={onSelect}
+            />
+        </Animated.View>
+    )
 }
 
 const Item = ({ id, year, collectionId, image, title, name, selected, onSelect }) => {
@@ -53,6 +115,8 @@ export default function Month({ route, navigation }) {
     const [extra, setExtra] = React.useState('');
     const [diary, setDiary] = React.useState('');
     const [items, setItems] = React.useState([]);
+    const [loading, setLoading] = React.useState(false);
+    const y = new Animated.Value(0);
     const storageRef = Firebase.storage().ref();
     const { params } = route;
 
@@ -67,13 +131,16 @@ export default function Month({ route, navigation }) {
     React.useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (
-                <TouchableOpacity style={styles.button} onPress={() => setVisible(true)}>
+                <TouchableOpacity style={styles.button} onPress={() => {
+                    setVisible(true);
+                    setFile({});
+                }}>
                     <Text style={{ fontSize: 12, color: '#fff' }}>THÊM NHẬT KÝ</Text>
                 </TouchableOpacity>
             ),
             headerLeft: () => (
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name='chevron-left' size={25} color='#fff'/>
+                    <Icon name='chevron-left' size={25} color='#fff' />
                 </TouchableOpacity>
             )
         })
@@ -87,9 +154,10 @@ export default function Month({ route, navigation }) {
                     let items = [];
                     result.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
                     setItems(items);
+                    setLoading(false);
                 }
             })
-    }, [])
+    }, [loading === true])
 
 
     const upload = async (date, file) => {
@@ -127,6 +195,7 @@ export default function Month({ route, navigation }) {
                                 .then(refer => {
                                     //console.log(refer.id);
                                     setVisible(false);
+                                    setLoading(true);
                                 })
                                 .catch(error => console.log(error))
                         })
@@ -136,6 +205,8 @@ export default function Month({ route, navigation }) {
                         console.log(reject.message);
                     })
         } else {
+            Firebase.firestore().collection(DB.diary).doc(params.year).set({})
+
             Firebase.firestore().collection(DB.diary).doc(params.year).collection(params.id).doc(is_input_date ? dateInp + '-' + Mapday(date) :
                 new Date().getDate() + '-' + Mapday(new Date()))
                 .set({
@@ -147,6 +218,7 @@ export default function Month({ route, navigation }) {
                 .then(refer => {
                     //console.log(refer.id);
                     setVisible(false);
+                    setLoading(true);
                 })
                 .catch(error => console.log(error))
         }
@@ -200,18 +272,24 @@ export default function Month({ route, navigation }) {
 
     }
 
-//     <View style={styles.bottom}>
-//     <TouchableOpacity onPress={() => { setVisible(true); setFile({}) }}>
-//         <FontAwesome name='plus-circle' size={30} color='#ed881c' />
-//     </TouchableOpacity>
-// </View>
-
+    //     <View style={styles.bottom}>
+    //     <TouchableOpacity onPress={() => { setVisible(true); setFile({}) }}>
+    //         <FontAwesome name='plus-circle' size={30} color='#ed881c' />
+    //     </TouchableOpacity>
+    // </View>
+    const onScroll = Animated.event([{ nativeEvent: { contentOffset: { y } } }], {
+        useNativeDriver: true,
+      });
     return (
         <View style={styles.main}>
             <SafeAreaView style={styles.container}>
-                <FlatList
+                <AnimatedFlatlist
                     data={items}
-                    renderItem={({ item }) => (<Item
+                    {...{onScroll}}
+                    bounces={false}
+                    renderItem={({ index , item }) => (<Wallet
+                        y={y}
+                        index={index}
                         id={item.id}
                         collectionId={params.id}
                         year={params.year}
@@ -223,7 +301,7 @@ export default function Month({ route, navigation }) {
                     />)}
                 >
 
-                </FlatList>
+                </AnimatedFlatlist>
             </SafeAreaView>
             <Modal
                 swipeDirection={['down', 'left', 'right', 'up']}
@@ -250,7 +328,7 @@ export default function Month({ route, navigation }) {
                                     <FontAwesome name="camera" size={25} color='#bd4a20' />
                                 </TouchableOpacity>
                             </View>
-                            <View style={{width: 60, height: 60, alignSelf: 'center'}}>
+                            <View style={{ width: 60, height: 60, alignSelf: 'center' }}>
                                 {
                                     file !== null && <View style={{ alignSelf: 'center', marginLeft: 50 }}>
                                         <Image source={{ uri: file.uri }} style={{ width: 60, height: 60 }} />
@@ -275,7 +353,7 @@ export default function Month({ route, navigation }) {
 
 const styles = StyleSheet.create({
     main: {
-        marginTop: Constants.statusBarHeight,
+        //marginTop: Constants.statusBarHeight,
         flex: 1,
         flexDirection: 'column'
     },
@@ -290,7 +368,7 @@ const styles = StyleSheet.create({
     item: {
         backgroundColor: '#f9c2ff',
         padding: 5,
-        marginVertical: 8,
+        //marginVertical: 8,
         marginHorizontal: 8,
         flexDirection: 'row'
     },
@@ -358,5 +436,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(92, 110, 191, .5)',
         borderRadius: 3,
         marginHorizontal: 3
+    },
+    cardTemplate: {
+        width: WIDTH,
+        height: HEIGHT
+    },
+    cardWall: {
+        marginVertical: MARGIN,
+        alignSelf: 'center'
     }
 })

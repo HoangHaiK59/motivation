@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#80422a'
     },
     labelText: {
-        fontSize: 9,
+        fontSize: 10,
         fontWeight: '700',
         color: '#c4c0c0'
     }

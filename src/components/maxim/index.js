@@ -170,8 +170,7 @@ class Maxim extends React.Component {
 
     }
 
-    componentDidMount() {
-        this.getMaxims();
+    renderNavigation() {
         this.props.navigation.setOptions({
             headerRight: () => (
                 <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -196,10 +195,18 @@ class Maxim extends React.Component {
         })
     }
 
+    componentDidMount() {
+        this.getMaxims();
+        this.renderNavigation();
+    }
+
 
     componentDidUpdate(prevState, prevProps) {
         if (this.state.update) {
             this.getMaxims();
+        }
+        if(this.state.horizontal != prevState.horizontal) {
+            this.renderNavigation();
         }
     }
 
