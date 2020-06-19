@@ -54,9 +54,41 @@ class Sport extends React.Component {
             extrapolate: Extrapolate.CLAMP
         });
         const item = {
-            cover: require('../../assets/street.jpg'),
+            cover: {uri: 'https://i.imgur.com/waJJXLb.jpg'},
             header: 'TITLE',
             data: [
+                {
+                    title: '1',
+                    progress: 90
+                },
+                {
+                    title: '2',
+                    progress: 80
+                },
+                {
+                    title: '1',
+                    progress: 90
+                },
+                {
+                    title: '2',
+                    progress: 80
+                },
+                {
+                    title: '1',
+                    progress: 90
+                },
+                {
+                    title: '2',
+                    progress: 80
+                },
+                {
+                    title: '1',
+                    progress: 90
+                },
+                {
+                    title: '2',
+                    progress: 80
+                },
                 {
                     title: '1',
                     progress: 90
@@ -70,8 +102,8 @@ class Sport extends React.Component {
         }
         return (
             <View style={styles.main}>
-                <Cover {...{...this.y, item}}/>
-                <Content {...{...this.y, item}} />
+                <Cover y={this.y} item={item}/>
+                <Content y={this.y} item={item} />
             </View>
         )
     }

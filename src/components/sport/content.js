@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, Text, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
 import { onScrollEvent } from 'react-native-redash';
@@ -60,7 +60,7 @@ export default function Content({ y, item: { header, data, chart } }) {
             <View style={styles.header}>
                 <Header y={y} header={header} />
             </View>
-            <View style={[styles.content, {marginTop: 10}]}>
+            <View style={[styles.content]}>
                 <YAxis
                     data={chart[0].data}
                     formatLabel={(value) => value}
@@ -153,9 +153,35 @@ const styles = StyleSheet.create({
         padding: 16,
         justifyContent: "center",
     },
+    most: {
+        width: width,
+        height: 120,
+        flexDirection: 'row',
+        backgroundColor: 'black',
+        padding: 10
+    },
+    left: {
+        width: 120,
+        height: 120
+    },
+    center: {
+        width: 15,
+    },
+    right: {
+        height: 120
+    },
+    avt: {
+        position: 'absolute',
+        top: -10,
+        width: 120,
+        height: 120,
+        left: 10,
+        backgroundColor: 'yellow'
+    },
     content: {
         height: 200,
-        padding: 15,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        backgroundColor: 'black',
+        padding: 10
     },
 })
