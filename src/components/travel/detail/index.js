@@ -26,6 +26,7 @@ export default function DetailTravel({ route, navigation }) {
     const [file, setFile] = React.useState({});
     const [update, setUpdate] = React.useState(false);
     const [name, setName] = React.useState('');
+    const [selectedView, setSelectedView] = React.useState(false);
     const animatedValue = new Animated.Value(1);
     const { params } = route;
 
@@ -48,6 +49,7 @@ export default function DetailTravel({ route, navigation }) {
             .then(result => {
                 if (result.docs.length > 0) {
                     result.docs.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+                    items = items.map(item => ({...item, selected: false}));
                     setItems(items);
                 }
                 setUpdate(false);
@@ -101,20 +103,16 @@ export default function DetailTravel({ route, navigation }) {
         })
     }, [navigation])
 
-    const handlePressIn = () => {
-        Animated.spring(animatedValue, {
-            toValue: .5
-        })
-        .start();
-    }
-
-    const handlePressOut = () => {
-        Animated.spring(animatedValue, {
-            toValue: 1,
-            tension: 40,
-            friction: 3
-        })
-        .start();
+    const handleSelectionImage = (id) => {
+        let itemArr = items.map((item, index) => {
+            if(index === id) {
+                return {...item, selected: !item.selected}
+            } else {
+                return item;
+            }
+        });
+        setSelectedView(true);
+        setItems(itemArr);
     }
 
     const getName = () => {
@@ -240,9 +238,20 @@ export default function DetailTravel({ route, navigation }) {
 
                 <View style={styles.container}>
                     {
-                        items.length > 0 ? items.map((item, id) => <Animated.View key={id} style={[styles.item, animationStyle]}>
-                            <TouchableOpacity onPress={() => navigation.navigate('View Image', {item: item, items: items})} >
-                                <Image style={styles.image} source={{ uri: item.url }} />
+                        items.length > 0 ? items.map((item, id) => <Animated.View key={id} style={[styles.item]}>
+                            <TouchableOpacity onLongPress={() => handleSelectionImage(id)} onPress={() => navigation.navigate('View Image', {item: item, items: items})} >
+                                <Image style={selectedView ? {...styles.image, opacity: .8}: styles.image} source={{ uri: item.url }} />
+                                {
+                                    selectedView? 
+                                        (<View style={styles.selected}>
+                                            <View style={styles.boxSelected}>
+                                                {
+                                                    item.selected && <FontAwesome name='check' size={15} color='yellow'/>
+                                                }
+                                            </View> 
+                                        </View>): null
+                                    
+                                }
                             </TouchableOpacity>
 
                         </Animated.View>) :
@@ -298,11 +307,11 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        marginVertical: 10,
+        marginVertical: 8,
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'flex-start',
-        marginHorizontal: 40
+        marginHorizontal: 12
     },
     childContainer: {
         marginVertical: 10,
@@ -372,5 +381,16 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(92, 110, 191, .5)',
         borderRadius: 3,
         marginHorizontal: 3
-    }
+    },
+    selected: {
+        top: 10,
+        left: 10,
+        position: 'absolute'
+    },
+    boxSelected: {
+        width: 15,
+        height: 15,
+        borderWidth: 1,
+        borderColor: 'tomato'
+    },
 })

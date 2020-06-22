@@ -1,8 +1,14 @@
 import React from 'react';
 import Constants from 'expo-constants';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import Sections from './sections';
 
 const { width, height } = Dimensions.get('window');
+
+const mariner = '#3B5F8F';
+const mediumPurple = '#8266D4';
+const tomato = '#F95B57';
+const mySin = '#F3A646';
 
 class Creative extends React.Component {
     constructor(props) {
@@ -14,23 +20,42 @@ class Creative extends React.Component {
     }
 
     render() {
+
+        const sections = [
+            {
+                title: 'IDEA',
+                leftColor: mediumPurple,
+                rightColor: mariner,
+                image: { uri: 'https://i.imgur.com/waJJXLb.jpg' },
+            },
+            {
+                title: 'BUSINESS',
+                leftColor: tomato,
+                rightColor: mediumPurple,
+                image: { uri: 'https://i.imgur.com/waJJXLb.jpg' },
+            },
+            {
+                title: 'PROJECT',
+                leftColor: mySin,
+                rightColor: tomato,
+                image: { uri: 'https://i.imgur.com/waJJXLb.jpg' },
+            },
+            {
+                title: 'WORKSHOP',
+                leftColor: '#3e6b8a',
+                rightColor: tomato,
+                image: { uri: 'https://i.imgur.com/waJJXLb.jpg' },
+            },
+            {
+                title: 'HOME',
+                leftColor: mediumPurple,
+                rightColor: mariner,
+                image: { uri: 'https://i.imgur.com/waJJXLb.jpg' },
+            },
+        ];
+
         return (
-            <View style={styles.container}>
-                <View style={styles.content}>
-                    <TouchableOpacity style={styles.item}>
-                        <Text style={styles.text}>Text</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.item}>
-                        <Text style={styles.text}>Text</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.item}>
-                        <Text style={styles.text}>Text</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.item}>
-                        <Text style={styles.text}>Text</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
+            <Sections  {...{ sections }} />
         )
     }
 }
