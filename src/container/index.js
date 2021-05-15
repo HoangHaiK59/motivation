@@ -27,13 +27,16 @@ import ViewImage from '../components/travel/detail/view';
 import Focus from '../components/relax/focus';
 import Sleep from '../components/relax/sleep';
 import RelaxAction from '../components/relax/action';
+import { UserContext } from '../components/context/user.context';
+import Authentication from '../components/authentication';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function HomeStack() {
+function HomeStack({context}) {
     return (
         <Stack.Navigator>
+            <Stack.Screen name="Login" component={Authentication} context={context} options={{ headerTitleAlign: 'center' }} />
             <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerTitleAlign: 'center' }} />
             <Stack.Screen name="Book" component={Book} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
             <Stack.Screen name="Sport" component={Sport} options={{ headerShown: false, headerTitleAlign: 'center' }} />
@@ -72,53 +75,59 @@ function StatisticStack() {
 
 export default function Container() {
 
-
     return (
-        <View style={styles.container}>
-            <StatusBar backgroundColor='transparent' translucent />
-            <NavigationContainer theme={{
-                colors: {
-                    background: '#050504',
-                    text: '#c4c0c0'
-                }
-            }}>
-                <Tab.Navigator
-                    tabBarOptions={{
-                        style: {
-                            backgroundColor: '#050504'
-                        },
-                        tabStyle: {
-                            height: 45
-                        },
-                        labelStyle: {
-                            color: '#c4c0c0'
-                        },
-                        keyboardHidesTabBar: true
-                    }}
-                    screenOptions={({ route, navigation }) => ({
-                        tabBarIcon: ({ focused, color, size }) => {
-                            let iconName;
-                            if (route.name === 'Home') {
-                                iconName = focused ? 'home' : 'home'
-                            } else if ((route.name === 'Statistic')) {
-                                iconName = focused
-                                    ? 'line-chart'
-                                    : 'line-chart';
-                            } else if ((route.name === 'Settings')) {
-                                iconName = focused
-                                    ? 'cog'
-                                    : 'cog';
-                                //navigation.setParams({handleDarkMode: handleDarkMode()})
+        <UserContext.Consumer>
+            {
+                context => (
+                    <View style={styles.container}>
+                        <StatusBar translucent backgroundColor="#050504" barStyle={"light-content"} />
+                        <NavigationContainer theme={{
+                            colors: {
+                                background: '#050504',
+                                text: '#c4c0c0'
                             }
-                            return <FontAwesome name={iconName} size={size} color={focused ? '#e33310' : color} />;
-                        }
-                    })}
-                >
-                    <Tab.Screen name="Home" component={HomeStack} />
-                    <Tab.Screen name="Statistic" component={StatisticStack} />
-                </Tab.Navigator>
-            </NavigationContainer>
-        </View>
+                        }}>
+                            <Tab.Navigator
+                                tabBarOptions={{
+                                    style: {
+                                        backgroundColor: '#050504'
+                                    },
+                                    tabStyle: {
+                                        height: 45
+                                    },
+                                    labelStyle: {
+                                        color: '#c4c0c0'
+                                    },
+                                    keyboardHidesTabBar: true
+                                }}
+                                screenOptions={({ route, navigation }) => ({
+                                    tabBarIcon: ({ focused, color, size }) => {
+                                        let iconName;
+                                        if (route.name === 'Home') {
+                                            iconName = focused ? 'home' : 'home'
+                                        } else if ((route.name === 'Statistic')) {
+                                            iconName = focused
+                                                ? 'line-chart'
+                                                : 'line-chart';
+                                        } else if ((route.name === 'Settings')) {
+                                            iconName = focused
+                                                ? 'cog'
+                                                : 'cog';
+                                            //navigation.setParams({handleDarkMode: handleDarkMode()})
+                                        }
+                                        return <FontAwesome name={iconName} size={size} color={focused ? '#e33310' : color} />;
+                                    }
+                                })}
+                            >
+                                <Tab.Screen name="Home" component={HomeStack} {...context} />
+                                <Tab.Screen name="Statistic" component={StatisticStack} {...context} />
+                            </Tab.Navigator>
+                        </NavigationContainer>
+                    </View>
+                )
+            }
+        </UserContext.Consumer>
+
     )
 }
 

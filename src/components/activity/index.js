@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, YellowBox, Modal, ScrollView, FlatList, TouchableHighlight, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, LogBox, Modal, ScrollView, FlatList, TouchableHighlight, Dimensions } from 'react-native';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
 import { FontAwesome } from '@expo/vector-icons';
 
-YellowBox.ignoreWarnings(['Setting a timer']);
+// LogBox.ignoreLogs(['Setting a timer']);
 
 const { width, height } = Dimensions.get('window');
 

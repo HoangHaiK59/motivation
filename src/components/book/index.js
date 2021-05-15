@@ -6,8 +6,6 @@ import { DB } from '../../helper/db';
 import { FontAwesome, Entypo as Icon } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 
-console.ignoredYellowBox = ['Setting a timer'];
-
 const { width, height } = Dimensions.get('window');
 
 class Book extends React.Component {

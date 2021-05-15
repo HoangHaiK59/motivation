@@ -353,7 +353,6 @@ export default function Month({ route, navigation }) {
 
 const styles = StyleSheet.create({
     main: {
-        //marginTop: Constants.statusBarHeight,
         flex: 1,
         flexDirection: 'column'
     },

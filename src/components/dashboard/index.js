@@ -1,15 +1,13 @@
 import * as React from 'react';
 //import Animated from 'react-native-reanimated';
-import { View, StyleSheet, Text, TouchableWithoutFeedback, Animated, Dimensions, YellowBox, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, TouchableWithoutFeedback, Animated, Dimensions, LogBox, ScrollView } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Activity from '../activity';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
-YellowBox.ignoreWarnings(['Setting a timer']);
-
-console.ignoredYellowBox = ['Setting a timer'];
+// LogBox.ignoreLogs(['Setting a timer']);
 
 
 export default function Dashboard(props) {

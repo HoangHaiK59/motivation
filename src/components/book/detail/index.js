@@ -102,6 +102,13 @@ export default function DetailBook({ route, navigation }) {
             .catch(err => console.log(err))
     }
 
+    const onSwipe = item => {
+        const note = [...bookInfo.note];
+        note.splice(note.indexOf(item), 1);
+        console.log(note);
+        setBookInfo({...bookInfo, note})
+    }
+
     const item = {
         cover: {
             uri: bookInfo?.image
@@ -112,11 +119,11 @@ export default function DetailBook({ route, navigation }) {
     const y = new Animated.Value(0);
 
     return (
-        <View style={{ marginTop: Constants.statusBarHeight, flex: 1 }}>
+        <View style={{flex: 1 }}>
             {
                 Object.keys(bookInfo).length > 0 && <View style={styles.container}>
                     <Cover {...{ y, item }} />
-                    <Content  {...{ y, item }} />
+                    <Content  {...{ y, item }} onSwipe={onSwipe}/>
                 </View>
             }
             <Modal

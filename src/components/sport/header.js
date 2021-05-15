@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
         right: 0,
         height: MIN_HEADER_HEIGHT,
         backgroundColor: 'black',
-        paddingTop: Constants.statusBarHeight,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center'

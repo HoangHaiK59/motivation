@@ -62,8 +62,7 @@ class Creative extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        marginTop: Constants.statusBarHeight
+        flex: 1
     },
     content: {
         flex: 1,

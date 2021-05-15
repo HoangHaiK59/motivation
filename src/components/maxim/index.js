@@ -7,43 +7,90 @@ import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
+import Action, { CARD_HEIGHT, WIDTH, MARGIN } from './action';
+import Reanimated, { useCode, cond, set, Clock, clockRunning, eq, not, add, min, abs, call } from 'react-native-reanimated';
+import {
+    PanGestureHandler,
+    State,
+    TouchableWithoutFeedback,
+} from 'react-native-gesture-handler';
+import {
+    clamp,
+    snapPoint,
+    timing,
+    useClock,
+    usePanGestureHandler,
+    useValue,
+} from 'react-native-redash';
 
 const { width } = Dimensions.get('window');
 
-const WIDTH = width * 0.9;
-const RATIO = 100 / 362;
-const HEIGHT = WIDTH * RATIO;
-export const MARGIN = 16;
-
-export const CARD_HEIGHT = HEIGHT + MARGIN * 2;
 const { height: wHeight } = Dimensions.get('window');
 const height = wHeight - 64;
 
+const snapPoints = [-width, -180, 0];
 
 const AnimatedFlatlist = Animated.createAnimatedComponent(FlatList);
 
-const Item = ({ id, title, url, author, horizontal }) => (
-    <View style={horizontal ? styles.itemHorizoltal : styles.item}>
-        {
-            horizontal ? <View style={styles.itemList}>
-                <Image source={{ uri: url }} style={{ width: width, height: Dimensions.get('window').height, margin: 0 }} />
-                <LinearGradient colors={['#190A05', '#870000']} start={[0.7, 0.2]} style={styles.maxim}>
-                    <Text style={styles.text}>{title}</Text>
-                    <View style={{ alignItems: 'flex-end' }}>
-                        <Text style={styles.text}>{author}</Text>
+const Item = ({ id, title, url, author, horizontal, onSwipe }) => {
+    const { translation, velocity, state, gestureHandler } = usePanGestureHandler();
+    const translateX = useValue(0);
+    const offsetX = useValue(0);
+    const height = useValue(CARD_HEIGHT);
+    const deleteOpacity = useValue(1);
+    const clock = useClock();
+    const to = snapPoint(translateX, velocity.x, snapPoints);
+    const shouldRemove = useValue(0);
+    useCode(() => [
+        cond(eq(state, State.ACTIVE), set(translateX, add(offsetX, min(translation.x, 0)))),
+        cond(eq(state, State.END), [
+            set(translateX, timing({ clock, from: CARD_HEIGHT, to })),
+            set(offsetX, translateX),
+            cond(eq(to, -width), set(shouldRemove, 1))
+        ]),
+        cond(shouldRemove, [
+            set(height, timing({ from: CARD_HEIGHT, to: 0 })),
+            set(deleteOpacity, 0),
+            cond(not(clockRunning(clock)), call([], onSwipe)),
+        ])
+    ], [onSwipe])
+    return (
+        <>
+            {
+                horizontal ? <View style={styles.itemHorizoltal}>
+                    <View style={styles.itemList}>
+                        <Image source={{ uri: url }} style={{ width: width, height: Dimensions.get('window').height, margin: 0 }} />
+                        <LinearGradient colors={['#190A05', '#870000']} start={[0.7, 0.2]} style={styles.maxim}>
+                            <Text style={styles.text}>{title}</Text>
+                            <View style={{ alignItems: 'flex-end' }}>
+                                <Text style={styles.text}>{author}</Text>
+                            </View>
+                        </LinearGradient>
                     </View>
-                </LinearGradient>
-            </View> : <View style={[styles.cardTemplate, {padding: 5}]}>
-                    <Text style={styles.text}>{title}</Text>
-                    <View style={{ alignItems: 'flex-end' }}>
-                        <Text style={styles.text}>{author}</Text>
-                    </View>
-                </View>
-        }
-    </View>
-);
+                </View> :
+                    <Reanimated.View >
+                        <View style={styles.background}>
+                            <TouchableWithoutFeedback onPress={() => shouldRemove.setValue(1)}>
+                                <Action x={abs(translateX)} deleteOpacity={deleteOpacity} />
+                            </TouchableWithoutFeedback>
+                        </View>
+                        <PanGestureHandler {...gestureHandler}>
+                            <Reanimated.View style={{ height, transform: [{ translateX }] }}>
+                                <View style={[styles.cardTemplate, { padding: 5 }]}>
+                                    <Text style={styles.text}>{title}</Text>
+                                    <View style={{ alignItems: 'flex-end' }}>
+                                        <Text style={styles.text}>{author}</Text>
+                                    </View>
+                                </View>
+                            </Reanimated.View>
+                        </PanGestureHandler>
+                    </Reanimated.View>
+            }
+        </>
+    )
+};
 
-const Wallet = ({ animatedValue, id, title, url, author, horizontal }) => {
+const Wallet = ({ animatedValue, id, title, url, author, horizontal, onSwipe }) => {
     const position = Animated.subtract(id * CARD_HEIGHT, animatedValue);
     const isDisappearing = -CARD_HEIGHT;
     const isTop = 0;
@@ -77,7 +124,7 @@ const Wallet = ({ animatedValue, id, title, url, author, horizontal }) => {
             style={[styles.cardWall, { opacity, transform: [{ translateY }, { scale }] }]}
             key={id}
         >
-            <Item id={id} title={title} url={url} author={author} horizontal={horizontal} />
+            <Item id={id} title={title} url={url} author={author} horizontal={horizontal} onSwipe={onSwipe} />
         </Animated.View>
     )
 }
@@ -189,7 +236,7 @@ class Maxim extends React.Component {
             ),
             headerLeft: () => (
                 <TouchableOpacity onPress={() => this.back()}>
-                    <Icon name='chevron-left' size={25} color='#fff'/>
+                    <Icon name='chevron-left' size={25} color='#fff' />
                 </TouchableOpacity>
             )
         })
@@ -205,7 +252,7 @@ class Maxim extends React.Component {
         if (this.state.update) {
             this.getMaxims();
         }
-        if(this.state.horizontal != prevState.horizontal) {
+        if (this.state.horizontal != prevState.horizontal) {
             this.renderNavigation();
         }
     }
@@ -241,9 +288,9 @@ class Maxim extends React.Component {
         const y = new Animated.Value(0);
         const onScroll = Animated.event([{ nativeEvent: { contentOffset: { y } } }], {
             useNativeDriver: true,
-          });
+        });
         return (
-            <SafeAreaView style={this.state.horizontal ? styles.main : { flex: 1, flexDirection: 'column', marginTop: Constants.statusBarHeight }}>
+            <SafeAreaView style={this.state.horizontal ? styles.main : { flex: 1, flexDirection: 'column' }}>
 
                 {
                     this.state.horizontal ? <FlatList
@@ -261,11 +308,16 @@ class Maxim extends React.Component {
                     /> : <AnimatedFlatlist
                             scrollEventThrottle={16}
                             bounces={false}
-                            {...{onScroll}}
+                            {...{ onScroll }}
                             showsVerticalScrollIndicator={false}
                             showsHorizontalScrollIndicator={false}
                             data={this.state.maxims}
                             renderItem={({ index, item }) => <Wallet
+                                onSwipe={() => {
+                                    const newItems = [...this.state.maxims];
+                                    newItems.splice(newItems.indexOf(item), 1);
+                                    this.setState({ maxims: newItems })
+                                }}
                                 animatedValue={y}
                                 horizontal={this.state.horizontal}
                                 id={index}
@@ -336,7 +388,6 @@ const styles = StyleSheet.create({
     main: {
         flex: 1,
         flexDirection: 'column',
-        //marginTop: Constants.statusBarHeight
     },
     container: {
         flex: 1,
@@ -431,12 +482,21 @@ const styles = StyleSheet.create({
     },
     cardTemplate: {
         width: WIDTH,
-        height: HEIGHT
+        height: CARD_HEIGHT,
+        backgroundColor: '#2d4269',
     },
     cardWall: {
         marginVertical: MARGIN,
         alignSelf: 'center'
-    }
+    },
+    background: {
+        ...StyleSheet.absoluteFillObject,
+        //backgroundColor: "#E1E2E3",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        overflow: "hidden",
+    },
 });
 
 export default Maxim;

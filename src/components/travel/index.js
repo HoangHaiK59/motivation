@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
         flexDirection: 'column',
-        //marginTop: Constants.statusBarHeight
     },
     container: {
         flex: 1
