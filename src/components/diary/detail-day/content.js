@@ -2,12 +2,12 @@ import * as React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { cos } from 'react-native-reanimated';
-import { onScrollEvent } from 'react-native-redash';
+import { onScrollEvent } from 'react-native-redash/lib/module/v1';
 
 import Header from '../../common/header';
 import { MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT } from '../../../model/constants';
 
-const { interpolate, Extrapolate } = Animated;
+const { interpolateNode, Extrapolate } = Animated;
 
 const Item = ({ id, title }) => (
     <View key={id} style={styles.item}>
@@ -16,13 +16,13 @@ const Item = ({ id, title }) => (
 )
 
 export default function Content({ animatedValue , style: {header, items} }) {
-    const height = interpolate(animatedValue, {
+    const height = interpolateNode(animatedValue, {
         inputRange: [- MAX_HEADER_HEIGHT, - 48/2],
         outputRange: [0, MAX_HEADER_HEIGHT + 48],
         extrapolate: Extrapolate.CLAMP
     });
 
-    const opacity = interpolate(animatedValue, {
+    const opacity = interpolateNode(animatedValue, {
         inputRange: [- MAX_HEADER_HEIGHT / 2, 0, MAX_HEADER_HEIGHT / 2],
         outputRange: [0, 1, 0],
         extrapolate: Extrapolate.CLAMP

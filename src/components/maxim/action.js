@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Dimensions} from 'react-native';
-import Animated, { interpolate, multiply, cond, lessThan, divide, sub, add, Extrapolate } from 'react-native-reanimated';
+import Animated, { interpolateNode, multiply, cond, lessThan, divide, sub, add, Extrapolate } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
 
@@ -15,12 +15,12 @@ export default function Action({ x, deleteOpacity }) {
     const size = cond(lessThan(x, CARD_HEIGHT), x, add(x, sub(x, CARD_HEIGHT)));
     const translateX = cond(lessThan(x, CARD_HEIGHT), 0, divide(sub(x, CARD_HEIGHT), 2));
     const borderRadius = divide(size, 2);
-    const scale = interpolate(size, {
+    const scale = interpolateNode(size, {
         inputRange: [20, 30],
         outputRange: [0.001, 1],
         extrapolate: Extrapolate.CLAMP,
     });
-    const iconOpacity = interpolate(size, {
+    const iconOpacity = interpolateNode(size, {
         inputRange: [CARD_HEIGHT - 10, CARD_HEIGHT + 10],
         outputRange: [1, 0],
     });

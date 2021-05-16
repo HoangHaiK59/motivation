@@ -1,11 +1,17 @@
 import React from 'react';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import firebase from '../../firebase';
 
 export const UserContext = React.createContext({
     user: null,
     error: null,
     handleError: () => {}
 });
+
+const getUser = async () => {
+    const result = await AsyncStorage.getItem('userFirebase');
+    return JSON.parse(result)
+}
 
 const UserProvider = props => {
     const [user, setUser] = React.useState(getUser());
@@ -19,15 +25,12 @@ const UserProvider = props => {
                     console.log(error)
                 })
             } else {
-                localStorage.removeItem('userFirebase') 
+                AsyncStorage.removeItem('userFirebase') 
             }
         })
     }, [])
     const handleError = error => {
         setError(error);
-    }
-    const getUser = async () => {
-        return await AsyncStorage.getItem('userFirebase');
     }
     return (
         <UserContext.Provider value={{user, error, handleError}}>

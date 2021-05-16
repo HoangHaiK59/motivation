@@ -18,6 +18,8 @@ const Authentication = props => {
         ).catch(error => {
             context.handleError(error)
         })
+
+        // await firebase.auth().signOut();
     }
     return (
         <SafeAreaView style={{flex: 1}}>

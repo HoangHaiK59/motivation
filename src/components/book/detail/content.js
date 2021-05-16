@@ -16,10 +16,10 @@ import {
     useClock,
     usePanGestureHandler,
     useValue,
-} from 'react-native-redash';
+} from 'react-native-redash/lib/module/v1';
 import Action, { CARD_HEIGHT, WIDTH } from '../action';
 
-const { interpolate, Extrapolate } = Animated;
+const { interpolateNode, Extrapolate } = Animated;
 const { width } = Dimensions.get('window');
 
 const snapPoints = [-width, -100, 0];
@@ -66,13 +66,13 @@ const Item = ({ id, title, onSwipe }) => {
 }
 
 export default function Content({ y, item: { items }, onSwipe }) {
-    const height = interpolate(y, {
+    const height = interpolateNode(y, {
         inputRange: [- MAX_HEADER_HEIGHT, - 48 / 2],
         outputRange: [0, MAX_HEADER_HEIGHT + 48],
         extrapolate: Extrapolate.CLAMP
     });
 
-    const opacity = interpolate(y, {
+    const opacity = interpolateNode(y, {
         inputRange: [- MAX_HEADER_HEIGHT / 2, 0, MAX_HEADER_HEIGHT / 2],
         outputRange: [0, 1, 0],
         extrapolate: Extrapolate.CLAMP

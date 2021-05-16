@@ -318,7 +318,7 @@ export default function Month({ route, navigation }) {
                         <TextInput placeholder='DD/MM/YYYY' style={styles.input} onChangeText={date => setDate(date)} selectTextOnFocus={true} multiline={true} />
                         <TextInput placeholder='Title...' style={styles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true} />
                         <TextInput placeholder='Extra...' style={styles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true} />
-                        <TextInput placeholder='Diary...' style={styles.input} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} />
+                        <TextInput placeholder='Diary...' style={styles.textArea} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} numberOfLines={6} />
                         <View style={{ flexDirection: 'row', width: width, height: 70, justifyContent: 'flex-start' }}>
                             <View style={{ alignItems: 'center', flexDirection: 'column', padding: 5 }}>
                                 <TouchableOpacity onPress={() => pickImage()} style={{ alignSelf: 'center' }}>
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
         fontSize: 17
     },
     text: {
-        color: '#c4c0c0',
+        color: '#fff',
         fontSize: 14
     },
     centerView: {
@@ -413,11 +413,12 @@ const styles = StyleSheet.create({
         shadowRadius: 3.5,
         elevation: 5,
         width: width,
-        padding: 10
+        paddingHorizontal: 10,
+        paddingBottom: 10
     },
     buttonModal: {
         borderRadius: 30,
-        backgroundColor: '#f2400f',
+        backgroundColor: '#6c9af0',
         width: 120,
         height: 40
     },
@@ -427,8 +428,14 @@ const styles = StyleSheet.create({
     input: {
         borderBottomColor: '#7b82a6',
         borderBottomWidth: 2,
-        width: width,
+        width: width - 20,
         marginVertical: 10
+    },
+    textArea: {
+        width: width - 20,
+        marginVertical: 10,
+        borderColor: '#7b82a6',
+        borderWidth: 2
     },
     button: {
         padding: 3,

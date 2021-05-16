@@ -2,13 +2,13 @@ import * as React from 'react';
 import { StyleSheet, View, Text, Dimensions, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
-import { onScrollEvent } from 'react-native-redash';
+import { onScrollEvent } from 'react-native-redash/lib/module/v1';
 import { AreaChart, LineChart, Grid, XAxis, YAxis } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
 import Header from './header';
 import { MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT } from '../../model/constants';
 
-const { interpolate, Extrapolate } = Animated;
+const { interpolateNode, Extrapolate } = Animated;
 const { width } = Dimensions.get('window');
 
 const Item = ({ progress, title }) => (
@@ -23,13 +23,13 @@ const Item = ({ progress, title }) => (
 )
 
 export default function Content({ y, item: { header, data, chart } }) {
-    const height = interpolate(y, {
+    const height = interpolateNode(y, {
         inputRange: [- MAX_HEADER_HEIGHT, - 48 / 2],
         outputRange: [0, MAX_HEADER_HEIGHT + 48],
         extrapolate: Extrapolate.CLAMP
     });
 
-    const opacity = interpolate(y, {
+    const opacity = interpolateNode(y, {
         inputRange: [- MAX_HEADER_HEIGHT / 2, 0, MAX_HEADER_HEIGHT / 2],
         outputRange: [0, 1, 0],
         extrapolate: Extrapolate.CLAMP

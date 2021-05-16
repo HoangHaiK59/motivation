@@ -29,6 +29,8 @@ import Sleep from '../components/relax/sleep';
 import RelaxAction from '../components/relax/action';
 import { UserContext } from '../components/context/user.context';
 import Authentication from '../components/authentication';
+import Investment from '../components/investment';
+import ViewInvest from '../components/investment/view';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,8 +38,11 @@ const Tab = createBottomTabNavigator();
 function HomeStack({context}) {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Login" component={Authentication} context={context} options={{ headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Dashboard" component={Dashboard} options={({route, navigation}) => ({ headerShown: true, headerTitleAlign: 'center', headerRight: props => (
+                <TouchableOpacity style={styles.cog} onPress={() => navigation.navigate('Setting')}>
+                    <FontAwesome name="cog" size={20} color="#fff" />
+                </TouchableOpacity>
+            )})} />
             <Stack.Screen name="Book" component={Book} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
             <Stack.Screen name="Sport" component={Sport} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Task" component={Task} options={{ headerShown: false, headerTitleAlign: 'center' }} />
@@ -61,11 +66,26 @@ function HomeStack({context}) {
             <Stack.Screen name="Focus" component={Focus} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Sleep" component={Sleep} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Relax Action" component={RelaxAction} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Investment" component={Investment} options={({route, navigation}) => ({ headerShown: true, headerTitleAlign: 'center', headerLeft: () => (
+                <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
+                    <FontAwesome name='chevron-left' size={20} color='white'/>
+                </TouchableOpacity>
+            ) })} />
+            <Stack.Screen name="View Invest" component={ViewInvest} options={({route, navigation}) => ({ headerShown: true, headerTitleAlign: 'center', headerTitle: '', headerLeft: () => (
+                <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
+                    <FontAwesome name='chevron-left' size={20} color='white'/>
+                </TouchableOpacity>
+            ) })} />
+            <Stack.Screen name="Setting" children={(props) => <Settings {...props} context={context} />} options={({route, navigation}) => ({headerShown: true, headerTitleAlign: 'center', headerLeft: () => (
+                <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
+                    <FontAwesome name='chevron-left' size={20} color='white'/>
+                </TouchableOpacity>
+            ) })} />
         </Stack.Navigator>
     )
 }
 
-function StatisticStack() {
+function StatisticStack({context}) {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Statistic" component={Statistic} options={{ headerTitleAlign: 'center' }} />
@@ -87,7 +107,8 @@ export default function Container() {
                                 text: '#c4c0c0'
                             }
                         }}>
-                            <Tab.Navigator
+                            {
+                                context.user ?  <Tab.Navigator
                                 tabBarOptions={{
                                     style: {
                                         backgroundColor: '#050504'
@@ -119,9 +140,13 @@ export default function Container() {
                                     }
                                 })}
                             >
-                                <Tab.Screen name="Home" component={HomeStack} {...context} />
-                                <Tab.Screen name="Statistic" component={StatisticStack} {...context} />
-                            </Tab.Navigator>
+                                <Tab.Screen name="Home" children={(props) => <HomeStack {...props} context={context} />}  />
+                                <Tab.Screen name="Statistic" children={(props) => <StatisticStack {...props} context={context} />} />
+                            </Tab.Navigator> : <Stack.Navigator>
+                                <Stack.Screen name="Login" children={(props) => <Authentication {...props} context={context} />} options={{ headerTitleAlign: 'center' }} />
+                            </Stack.Navigator>
+                            }
+                                        
                         </NavigationContainer>
                     </View>
                 )
@@ -134,5 +159,9 @@ export default function Container() {
 const styles = StyleSheet.create({
     container: {
         flex: 1
+    },
+    cog: {
+        marginRight: 10,
+        width: 25
     }
 })

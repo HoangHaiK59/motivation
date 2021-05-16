@@ -3,16 +3,16 @@ import { Image, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { MAX_HEADER_HEIGHT, HEADER_DELTA } from '../../../model/constants';
 
-const {interpolate, Extrapolate} = Animated;
+const {interpolateNode, Extrapolate} = Animated;
 
 export default function Cover({ animatedValue, style:{cover} }) {
-    const scale = interpolate(animatedValue, {
+    const scale = interpolateNode(animatedValue, {
         inputRange: [ -MAX_HEADER_HEIGHT, 0],
         outputRange: [4, 1],
         extrapolate: Extrapolate.CLAMP
     });
 
-    const opacity = interpolate(animatedValue, {
+    const opacity = interpolateNode(animatedValue, {
         inputRange: [-64 , 0, HEADER_DELTA],
         outputRange: [0, 0.2, 1],
         extrapolate: Extrapolate.CLAMP

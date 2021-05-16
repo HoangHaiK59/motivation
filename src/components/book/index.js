@@ -346,7 +346,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignSelf: 'center',
         borderRadius: 50,
-        alignItems: 'center'
+        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'center'
     },
     buttonClose: {
         width: 50,

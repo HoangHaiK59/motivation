@@ -4,16 +4,16 @@ import Constants from 'expo-constants';
 import Animated from 'react-native-reanimated';
 import { MIN_HEADER_HEIGHT, HEADER_DELTA } from '../../../model/constants';
 
-const { interpolate, Extrapolate } = Animated;
+const { interpolateNode, Extrapolate } = Animated;
 
 export default function Header({ animatedValue, header }) {
-    const opacity = interpolate(animatedValue, {
+    const opacity = interpolateNode(animatedValue, {
         inputRange: [HEADER_DELTA - 16, HEADER_DELTA],
         outputRange: [0,1],
         extrapolate: Extrapolate.CLAMP
     });
 
-    const textOpacity = interpolate(animatedValue, {
+    const textOpacity = interpolateNode(animatedValue, {
         inputRange: [HEADER_DELTA - 8, HEADER_DELTA - 4],
         outputRange: [0, 1],
         extrapolate: Extrapolate.CLAMP

@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Platform, StyleSheet, Text, View, InteractionManager } from 'react-native';
+import { Platform, InteractionManager, LogBox } from 'react-native';
 //import { Navigation } from 'react-native-navigation';
 import Container from './src/container';
 import { decode, encode } from 'base-64';
+import UserProvider from './src/components/context/user.context';
 
 if (!global.btoa) {
   global.btoa = encode;
@@ -11,6 +12,8 @@ if (!global.btoa) {
 if (!global.atob) {
   global.atob = decode;
 }
+
+LogBox.ignoreLogs(['Setting a timer'])
 
 const _setTimeout = global.setTimeout;
 const _clearTimeout = global.clearTimeout;
@@ -69,26 +72,8 @@ const instructions = Platform.select({
 
 export default function App() {
   return (
+    <UserProvider>
       <Container />
+    </UserProvider>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#121212'
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-    color: '#333333'
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});

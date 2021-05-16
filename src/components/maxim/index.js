@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Animated, Easing, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, Animated, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Image } from 'react-native';
 import { Feather, FontAwesome, Entypo as Icon } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import Modal from 'react-native-modal';
@@ -20,8 +20,8 @@ import {
     timing,
     useClock,
     usePanGestureHandler,
-    useValue,
-} from 'react-native-redash';
+    useValue
+} from 'react-native-redash/lib/module/v1';
 
 const { width } = Dimensions.get('window');
 

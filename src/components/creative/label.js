@@ -6,7 +6,7 @@ import {
     SMALL_HEADER_HEIGHT, MEDIUM_HEADER_HEIGHT, PADDING,
 } from './model';
 
-const { Value, Extrapolate, interpolate } = Animated;
+const { Value, Extrapolate, interpolateNode } = Animated;
 
 const { width, height } = Dimensions.get('window');
 // Character width is 19.3 on iOS and 19 on Android
@@ -19,12 +19,12 @@ export default class Label extends React.PureComponent {
         const {
             x, y, index, section,
         } = this.props;
-        const opacity = interpolate(x, {
+        const opacity = interpolateNode(x, {
             inputRange: index === 0 ? [0, 0, width] : [width * (index - 1), width * index, width * (index + 1)],
             outputRange: [0.5, 1, 0.5],
             extrapolate: Extrapolate.CLAMP,
         });
-        const labelWidth = interpolate(y, {
+        const labelWidth = interpolateNode(y, {
             inputRange: [0, height - MEDIUM_HEADER_HEIGHT, height - SMALL_HEADER_HEIGHT],
             outputRange: [section.title.length * charWidth, width, width],
             extrapolate: Extrapolate.CLAMP,

@@ -20,7 +20,8 @@ import Animated, {
     sub,
     useCode
 } from 'react-native-reanimated';
-import { Vector, panGestureHandler, pinchActive, pinchBegan, pinchGestureHandler, useValue, vec } from 'react-native-redash';
+import { panGestureHandler, pinchActive, pinchBegan, pinchGestureHandler, useValue, vec } from 'react-native-redash/lib/module/v1';
+import { Vector } from 'react-native-redash';
 import { Dimensions, Platform } from 'react-native';
 import { State } from 'react-native-gesture-handler';
 

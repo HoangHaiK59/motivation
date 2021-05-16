@@ -7,7 +7,7 @@ import Animated from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
 
-const { interpolate, Extrapolate } = Animated;
+const { interpolateNode, Extrapolate } = Animated;
 
 import { MAX_HEADER_HEIGHT } from '../../model/constants';
 import Cover from './cover';
@@ -48,7 +48,7 @@ class Sport extends React.Component {
                 svg: { stroke: 'green' },
             }
         ]
-        const height = interpolate(this.y, {
+        const height = interpolateNode(this.y, {
             inputRange: [- MAX_HEADER_HEIGHT, - 48 / 2],
             outputRange: [0, MAX_HEADER_HEIGHT + 48],
             extrapolate: Extrapolate.CLAMP

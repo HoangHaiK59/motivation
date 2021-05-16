@@ -30,7 +30,7 @@ import {
     usePinchGestureHandler,
     useValue,
     vec,
-} from 'react-native-redash';
+} from 'react-native-redash/lib/module/v1';
 
 import {
     PanGestureHandler,

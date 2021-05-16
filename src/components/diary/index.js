@@ -1,10 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, TouchableOpacity, Picker, Modal, Image } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, TouchableOpacity, Modal, Image } from 'react-native';
+import { Picker } from '@react-native-community/picker'
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
 import Constants from 'expo-constants';
+import * as _ from 'lodash';
+import DateTimePicker from '@react-native-community/datetimepicker'
+import moment from 'moment';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,10 +27,12 @@ class Diary extends React.Component {
             file: {},
             visible: false,
             month: '',
-            months: []
+            months: [],
+            show: false
         }
         this.storageRef = Firebase.storage().ref();
         this.firestoreRef = Firebase.firestore();
+        this.years = _.range(2020,new Date().getFullYear() + 1, 1)
     }
 
     getDate() {
@@ -106,10 +112,41 @@ class Diary extends React.Component {
 
     }
 
+    showDatePicker = () => {
+        this.setState(state => ({...state, show: !state.show}))
+    }
+
+    onChageDate(event, selectedDate) {
+        const curDate = selectedDate || new Date();
+        const year = moment(curDate).toDate().getFullYear().toString();
+        const month = moment(curDate).toDate().getMonth() + 1;
+        const day = moment(curDate).toDate().getDate()
+        this.firestoreRef.collection(`${DB.diary}/${year}/T${month}`)
+        .get()
+        .then(querySnapshot => {
+            console.log(querySnapshot.size)
+            if (querySnapshot.size > 0) {
+                this.firestoreRef.doc(`${DB.diary}/${year}/T${month}/${day >= 10 ? day : '0' + day}-${this.mapDay(curDate)}`)
+                .get()
+                .then(doc => { 
+                    if (doc.exists) {
+                        this.props.navigation.navigate('Day', {id: doc.id, year, collectionId: `T${month}`, name: this.mapDay(curDate)})
+                    }
+                })
+                .catch(err => console.log(err))
+            }
+        })
+    }
+
+    mapDay = (day) => {
+        const arr = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+        const valueId = moment(day, 'DD/MM/YYYY').toDate().getDay() - 1;
+        return arr.find((val, id) => id === valueId)
+    }
+
     componentDidMount() {
         this.getMonth();
     }
-
 
     render() {
         return (
@@ -126,14 +163,16 @@ class Diary extends React.Component {
                     <View style={styles.filter}>
                         <Picker mode={"dropdown"} style={styles.picker} selectedValue={this.state.year}
                             onValueChange={(year, index) => this.setState({ year })}>
-                            <Picker.Item label='2020' value='2020' />
+                            {
+                                this.years.map(year => <Picker.Item key={year.toString()} label={year.toString()} value={year.toString()} />)
+                            }
                         </Picker>
                     </View>
                     <ScrollView  horizontal={true} showsHorizontalScrollIndicator={false} centerContent={true} contentContainerStyle={{ flexGrow: 1, marginTop: 15 }}>
                         <View style={styles.cardContainer}>
                              {
                                  this.state.months.length > 0 ? this.state.months
-                                 .slice(0, new Date().getMonth() + 1)
+                                 .slice(0, +this.state.year < new Date().getFullYear() ? 12: new Date().getMonth() + 1)
                                  .map((month, id) => <TouchableOpacity key={id} onPress={() => this.props.navigation.navigate('Month', {
                                      id: month.id,
                                      month: month.data.month,
@@ -157,17 +196,30 @@ class Diary extends React.Component {
                         <Text style={styles.dateText}>Today</Text>
                         <Text style={styles.dateText}>{this.getDate()}</Text>
                     </View>
-                    <View style={styles.event}>
+                    {/* <View style={styles.event}>
                         <TouchableOpacity style={styles.eventIcon} onPress={() => this.setState({visible: true, file: {}})}>
                             <FontAwesome name='pencil' size={19} color='#fff' />
                         </TouchableOpacity>
-                    </View>
+                    </View> */}
                     <View style={styles.event}>
-                        <TouchableOpacity style={styles.eventIcon} onPress={() => { }}>
+                        <TouchableOpacity style={styles.eventIcon} onPress={() => this.showDatePicker()}>
                             <FontAwesome name='calendar' size={18} color='#fff' />
                         </TouchableOpacity>
                     </View>
                 </View>
+                {
+                    this.state.show && (
+                        <DateTimePicker 
+                        testID="dateTimePicker"
+                        value={new Date()}
+                        mode="date"
+                        display="calendar"
+                        maximumDate={new Date()}
+                        minimumDate={new Date(2020,1,1)}
+                        onChange={this.onChageDate.bind(this)}
+                        />
+                    )
+                }
                 <Modal visible={this.state.visible} transparent={true} animationType="fade" onRequestClose={() => { }}>
                 <View style={styles.centerView}>
                     <View style={styles.modalView}>
@@ -189,7 +241,7 @@ class Diary extends React.Component {
                                 <Text style={styles.text}>Create</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.buttonClose, { alignItems: 'center' }]} onPress={() => this.setState({visible: false})}>
-                                <Text style={styles.text}>Close</Text>
+                                <Text style={styles.text2}>Close</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -284,13 +336,23 @@ const styles = StyleSheet.create({
         borderRadius: 200,
         backgroundColor: '#2b58ba',
         marginHorizontal: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'center'
     },
     eventIcon: {
-        position: 'absolute',
-        top: 13
+        width: '100%',
+        height: '100%',
+        flex: 1,
+        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'center'
     },
     text: {
+        color: '#fff',
+        fontSize: 14
+    },
+    text2: {
         color: '#c4c0c0',
         fontSize: 14
     },
@@ -310,15 +372,25 @@ const styles = StyleSheet.create({
         shadowOpacity: .25,
         shadowRadius: 3.5,
         elevation: 5,
-        width: width
+        width: width,
+        paddingHorizontal: 10,
+        paddingVertical: 10
     },
     buttonModal: {
         borderRadius: 30,
-        backgroundColor: '#f2400f',
-        width: 60
+        backgroundColor: '#3e7cf0',
+        width: 80,
+        height: 30,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     buttonClose: {
-        width: 60
+        width: 80,
+        height: 30,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     input: {
         borderBottomColor: '#173f6e',

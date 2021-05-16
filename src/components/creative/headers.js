@@ -10,7 +10,7 @@ import Label from './label';
 import Cursor from './cursor';
 
 const {
-  Value, Extrapolate, interpolate, add, multiply, divide, greaterThan, cond,
+  Value, Extrapolate, interpolateNode, add, multiply, divide, greaterThan, cond,
 } = Animated;
 
 
@@ -20,7 +20,7 @@ const { width, height } = Dimensions.get('window');
 export default class Headers extends React.PureComponent {
   tX = (index) => {
     const { x, y } = this.props;
-    return add(interpolate(y, {
+    return add(interpolateNode(y, {
       inputRange: [0, height - MEDIUM_HEADER_HEIGHT],
       outputRange: [x, index * width],
       extrapolate: Extrapolate.CLAMP,
@@ -30,7 +30,7 @@ export default class Headers extends React.PureComponent {
   tY = (index) => {
     const { y, sections } = this.props;
     const FULL_HEADER_HEIGHT = height / sections.length;
-    return interpolate(y, {
+    return interpolateNode(y, {
       inputRange: [0, height - MEDIUM_HEADER_HEIGHT, height - SMALL_HEADER_HEIGHT],
       outputRange: [index * FULL_HEADER_HEIGHT, 0, 0],
       extrapolate: Extrapolate.CLAMP,
@@ -55,12 +55,12 @@ export default class Headers extends React.PureComponent {
   render() {
     const { sections, x, y } = this.props;
     const FULL_HEADER_HEIGHT = height / sections.length;
-    const headerHeight = interpolate(y, {
+    const headerHeight = interpolateNode(y, {
       inputRange: [0, height - MEDIUM_HEADER_HEIGHT, height - SMALL_HEADER_HEIGHT],
       outputRange: [FULL_HEADER_HEIGHT, MEDIUM_HEADER_HEIGHT, SMALL_HEADER_HEIGHT],
       extrapolate: Extrapolate.CLAMP,
     });
-    const labelHeight = interpolate(y, {
+    const labelHeight = interpolateNode(y, {
         inputRange: [0, height - MEDIUM_HEADER_HEIGHT, height - SMALL_HEADER_HEIGHT],
         outputRange: [FULL_HEADER_HEIGHT, MEDIUM_HEADER_HEIGHT , SMALL_HEADER_HEIGHT - 45],
         extrapolate: Extrapolate.CLAMP,
@@ -89,23 +89,23 @@ export default class Headers extends React.PureComponent {
         }
         {
           sections.map((section, key) => {
-            const opacity = interpolate(x, {
+            const opacity = interpolateNode(x, {
               inputRange: key === 0 ? [0, 0, width] : [width * (key - 1), width * key, width * (key + 1)],
               outputRange: [0.5, 1, 0.5],
               extrapolate: Extrapolate.CLAMP,
             });
-            const translateX1 = interpolate(y, {
+            const translateX1 = interpolateNode(y, {
               inputRange: [0, height - MEDIUM_HEADER_HEIGHT],
               outputRange: [-width / 2 + CURSOR_WIDTH / 2 + PADDING, 0],
               extrapolate: Extrapolate.CLAMP,
             });
-            const translateX2 = interpolate(y, {
+            const translateX2 = interpolateNode(y, {
               inputRange: [0, height - MEDIUM_HEADER_HEIGHT, height - SMALL_HEADER_HEIGHT],
               outputRange: [0, (width / 2) * key, (CURSOR_WIDTH + PADDING) * key - width / 4 + PADDING * 2],
               extrapolate: Extrapolate.CLAMP,
             });
             const translateX = add(translateX1, translateX2);
-            const translateY = interpolate(y, {
+            const translateY = interpolateNode(y, {
               inputRange: [0, height - MEDIUM_HEADER_HEIGHT],
               outputRange: [multiply(headerHeight, key), 0],
               extrapolate: Extrapolate.CLAMP,
