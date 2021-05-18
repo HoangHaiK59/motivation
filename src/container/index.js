@@ -8,7 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Dashboard from '../components/dashboard';
 import Book from '../components/book';
 import Sport from '../components/sport';
-import Task from '../components/task';
+import Plan from '../components/plan';
 import Creative from '../components/creative';
 import Diary from '../components/diary';
 import Relax from '../components/relax';
@@ -45,7 +45,7 @@ function HomeStack({context}) {
             )})} />
             <Stack.Screen name="Book" component={Book} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
             <Stack.Screen name="Sport" component={Sport} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Task" component={Task} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Plan" component={Plan} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Creative" component={Creative} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Diary" component={Diary} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Relax" component={Relax} options={{ headerShown: false, headerTitleAlign: 'center' }} />
@@ -109,19 +109,17 @@ export default function Container() {
                         }}>
                             {
                                 context.user ?  <Tab.Navigator
-                                tabBarOptions={{
-                                    style: {
-                                        backgroundColor: '#050504'
-                                    },
-                                    tabStyle: {
-                                        height: 45
-                                    },
-                                    labelStyle: {
+                                screenOptions={({ route, navigation }) => ({
+                                    tabBarHideOnKeyboard: true,
+                                    tabBarLabelStyle: {
                                         color: '#c4c0c0'
                                     },
-                                    keyboardHidesTabBar: true
-                                }}
-                                screenOptions={({ route, navigation }) => ({
+                                    tabBarItemStyle: {
+                                        height: 45
+                                    },
+                                    tabBarStyle: {
+                                        backgroundColor: '#050504'
+                                    },
                                     tabBarIcon: ({ focused, color, size }) => {
                                         let iconName;
                                         if (route.name === 'Home') {
@@ -140,8 +138,8 @@ export default function Container() {
                                     }
                                 })}
                             >
-                                <Tab.Screen name="Home" children={(props) => <HomeStack {...props} context={context} />}  />
-                                <Tab.Screen name="Statistic" children={(props) => <StatisticStack {...props} context={context} />} />
+                                <Tab.Screen options={{headerShown: false}} name="Home" children={(props) => <HomeStack {...props} context={context} />}  />
+                                <Tab.Screen options={{headerShown: false}} name="Statistic" children={(props) => <StatisticStack {...props} context={context} />} />
                             </Tab.Navigator> : <Stack.Navigator>
                                 <Stack.Screen name="Login" children={(props) => <Authentication {...props} context={context} />} options={{ headerTitleAlign: 'center' }} />
                             </Stack.Navigator>

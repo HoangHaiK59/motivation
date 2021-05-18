@@ -39,9 +39,7 @@ class Activity extends React.Component {
             Firebase.firestore().collection(DB.activity).get()
                 .then(result => {
                     if (result.docs.length > 0) {
-                        let activity = [];
-                        result.docs.forEach(doc => activity.push(doc.data()));
-                        this.setState({ activity })
+                        this.setState({ activity: result.docs.map(doc => ({id: doc.id, ...doc.data()})) })
                     }
                 })
         }
@@ -51,9 +49,7 @@ class Activity extends React.Component {
         Firebase.firestore().collection(DB.activity).get()
         .then(result => {
             if (result.docs.length > 0) {
-                let activity = [];
-                result.docs.forEach(doc => activity.push(doc.data()));
-                this.setState({ activity })
+                this.setState({ activity: result.docs.map(doc => ({id: doc.id, ...doc.data()})) })
             }
         })
     }

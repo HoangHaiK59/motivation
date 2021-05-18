@@ -92,9 +92,9 @@ export default function Dashboard(props) {
                     </LinearGradient>
 
                     <LinearGradient colors={['rgb(191, 44, 36)', 'rgb(237, 35, 24)']} style={[styles.item]}>
-                        <TouchableWithoutFeedback onPress={() => handlePress('Task')}>
+                        <TouchableWithoutFeedback onPress={() => handlePress('Plan')}>
                             <Animated.View style={[styles.button]}>
-                                <Text style={[styles.text, { padding: 5 }]}>Task</Text>
+                                <Text style={[styles.text, { padding: 5 }]}>Plan</Text>
                             </Animated.View>
                         </TouchableWithoutFeedback>
                     </LinearGradient>
