@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Dimensions, Image, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Dimensions, Image, Text, TouchableOpacity, TouchableWithoutFeedback, SafeAreaView, FlatList } from 'react-native';
 import firebase from '../../firebase';
+import moment from 'moment';
 
 const { width } = Dimensions.get('window');
 
@@ -23,19 +24,26 @@ const Investment = props => {
             id: item.id
         })
     }
-    return (
-        <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.container}>
-                {
-                    items.map(item => <TouchableOpacity key={item.id} onPress={() => view(item)}>
-                            <View style={styles.item}>
-                                <Image source={{uri: item.thumnail}} style={styles.image}/>
-                                <Text style={styles.name}>{item.name}</Text>
-                            </View>
-                        </TouchableOpacity>)
-                }
+    const renderItem = ({item, index}) => {
+        return <TouchableWithoutFeedback onPress={() => view(item)} style={[index > 0 && {marginTop:8}]}>
+        <View style={styles.item}>
+            <Image source={{uri: item.thumnail}} style={styles.image}/>
+            <View style={styles.content}>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.time}>{moment.unix(item.createdAt).fromNow()}</Text>
             </View>
-        </ScrollView>
+        </View>
+    </TouchableWithoutFeedback>
+    }
+    return (
+        <SafeAreaView style={{padding: 8, flex: 1,}}>
+            <FlatList 
+            style={styles.container} 
+            scrollEnabled={true}
+            renderItem={renderItem}
+            data={items}
+            />
+        </SafeAreaView>
     )
 }
 
@@ -48,16 +56,28 @@ const styles = StyleSheet.create({
     item: {
         width: width,
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+        borderRadius: 10
     },
     image: {
-        width: width,
-        height: 200,
-        resizeMode: 'cover'
+        flex: 1,
+        height: 100,
+        resizeMode: 'cover',
+    },
+    content: {
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 2,
+        paddingHorizontal: 5,
     },
     name: {
         fontSize: 16,
-        color: '#fff'
+        color: '#000'
+    },
+    time: {
+        fontSize: 13,
+        color: '#000'
     }
 })
 

@@ -7,7 +7,7 @@ export const UserContext = React.createContext({
     user: null,
     error: null,
     handleError: () => {},
-    theme: null,
+    theme: DarkTheme,
     setThemeProvider: () => {}
 });
 
@@ -18,7 +18,6 @@ const getUser = async () => {
 
 const getTheme = async () => {
     const result = await AsyncStorage.getItem('theme');
-    console.log(JSON.parse(result))
     return JSON.parse(result)
 }
 
@@ -45,7 +44,9 @@ const UserProvider = props => {
     }
     const getTheme = async () => {
         const result = await AsyncStorage.getItem('theme');
-        setTheme(JSON.parse(result))
+        if (result) {
+            setTheme(JSON.parse(result))
+        }
     }
     const setThemeProvider = (isDark = true) => {
         if(isDark) {

@@ -10,14 +10,14 @@ import Doughnut from '../doughnut';
 const Item = ({item, index}) => {
     return <View style={styles.sectionItem}>
         <View style={styles.index}>
-            <Text style={styles.text}>{index}</Text>
+            <Text style={styles.textIndex}>{index + 1}</Text>
         </View>
         <View style={styles.content}>
             <Text style={styles.text}>{item.name}</Text>
             <Text style={styles.text}>{item.content}</Text>
         </View>
         <View style={styles.progress}>
-            <Doughnut percentage={50} color={'tomato'} delay={500} max={100} />
+            <Doughnut percentage={50} radius={25} color={'tomato'} delay={500} max={100} />
         </View>
     </View>
 }
@@ -165,15 +165,23 @@ const styles = StyleSheet.create({
         marginVertical: 8
     },
     index: {
-        flex: 1
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 0.35,
+        backgroundColor: '#9dafed',
+        height: 45,
+        borderRadius: 10
     },
     content: {
         flex: 2,
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        paddingLeft: 5
     },
     progress: {
-        flex: 1,
+        flex: 0.5,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -190,6 +198,11 @@ const styles = StyleSheet.create({
     sectionHeaderLeft: {
     },
     sectionHeaderRight: {
+    },
+    textIndex: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff'
     }
 });
 

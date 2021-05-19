@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, Image, ScrollView, FlatList } from 'react-native';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
 import { FontAwesome , Entypo as Icon } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import { map } from '../../helper/map';
 import Constants from 'expo-constants';
 import Modal from 'react-native-modal';
 
+const { width } = Dimensions.get('window')
 
 class Travel extends React.Component {
     constructor(props) {
@@ -91,9 +92,7 @@ class Travel extends React.Component {
         Firebase.firestore().collection(DB.travel).get()
             .then(result => {
                 if (result.docs.length > 0) {
-                    let medias = [];
-                    result.docs.forEach(doc => medias.push(doc.id));
-                    this.setState({ medias })
+                    this.setState({ medias: result.docs.map(doc => doc.id) })
                 }
             })
             .catch(error => console.log(error))
@@ -124,11 +123,19 @@ class Travel extends React.Component {
     //         <FontAwesome name='plus-circle' size={30} color='#ed881c' />
     //     </TouchableOpacity>
     // </View>
+    renderItem = ({item, index}) => {
+        return <TouchableOpacity style={[styles.fItem, index % 2!== 0 && {marginLeft: 10}]} onPress={() => this.props.navigation.navigate('Detail Travel', { ref: item, title: item, name: this.state.folderName })}>
+            <View>
+                <FontAwesome name="folder" size={35} color='#eda32b' />
+                <Text style={[styles.textFolder, styles.textStyle]}>{item}</Text>
+            </View>
+        </TouchableOpacity>
+    }
 
     render() {
         return (
             <View style={styles.mainContainer}>
-                <View style={styles.container}>
+                {/* <View style={styles.container}>
                     {
                         this.state.medias.length > 0 && <View style={styles.travelContainer}>
                             {
@@ -143,7 +150,23 @@ class Travel extends React.Component {
                             }
                         </View>
                     }
+                </View> */}
+                <View style={styles.searchBox}>
+                    <TextInput 
+                    placeholder="Search..."
+                    placeholderTextColor='#000'
+                    style={[styles.inputSearch]}
+                    />
                 </View>
+                <FlatList
+                scrollEnabled={true}
+                contentContainerStyle={styles.container}
+                numColumns={2}
+                showsVerticalScrollIndicator={false}
+                data={this.state.medias}
+                keyExtractor={(item, index) => item + index}
+                renderItem={this.renderItem}
+                />
                 <Modal
                     isVisible={this.state.visible}
                     swipeDirection={['down', 'left', 'right', 'up']}
@@ -193,9 +216,10 @@ const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
         flexDirection: 'column',
+        paddingHorizontal: 10
     },
     container: {
-        flex: 1
+        flex: 1,
     },
     bottomContainer: {
         position: 'absolute',
@@ -263,6 +287,34 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(92, 110, 191, .5)',
         borderRadius: 3,
         marginHorizontal: 3
+    },
+    fItem: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        height: 100,
+        backgroundColor: '#77c593',
+        marginBottom: 10,
+        borderRadius: 5
+    },
+    textFolder: {
+        color: '#fff',
+        fontSize: 14
+    },
+    searchBox: {
+        marginTop: 10,
+        height: 80,
+        alignItems: 'center'
+    },
+    inputSearch: {
+        width: '100%',
+        borderColor: '#000',
+        borderWidth: 1,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+        backgroundColor: '#fff'
     }
 })
 
