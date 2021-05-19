@@ -99,12 +99,12 @@ class Book extends React.Component {
                     num_of_page_read: 0,
                     total_page: 0
                 }})}>
-                    <Text style={{ fontSize: 12, color: '#fff' }}>THÊM SÁCH</Text>
+                    <Text style={{ fontSize: 12, color: this.props.context.theme.colors.text }}>THÊM SÁCH</Text>
                 </TouchableOpacity>
             ),
             headerLeft: () => (
                 <TouchableOpacity onPress={() => this.back()}>
-                    <Icon name='chevron-left' size={25} color='#fff'/>
+                    <Icon name='chevron-left' size={25} color={this.props.context.theme.colors.text}/>
                 </TouchableOpacity>
             )
         })
@@ -146,7 +146,7 @@ class Book extends React.Component {
                         {
                             this.state.books.length > 0 ? this.state.books.map((book, id) => <View style={[styles.bookContainer, { position: 'relative' }]} key={id} >
                                 <View style={styles.label}>
-                                    <Text style={styles.labelText}>{book.num_of_page_read}/{book.total_page}</Text>
+                                    <Text style={[styles.labelText, {color: this.props.context.theme.colors.text}]}>{book.num_of_page_read}/{book.total_page}</Text>
                                 </View>
                                 <TouchableOpacity onPress={() => this.handleViewDetail('Detail Book', {
                                     book: book
@@ -273,12 +273,10 @@ const styles = StyleSheet.create({
         top: 10
     },
     labelText: {
-        color: '#d5dbe8',
         fontSize: 10,
         zIndex: 1
     },
     text: {
-        color: '#c4c0c0',
         fontSize: 14
     },
     bottom: {
@@ -316,7 +314,6 @@ const styles = StyleSheet.create({
         width: 60
     },
     buttonText: {
-        color: '#c4c0c0',
         fontSize: 15,
         textAlign: 'center'
     },

@@ -11,7 +11,7 @@ import Content from './content';
 
 const { width, height } = Dimensions.get('window');
 
-export default function DetailBook({ route, navigation }) {
+export default function DetailBook({ route, navigation, context }) {
     const { book } = route.params.data;
     const [state, setState] = React.useState(false);
     const [visible, setVisible] = React.useState(false);

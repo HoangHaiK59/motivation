@@ -118,7 +118,6 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         paddingTop: MIN_HEADER_HEIGHT - 24, //48/2,
-
     },
     cover: {
         height: MAX_HEADER_HEIGHT - 48

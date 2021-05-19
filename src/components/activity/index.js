@@ -72,7 +72,7 @@ class Activity extends React.Component {
                             <>
                                 <View style={styles.headerContainer}>
                                     <FontAwesome style={{ marginTop: 5 }} name="tasks" size={15} color="#db9e5c" />
-                                    <Text style={[styles.header, { marginLeft: 10 }]}>
+                                    <Text style={[styles.header, { marginLeft: 10, color: this.props.context.theme.colors.text }]}>
                                         {
                                             this.state.activity[0].name
                                         }
@@ -84,9 +84,9 @@ class Activity extends React.Component {
                                             <View key={id} style={styles.content}>
                                                 <View style={styles.left}></View>
                                                 <TouchableHighlight style={styles.center} key={id} onPress={() => this.handlePressView('Detail', activity)} >
-                                                    <Text numberOfLines={1} ellipsizeMode="head" style={styles.text}>{activity.name}</Text>
+                                                    <Text numberOfLines={1} ellipsizeMode="head" style={[styles.text], {color: this.props.context.theme.colors.text}}>{activity.name}</Text>
                                                 </TouchableHighlight>
-                                                <Text style={[styles.right, styles.text]}>{activity.time_start} - {activity.time_end + 'h'}</Text>
+                                                <Text style={[styles.right, styles.text, {color: this.props.context.theme.colors.text}]}>{activity.time_start} - {activity.time_end + 'h'}</Text>
                                             </View>)
                                     }
                                 </View>
@@ -152,7 +152,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start'
     },
     header: {
-        color: '#c4c0c0',
         fontSize: 17,
     },
     list: {
@@ -182,7 +181,6 @@ const styles = StyleSheet.create({
         textAlign: 'right'
     },
     text: {
-        color: '#c4c0c0',
         fontSize: 14
     },
     centerView: {

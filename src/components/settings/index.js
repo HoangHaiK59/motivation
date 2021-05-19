@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import firebase from '../../firebase';
+import { useTheme } from '@react-navigation/native';
 
 export default function Settings(props) {
+    const { colors, dark } = useTheme();
     const signOut = () => {
         firebase.auth().signOut();
     }
@@ -10,17 +12,29 @@ export default function Settings(props) {
     return (
         <ScrollView  showsHorizontalScrollIndicator={false} contentContainerStyle={{ marginTop: 10, flexGrow: 1, paddingHorizontal: 10 }}>
             <View style={styles.container}>
-                <Text style={styles.textHighlight}>Account</Text>
+                <Text style={[styles.textHighlight, {color: colors.text}]}>Account</Text>
                 <View style={[styles.box, {marginTop: 10}]}>
                     <View style={styles.avatar}>
-                        <Text style={styles.text}>{context.user.email.slice(0,2).toUpperCase()}</Text>
+                        <Text style={[styles.text, {color: colors.text}]}>{context.user.email.slice(0,2).toUpperCase()}</Text>
                     </View>
                 </View>
-                <Text style={[styles.textHighlight, {marginTop: 10}]}>Other</Text>
+                <Text style={[styles.textHighlight, {marginTop: 10,color: colors.text}]}>Device</Text>
+                <View style={[styles.split, {marginTop: 10}]}>
+                    <Text style={[styles.text, {color: colors.text}]}>
+                        Dark Theme
+                    </Text>
+                    <Switch
+                    trackColor={{false: colors.text, true: colors.text}}
+                    thumbColor={dark ? '#fff': '#000'}
+                    onValueChange={() => context.setThemeProvider(!dark)}
+                    value={dark}
+                    />
+                </View>
+                <Text style={[styles.textHighlight, {marginTop: 10,color: colors.text}]}>Other</Text>
                 <TouchableOpacity onPress={signOut} style={{marginTop: 10}}>
                     <View style={styles.button}>
-                        <Text style={styles.text}>Sign out</Text>
-                        <Text style={styles.textDescription}>You are logged in as {context.user.email}</Text>
+                        <Text style={[styles.text, {color: colors.text}]}>Sign out</Text>
+                        <Text style={[styles.textDescription, {color: colors.text}]}>You are logged in as {context.user.email}</Text>
                     </View>
                 </TouchableOpacity>
             </View>
@@ -40,15 +54,12 @@ const styles = StyleSheet.create({
         flexDirection: 'column'
     },
     text: {
-        color: '#fff',
         fontSize: 18
     },
     textDescription: {
-        color: '#fff',
         fontSize: 12
     },
     textHighlight: {
-        color: '#fff',
         fontSize: 20,
         fontWeight: 'bold'
     },
@@ -66,5 +77,10 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    split: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between'
     }
 })

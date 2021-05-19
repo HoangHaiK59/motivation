@@ -38,14 +38,18 @@ const Tab = createBottomTabNavigator();
 function HomeStack({context}) {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Dashboard" component={Dashboard} options={({route, navigation}) => ({ headerShown: true, headerTitleAlign: 'center', headerRight: props => (
+            <Stack.Screen name="Dashboard" children={(props) => <Dashboard {...props} context={context} />} options={({route, navigation}) => ({ headerShown: true, headerTitleAlign: 'center', headerRight: props => (
                 <TouchableOpacity style={styles.cog} onPress={() => navigation.navigate('Setting')}>
-                    <FontAwesome name="cog" size={20} color="#fff" />
+                    <FontAwesome name="cog" size={20} color={context.theme.colors.text} />
                 </TouchableOpacity>
             )})} />
-            <Stack.Screen name="Book" component={Book} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
+            <Stack.Screen name="Book" children={(props) => <Book {...props} context={context} />} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
             <Stack.Screen name="Sport" component={Sport} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Plan" component={Plan} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Plan" component={Plan} options={({route, navigation}) => ({ headerShown: true, headerTitleAlign: 'center', headerLeft: () => (
+                <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
+                    <FontAwesome name='chevron-left' size={20} color='white'/>
+                </TouchableOpacity>
+            ) })} />
             <Stack.Screen name="Creative" component={Creative} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Diary" component={Diary} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Relax" component={Relax} options={{ headerShown: false, headerTitleAlign: 'center' }} />
@@ -53,10 +57,10 @@ function HomeStack({context}) {
             <Stack.Screen name="Travel" component={Travel} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
             <Stack.Screen name="Style" component={Style} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Detail Book" component={DetailBook} options={({ route, navigation }) => ({ data: route.params.data, headerShown: true, headerTitleAlign: 'center', headerTransparent: true })} />
+            <Stack.Screen name="Detail Book" children={props => <DetailBook {...props} context={context} />} options={({ route, navigation }) => ({ data: route.params.data, headerShown: true, headerTitleAlign: 'center', headerTransparent: true })} />
             <Stack.Screen name="Detail Travel" component={DetailTravel} options={({ route, navigation }) => ({headerLeft: () => (
                 <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
-                    <FontAwesome name='arrow-left' size={20} color='white'/>
+                    <FontAwesome name='chevron-left' size={20} color='white'/>
                 </TouchableOpacity>
             )
                 , headerShown: true, headerTitleAlign: 'center', title: route.params.title })} />
@@ -94,19 +98,13 @@ function StatisticStack({context}) {
 }
 
 export default function Container() {
-
     return (
         <UserContext.Consumer>
             {
                 context => (
                     <View style={styles.container}>
                         <StatusBar translucent backgroundColor="#050504" barStyle={"light-content"} />
-                        <NavigationContainer theme={{
-                            colors: {
-                                background: '#050504',
-                                text: '#c4c0c0'
-                            }
-                        }}>
+                        <NavigationContainer theme={context.theme}>
                             {
                                 context.user ?  <Tab.Navigator
                                 screenOptions={({ route, navigation }) => ({
