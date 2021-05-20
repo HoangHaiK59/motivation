@@ -73,7 +73,8 @@ const styles = StyleSheet.create({
     input: {
         backgroundColor: '#fff',
         borderRadius: 5,
-        height: 60
+        height: 60,
+        paddingHorizontal: 8
     },
     button: {
         height: 60,

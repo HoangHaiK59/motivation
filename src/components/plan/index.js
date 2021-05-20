@@ -1,11 +1,12 @@
 import React from 'react';
 
-import { View, Text, StyleSheet, ScrollView, FlatList, Dimensions, SectionList, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, FlatList, Dimensions, SectionList, SafeAreaView, TouchableOpacity } from 'react-native';
 import * as _ from 'lodash';
 import moment from 'moment';
 const { width } = Dimensions.get('window');
 import base64 from 'base-64';
 import Doughnut from '../doughnut';
+import { FontAwesome } from '@expo/vector-icons'
 
 const Item = ({item, index}) => {
     return <View style={styles.sectionItem}>
@@ -14,7 +15,7 @@ const Item = ({item, index}) => {
         </View>
         <View style={styles.content}>
             <Text style={styles.text}>{item.name}</Text>
-            <Text style={styles.text}>{item.content}</Text>
+            <Text style={styles.textDes}>{item.content}</Text>
         </View>
         <View style={styles.progress}>
             <Doughnut percentage={50} radius={25} color={'tomato'} delay={500} max={100} />
@@ -107,6 +108,13 @@ class Plan extends React.Component {
                             )}
                         />
                     </SafeAreaView>
+                    <View style={styles.create}>
+                        <TouchableOpacity style={styles.createBtn}>
+                            <View>
+                                <FontAwesome color="#77a3a6" size={35} name="plus-circle" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </SafeAreaView>
         )
@@ -118,11 +126,18 @@ const styles = StyleSheet.create({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        paddingHorizontal: 8
+        paddingHorizontal: 8,
+        position: 'relative',
+        paddingTop:8,
+        paddingBottom: 16
     },
     text: {
         color: '#c4c0c0',
         fontSize: 14
+    },
+    textDes: {
+        color: '#c4c0c0',
+        fontSize: 12
     },
     calendar: {
         display: 'flex',
@@ -203,6 +218,19 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#fff'
+    },
+    create: {
+        width: 80,
+        position: 'absolute',
+        bottom: 5,
+        left: (width - 80) / 2
+    },
+    createBtn: {
+        width: '100%',
+        height: 30,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
 

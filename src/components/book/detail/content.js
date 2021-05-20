@@ -7,6 +7,9 @@ import {
     PanGestureHandler,
     State,
     TouchableWithoutFeedback,
+    LongPressGestureHandler,
+    FlingGestureHandler,
+    Directions
 } from 'react-native-gesture-handler';
 import {
     onScrollEvent,
@@ -25,7 +28,10 @@ const { width } = Dimensions.get('window');
 const snapPoints = [-width, -100, 0];
 
 
-const Item = ({ id, title, onSwipe }) => {
+const Item = ({id, title, onSwipe }) => {
+    const [enable, setEnable] = React.useState(true);
+    const scrollRef = React.useRef();
+    const ref = React.useRef();
     const { translation, velocity, state, gestureHandler } = usePanGestureHandler();
     const translateX = useValue(0);
     const offsetX = useValue(0);
@@ -54,11 +60,43 @@ const Item = ({ id, title, onSwipe }) => {
                     <Action x={abs(translateX)} deleteOpacity={deleteOpacity} />
                 </TouchableWithoutFeedback>
             </View>
-            <PanGestureHandler {...gestureHandler}>
+            <PanGestureHandler ref={ref} {...gestureHandler} enabled={enable} waitFor={scrollRef} simultaneousHandlers={scrollRef}>
                 <Animated.View style={{ height, transform: [{ translateX }] }}>
-                    <View style={styles.item}>
-                        <Text style={styles.text}>{title}</Text>
-                    </View>
+                    {/* <LongPressGestureHandler
+                    ref={scrollRef}
+                    minDurationMs={500}
+                    maxDist={10}
+                    onGestureEvent={() => setEnable(true)}
+                    onHandlerStateChange={({nativeEvent}) => {
+                        console.log('long press', nativeEvent.state)
+                        if (nativeEvent.state === State.ACTIVE || nativeEvent.state === State.CANCELLED) {
+                            setEnable(true)
+                        } else {
+                            setEnable(false)
+                        }
+                    }}
+                    >
+                        <View style={styles.item}>
+                            <Text style={styles.text}>{title}</Text>
+                        </View>
+                    </LongPressGestureHandler> */}
+                    <FlingGestureHandler
+                    ref={scrollRef}
+                    direction={Directions.RIGHT | Directions.LEFT}
+                    numberOfPointers={1}
+                    onHandlerStateChange={({ nativeEvent }) => {
+                        console.log('fling press', nativeEvent.state)
+                        if (nativeEvent.state === State.ACTIVE || nativeEvent.state === State.BEGAN) {
+                            setEnable(true)
+                        } else {
+                            setEnable(false)
+                        }
+                    }}
+                    >
+                        <View style={styles.item}>
+                            <Text style={styles.text}>{title}</Text>
+                        </View>
+                    </FlingGestureHandler>
                 </Animated.View>
             </PanGestureHandler>
         </Animated.View>
@@ -84,7 +122,6 @@ export default function Content({ y, item: { items }, onSwipe }) {
     // <View style={styles.header}>
     // <Header animatedValue={animatedValue} header={header} />
     // </View>
-
     return (
         <Animated.ScrollView
             contentContainerStyle={styles.container}

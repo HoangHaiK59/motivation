@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, Image, ScrollView, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, Image, ScrollView, FlatList, SafeAreaView } from 'react-native';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
 import { FontAwesome , Entypo as Icon } from '@expo/vector-icons';
@@ -20,7 +20,8 @@ class Travel extends React.Component {
             visible: false,
             name: '',
             file: {},
-            folderName: ''
+            folderName: '',
+            up: false
         }
 
         this.storageRef = Firebase.storage().ref();
@@ -92,7 +93,7 @@ class Travel extends React.Component {
         Firebase.firestore().collection(DB.travel).get()
             .then(result => {
                 if (result.docs.length > 0) {
-                    this.setState({ medias: result.docs.map(doc => doc.id) })
+                    this.setState({ medias: this.sortArray(true, result.docs.map(doc => doc.id)) })
                 }
             })
             .catch(error => console.log(error))
@@ -118,23 +119,60 @@ class Travel extends React.Component {
         })
     }
 
+    handleSortByName() {
+        this.setState(state => ({medias: this.sortArray(state.up, this.state.medias), up: !state.up}))
+    }
+
+    sortArray(asc = true, array = []) {
+        if (asc) {
+            array.sort((a,b) => a.localeCompare(b))
+        } else {
+            array.sort((a,b) => -a.localeCompare(b))
+        }
+        return array;
+    }
+
     // <View style={styles.bottomContainer}>
     //     <TouchableOpacity onPress={() => this.setState({ visible: true, file: {} })}>
     //         <FontAwesome name='plus-circle' size={30} color='#ed881c' />
     //     </TouchableOpacity>
     // </View>
     renderItem = ({item, index}) => {
-        return <TouchableOpacity style={[styles.fItem, index % 2!== 0 && {marginLeft: 10}]} onPress={() => this.props.navigation.navigate('Detail Travel', { ref: item, title: item, name: this.state.folderName })}>
+        return <View style={[styles.fview, index % 2!== 0 && {marginLeft: 25}]}>
+            <TouchableOpacity style={[styles.fItem]} onPress={() => this.props.navigation.navigate('Detail Travel', { ref: item, title: item, name: this.state.folderName })}>
+                <View>
+                    <FontAwesome name="folder" size={35} color='#2cebf5' />
+                </View>
+            </TouchableOpacity>
+            <Text style={[styles.textFolder]}>{item}</Text>
+        </View>
+    }
+
+    HeaderComponent = () => {
+        return (
             <View>
-                <FontAwesome name="folder" size={35} color='#eda32b' />
-                <Text style={[styles.textFolder, styles.textStyle]}>{item}</Text>
+                <View style={styles.searchBox}>
+                    <TextInput 
+                    placeholder="Search..."
+                    placeholderTextColor='#000'
+                    style={[styles.inputSearch]}
+                    />
+                </View>
+                <View style={styles.filter}>
+                    <TouchableOpacity style={styles.sort} onPress={() => this.handleSortByName()}>
+                        <View style={styles.sView}>
+                            <Text style={styles.textBold}>Name</Text>
+                            <FontAwesome name={this.state.up ? 'sort-up': 'sort-down' } size={20} color='#fff' style={{marginTop: this.state.up ? 4: -4, marginLeft: 5}} />
+                        </View>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </TouchableOpacity>
+        )
     }
 
     render() {
         return (
-            <View style={styles.mainContainer}>
+            <SafeAreaView style={styles.mainContainer}>
                 {/* <View style={styles.container}>
                     {
                         this.state.medias.length > 0 && <View style={styles.travelContainer}>
@@ -151,21 +189,14 @@ class Travel extends React.Component {
                         </View>
                     }
                 </View> */}
-                <View style={styles.searchBox}>
-                    <TextInput 
-                    placeholder="Search..."
-                    placeholderTextColor='#000'
-                    style={[styles.inputSearch]}
-                    />
-                </View>
                 <FlatList
                 scrollEnabled={true}
-                contentContainerStyle={styles.container}
                 numColumns={2}
                 showsVerticalScrollIndicator={false}
                 data={this.state.medias}
                 keyExtractor={(item, index) => item + index}
                 renderItem={this.renderItem}
+                ListHeaderComponent={this.HeaderComponent}
                 />
                 <Modal
                     isVisible={this.state.visible}
@@ -207,16 +238,16 @@ class Travel extends React.Component {
                         </View>
                     </View>
                 </Modal>
-            </View>
+            </SafeAreaView>
         )
     }
 }
 
 const styles = StyleSheet.create({
     mainContainer: {
-        flex: 1,
+        flexGrow: 1,
         flexDirection: 'column',
-        paddingHorizontal: 10
+        paddingHorizontal: 25
     },
     container: {
         flex: 1,
@@ -295,8 +326,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
         height: 100,
-        backgroundColor: '#77c593',
-        marginBottom: 10,
+        backgroundColor: '#1e212b',
         borderRadius: 5
     },
     textFolder: {
@@ -305,7 +335,7 @@ const styles = StyleSheet.create({
     },
     searchBox: {
         marginTop: 10,
-        height: 80,
+        height: 50,
         alignItems: 'center'
     },
     inputSearch: {
@@ -314,7 +344,36 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         paddingHorizontal: 10,
         borderRadius: 5,
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        height: 40
+    },
+    fview: {
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        height: 120,
+        justifyContent: 'flex-start',
+        marginBottom: 25,
+    },
+    filter: {
+        marginTop: 10,
+        height: 40,
+        display: 'flex',
+        justifyContent: 'space-between'
+    },
+    sort: {
+        flex: 1,
+    },
+    sView: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start'
+    },
+    textBold: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#fff'
     }
 })
 

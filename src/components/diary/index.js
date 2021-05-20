@@ -162,7 +162,7 @@ class Diary extends React.Component {
                     </View>
                     <View style={styles.filter}>
                         <Picker mode={"dropdown"} style={styles.picker} selectedValue={this.state.year}
-                            onValueChange={(year, index) => this.setState({ year })}>
+                            onValueChange={(year, index) => this.setState(state => ({show: false, year }))}>
                             {
                                 this.years.map(year => <Picker.Item key={year.toString()} label={year.toString()} value={year.toString()} />)
                             }
