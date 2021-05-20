@@ -130,12 +130,20 @@ export default function Month({ route, navigation }) {
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
+            headerLeftContainerStyle: {
+                paddingLeft: 8
+            }, 
+            headerRightContainerStyle: {
+                paddingRight: 8
+            },
             headerRight: () => (
                 <TouchableOpacity style={styles.button} onPress={() => {
                     setVisible(true);
                     setFile({});
                 }}>
-                    <Text style={{ fontSize: 12, color: '#fff' }}>THÊM NHẬT KÝ</Text>
+                    <View>
+                        <FontAwesome name='plus-circle' color="#fff" size={25} />
+                    </View>
                 </TouchableOpacity>
             ),
             headerLeft: () => (
@@ -319,14 +327,18 @@ export default function Month({ route, navigation }) {
                         <TextInput placeholder='Title...' style={styles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true} />
                         <TextInput placeholder='Extra...' style={styles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true} />
                         <TextInput placeholder='Diary...' style={styles.textArea} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} numberOfLines={6} />
-                        <View style={{ flexDirection: 'row', width: width, height: 70, justifyContent: 'flex-start' }}>
-                            <View style={{ alignItems: 'center', flexDirection: 'column', padding: 5 }}>
-                                <TouchableOpacity onPress={() => pickImage()} style={{ alignSelf: 'center' }}>
-                                    <FontAwesome name="image" size={25} color='#bd4a20' />
-                                </TouchableOpacity>
-                                <TouchableOpacity style={{ marginVertical: 10, alignSelf: 'center' }} onPress={() => cameraShot()}>
-                                    <FontAwesome name="camera" size={25} color='#bd4a20' />
-                                </TouchableOpacity>
+                        <View style={{ flexDirection: 'row', width: width - 20, height: 70, justifyContent: 'flex-start' }}>
+                            <View style={{ alignItems: 'flex-start', flexDirection: 'row', display: 'flex' }}>
+                                    <View style={styles.split}>
+                                        <TouchableOpacity onPress={() => pickImage()}>
+                                            <FontAwesome name="image" size={25} color='#bd4a20' />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.split}>
+                                        <TouchableOpacity style={{ marginVertical: 10, alignSelf: 'center' }} onPress={() => cameraShot()}>
+                                            <FontAwesome name="camera" size={25} color='#bd4a20' />
+                                        </TouchableOpacity>
+                                    </View>
                             </View>
                             <View style={{ width: 60, height: 60, alignSelf: 'center' }}>
                                 {
@@ -398,13 +410,13 @@ const styles = StyleSheet.create({
     },
     centerView: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         marginTop: 15,
     },
     modalView: {
         backgroundColor: '#fff',
-        alignItems: 'flex-start',
+        alignItems: 'flex-end',
         shadowOffset: {
             width: 0,
             height: 2
@@ -414,7 +426,10 @@ const styles = StyleSheet.create({
         elevation: 5,
         width: width,
         paddingHorizontal: 10,
-        paddingBottom: 10
+        paddingBottom: 10,
+        borderTopRightRadius: 30,
+        borderTopLeftRadius: 30,
+        paddingTop: 20
     },
     buttonModal: {
         borderRadius: 30,
@@ -426,22 +441,41 @@ const styles = StyleSheet.create({
         width: 60
     },
     input: {
-        borderBottomColor: '#7b82a6',
-        borderBottomWidth: 2,
+        shadowOffset: {
+            width: 1,
+            headerRight: 2
+        },
+        shadowRadius: 2,
+        borderRadius: 5,
+        borderWidth: 1,
+        padding: 6,
+        borderColor: '#cfccc6',
+        backgroundColor: '#f5f4f2',
         width: width - 20,
         marginVertical: 10
     },
     textArea: {
         width: width - 20,
         marginVertical: 10,
-        borderColor: '#7b82a6',
-        borderWidth: 2
+        shadowOffset: {
+            width: 1,
+            headerRight: 2
+        },
+        shadowRadius: 2,
+        borderRadius: 5,
+        borderWidth: 1,
+        padding: 6,
+        borderColor: '#cfccc6',
+        backgroundColor: '#f5f4f2',
     },
     button: {
         padding: 3,
-        backgroundColor: 'rgba(92, 110, 191, .5)',
+        // backgroundColor: 'rgba(92, 110, 191, .5)',
         borderRadius: 3,
-        marginHorizontal: 3
+        marginHorizontal: 3,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     cardTemplate: {
         width: WIDTH,
@@ -450,5 +484,10 @@ const styles = StyleSheet.create({
     cardWall: {
         marginVertical: MARGIN,
         alignSelf: 'center'
+    },
+    split: {
+        // borderStyle: 'dashed', borderColor: 'red', borderWidth: 1,
+        width: width /2 - 10, display: 'flex', justifyContent: 'center', alignItems: 'center',
+        height: 50
     }
 })

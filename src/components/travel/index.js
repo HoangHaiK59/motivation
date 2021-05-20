@@ -108,7 +108,9 @@ class Travel extends React.Component {
         this.props.navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity style={styles.button} onPress={() => this.setState({visible: true, file: {}})}>
-                    <Text style={{ fontSize: 12, color: '#fff' }}>THÊM ĐỊA DANH</Text>
+                    <View>
+                        <FontAwesome name='plus-circle' color="#fff" size={25} />
+                    </View>
                 </TouchableOpacity>
             ),
             headerLeft: () => (
@@ -207,14 +209,18 @@ class Travel extends React.Component {
                 >
                     <View style={styles.swipeView}>
                         <View style={styles.modalView}>
-                            <View style={{ flexDirection: 'row', padding: 5 }}>
-                                <View style={{ alignItems: 'flex-start', alignSelf: 'flex-start', flexDirection: 'column' }}>
-                                    <TouchableOpacity onPress={() => this.pickImage()}>
-                                        <FontAwesome name="image" size={40} color='#205fbd' />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={{ marginVertical: 10 }} onPress={() => this.pickImage()}>
-                                        <FontAwesome name="camera" size={40} color='#205fbd' />
-                                    </TouchableOpacity>
+                            <View style={{ display: 'flex',flexDirection: 'row', padding: 5 }}>
+                                <View style={{ alignItems: 'flex-start', flexDirection: 'row', display: 'flex' }}>
+                                    <View style={styles.split}>
+                                        <TouchableOpacity onPress={() => this.pickImage()}>
+                                            <FontAwesome name="image" size={40} color='#205fbd' />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.split}>
+                                        <TouchableOpacity onPress={() => this.pickImage()}>
+                                            <FontAwesome name="camera" size={40} color='#205fbd' />
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                                 <View style={{ width: 100, height: 100, marginLeft: 100 }}>
                                     {
@@ -283,13 +289,20 @@ const styles = StyleSheet.create({
         elevation: 5,
         width: Dimensions.get('window').width,
         paddingHorizontal: 8,
-        paddingVertical: 8
+        paddingVertical: 8,
+        height: 250,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30
     },
     buttonModal: {
         borderRadius: 30,
-        backgroundColor: '#bd2a20',
+        backgroundColor: '#305ed1',
         width: 80,
-        height: 25
+        height: 30,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     buttonClose: {
         width: 60
@@ -301,12 +314,20 @@ const styles = StyleSheet.create({
         marginVertical: 5
     },
     textInput: {
-        borderBottomColor: '#173f6e',
-        borderBottomWidth: 2,
-        width: Dimensions.get('window').width
+        shadowOffset: {
+            width: 1,
+            headerRight: 2
+        },
+        shadowRadius: 2,
+        borderRadius: 5,
+        borderWidth: 1,
+        padding: 6,
+        borderColor: '#cfccc6',
+        backgroundColor: '#f5f4f2',
+        width: Dimensions.get('window').width - 20
     },
     text: {
-        color: '#c4c0c0',
+        color: '#fff',
         fontSize: 14
     },
     textStyle: {
@@ -315,9 +336,12 @@ const styles = StyleSheet.create({
     },
     button: {
         padding: 3,
-        backgroundColor: 'rgba(92, 110, 191, .5)',
+        // backgroundColor: 'rgba(92, 110, 191, .5)',
         borderRadius: 3,
-        marginHorizontal: 3
+        marginHorizontal: 3,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     fItem: {
         display: 'flex',
@@ -374,6 +398,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: '#fff'
+    },
+    split: {
+        // borderStyle: 'dashed', borderColor: 'red', borderWidth: 1,
+        width: width /2 - 10, display: 'flex', justifyContent: 'center', alignItems: 'center',
+        height: 100
     }
 })
 

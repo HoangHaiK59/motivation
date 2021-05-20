@@ -36,7 +36,7 @@ const Investment = props => {
     </TouchableWithoutFeedback>
     }
     return (
-        <SafeAreaView style={{padding: 8, flex: 1,}}>
+        <SafeAreaView style={{padding: 8, flexGrow: 1}}>
             <FlatList 
             style={styles.container} 
             scrollEnabled={true}

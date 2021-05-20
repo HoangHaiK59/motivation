@@ -38,7 +38,7 @@ const Tab = createBottomTabNavigator();
 function HomeStack({context}) {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Dashboard" children={(props) => <Dashboard {...props} context={context} />} options={({route, navigation}) => ({ headerShown: true, headerTitleAlign: 'center', headerRight: props => (
+            <Stack.Screen name="Dashboard" children={(props) => <Dashboard {...props} context={context} />} options={({route, navigation}) => ({ headerShown: true, headerTitle: '', headerTitleAlign: 'center', headerRight: props => (
                 <TouchableOpacity style={styles.cog} onPress={() => navigation.navigate('Setting')}>
                     <FontAwesome name="cog" size={20} color={context.theme.colors.text} />
                 </TouchableOpacity>
@@ -50,11 +50,11 @@ function HomeStack({context}) {
                     <FontAwesome name='chevron-left' size={20} color='white'/>
                 </TouchableOpacity>
             ) })} />
-            <Stack.Screen name="Creative" component={Creative} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Creative" component={Creative} options={{headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Diary" component={Diary} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Relax" component={Relax} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Maxim" component={Maxim} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '', headerTransparent: true}} />
-            <Stack.Screen name="Travel" component={Travel} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
+            <Stack.Screen name="Travel" component={Travel} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '', headerLeftContainerStyle: {paddingLeft: 15}, headerRightContainerStyle: {paddingRight: 15} }} />
             <Stack.Screen name="Style" component={Style} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Detail Book" children={props => <DetailBook {...props} context={context} />} options={({ route, navigation }) => ({ data: route.params.data, headerShown: true, headerTitleAlign: 'center', headerTransparent: true })} />
@@ -70,7 +70,7 @@ function HomeStack({context}) {
             <Stack.Screen name="Focus" component={Focus} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Sleep" component={Sleep} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Relax Action" component={RelaxAction} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Investment" component={Investment} options={({route, navigation}) => ({ headerShown: true, headerTitleAlign: 'center', headerLeft: () => (
+            <Stack.Screen name="Investment" component={Investment} options={({route, navigation}) => ({ headerShown: true, headerTitle: '', headerTitleAlign: 'center', headerLeft: () => (
                 <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
                     <FontAwesome name='chevron-left' size={20} color='white'/>
                 </TouchableOpacity>
