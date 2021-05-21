@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Animated } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Animated, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
@@ -7,6 +7,7 @@ import Constants from 'expo-constants';
 import moment from 'moment';
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome, Entypo as Icon } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
 
 const { width } = Dimensions.get('window');
 
@@ -107,7 +108,8 @@ const Item = ({ id, year, collectionId, image, title, name, selected, onSelect }
 }
 
 export default function Month({ route, navigation }) {
-    const [file, setFile] = React.useState({});
+    const [ loaded ] = useFonts({Lato: require('../../../../assets/fonts/Lato-Regular.ttf')})
+    const [file, setFile] = React.useState(null);
     const [visible, setVisible] = React.useState(false);
     const [selected, setSelected] = React.useState(new Map());
     const [date, setDate] = React.useState('');
@@ -116,6 +118,7 @@ export default function Month({ route, navigation }) {
     const [diary, setDiary] = React.useState('');
     const [items, setItems] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
+    const [isCamera, setIsCamera] = React.useState(false);
     const y = new Animated.Value(0);
     const storageRef = Firebase.storage().ref();
     const { params } = route;
@@ -132,14 +135,14 @@ export default function Month({ route, navigation }) {
         navigation.setOptions({
             headerLeftContainerStyle: {
                 paddingLeft: 8
-            }, 
+            },
             headerRightContainerStyle: {
                 paddingRight: 8
             },
             headerRight: () => (
                 <TouchableOpacity style={styles.button} onPress={() => {
                     setVisible(true);
-                    setFile({});
+                    setFile(null);
                 }}>
                     <View>
                         <FontAwesome name='plus-circle' color="#fff" size={25} />
@@ -247,6 +250,7 @@ export default function Month({ route, navigation }) {
                 let fileName = result.uri.split('/').pop();
                 let match = /\.(\w+)$/.exec(fileName);
                 let type = match ? `image/${match[1]}` : `image`;
+                setIsCamera(false)
                 setFile({ uri: result.uri, name: fileName, type, width: result.width, height: result.height })
             }
 
@@ -270,6 +274,7 @@ export default function Month({ route, navigation }) {
                 let fileName = result.uri.split('/').pop();
                 let match = /\.(\w+)$/.exec(fileName);
                 let type = match ? `image/${match[1]}` : `image`;
+                setIsCamera(true)
                 setFile({ uri: result.uri, name: fileName, type, width: result.width, height: result.height })
             }
 
@@ -287,15 +292,18 @@ export default function Month({ route, navigation }) {
     // </View>
     const onScroll = Animated.event([{ nativeEvent: { contentOffset: { y } } }], {
         useNativeDriver: true,
-      });
+    });
+    if (!loaded) {
+        return null
+    }
     return (
         <View style={styles.main}>
             <SafeAreaView style={styles.container}>
                 <AnimatedFlatlist
                     data={items}
-                    {...{onScroll}}
+                    {...{ onScroll }}
                     bounces={false}
-                    renderItem={({ index , item }) => (<Wallet
+                    renderItem={({ index, item }) => (<Wallet
                         y={y}
                         index={index}
                         id={item.id}
@@ -311,6 +319,7 @@ export default function Month({ route, navigation }) {
 
                 </AnimatedFlatlist>
             </SafeAreaView>
+
             <Modal
                 swipeDirection={['down', 'left', 'right', 'up']}
                 onSwipeComplete={() => setVisible(false)}
@@ -322,41 +331,50 @@ export default function Month({ route, navigation }) {
                 isVisible={visible}
             >
                 <View style={styles.centerView}>
-                    <View style={styles.modalView}>
-                        <TextInput placeholder='DD/MM/YYYY' style={styles.input} onChangeText={date => setDate(date)} selectTextOnFocus={true} multiline={true} />
-                        <TextInput placeholder='Title...' style={styles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true} />
-                        <TextInput placeholder='Extra...' style={styles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true} />
-                        <TextInput placeholder='Diary...' style={styles.textArea} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} numberOfLines={6} />
-                        <View style={{ flexDirection: 'row', width: width - 20, height: 70, justifyContent: 'flex-start' }}>
-                            <View style={{ alignItems: 'flex-start', flexDirection: 'row', display: 'flex' }}>
-                                    <View style={styles.split}>
-                                        <TouchableOpacity onPress={() => pickImage()}>
-                                            <FontAwesome name="image" size={25} color='#bd4a20' />
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View style={styles.split}>
-                                        <TouchableOpacity style={{ marginVertical: 10, alignSelf: 'center' }} onPress={() => cameraShot()}>
-                                            <FontAwesome name="camera" size={25} color='#bd4a20' />
-                                        </TouchableOpacity>
-                                    </View>
+                    <KeyboardAvoidingView behavior={Platform.OS === "android" ? "height" : "padding"}>
+                        <View style={styles.modalView}>
+                            <View style={styles.titleModal}>
+                                <Text style={{ color: '#000', fontSize: 20, fontWeight: '600', fontFamily: 'Lato' }}>Create Diary</Text>
                             </View>
-                            <View style={{ width: 60, height: 60, alignSelf: 'center' }}>
-                                {
-                                    file !== null && <View style={{ alignSelf: 'center', marginLeft: 50 }}>
-                                        <Image source={{ uri: file.uri }} style={{ width: 60, height: 60 }} />
+                            <Text style={styles.textForm}>Date</Text>
+                            <TextInput placeholder='DD/MM/YYYY' style={styles.input} onChangeText={date => setDate(date)} selectTextOnFocus={true} multiline={true} />
+                            <Text style={styles.textForm}>Name</Text>
+                            <TextInput placeholder='Title...' style={styles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true} />
+                            <Text style={styles.textForm}>Description</Text>
+                            <TextInput placeholder='Extra...' style={styles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true} />
+                            <Text style={styles.textForm}>Content</Text>
+                            <TextInput placeholder='Diary...' style={[styles.textArea, {textAlignVertical: 'top'}]} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} numberOfLines={6} />
+                            <View style={{ flexDirection: 'row', width: (width - 60), height: 70, justifyContent: 'flex-start' }}>
+                                <View style={{ alignItems: 'flex-start', flexDirection: 'row', display: 'flex' }}>
+                                    <View style={styles.split}>
+                                        {
+                                            file === null ? <TouchableOpacity onPress={() => pickImage()}>
+                                                <FontAwesome name="image" size={25} color='#bd4a20' />
+                                            </TouchableOpacity> : !isCamera && <View style={{ width: '100%', height: '100%' }}>
+                                                <Image source={{ uri: file.uri }} style={{ width: '100%', height: 50 }} />
+                                            </View>
+                                        }
                                     </View>
-                                }
+                                    <View style={styles.split}>
+                                        {
+                                            file === null ? <TouchableOpacity onPress={() => cameraShot()}>
+                                                <FontAwesome name="camera" size={25} color='#bd4a20' />
+                                            </TouchableOpacity> : isCamera && <View style={{ width: '100%', height: '100%' }}>
+                                                <Image source={{ uri: file.uri }} style={{ width: '100%', height: 50 }} />
+                                            </View>
+                                        }
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
+                                <TouchableOpacity
+                                    style={[styles.buttonModal, { alignItems: 'center' }]}
+                                    onPress={() => upload(date, file)}>
+                                    <Text style={[styles.text, { fontSize: 15, fontWeight: '700' }]}>Create</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
-                            <TouchableOpacity
-                                disabled={(title === '' || extra === '' || diary === '') ? true : false}
-                                style={title !== '' || extra !== '' || diary !== '' ? [styles.buttonModal, { alignItems: 'center' }] : [styles.buttonModal, { alignItems: 'center', opacity: .6 }]}
-                                onPress={() => upload(date, file)}>
-                                <Text style={[styles.text, { fontSize: 18 }, { marginTop: 5 }]}>Create</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    </KeyboardAvoidingView>
                 </View>
             </Modal>
         </View>
@@ -408,34 +426,48 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 14
     },
+    textForm: {
+        fontSize: 16,
+        color: '#726f75',
+        fontWeight: '700'
+    },
     centerView: {
         flex: 1,
         justifyContent: 'flex-end',
-        alignItems: 'center',
-        marginTop: 15,
+        width: width - 20
     },
     modalView: {
-        backgroundColor: '#fff',
-        alignItems: 'flex-end',
+        backgroundColor: '#d4d5d9',
         shadowOffset: {
             width: 0,
             height: 2
         },
         shadowOpacity: .25,
-        shadowRadius: 3.5,
+        shadowRadius: 30,
         elevation: 5,
-        width: width,
-        paddingHorizontal: 10,
+        paddingHorizontal: 30,
         paddingBottom: 10,
         borderTopRightRadius: 30,
         borderTopLeftRadius: 30,
-        paddingTop: 20
+        paddingTop: 20,
+        marginLeft: -20,
+        marginBottom: -20
+    },
+    titleModal: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 50,
+        marginBottom: 10
     },
     buttonModal: {
-        borderRadius: 30,
-        backgroundColor: '#6c9af0',
-        width: 120,
-        height: 40
+        borderRadius: 5,
+        backgroundColor: '#994ce6',
+        width: width - 60,
+        height: 40,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     buttonClose: {
         width: 60
@@ -449,13 +481,14 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 1,
         padding: 6,
-        borderColor: '#cfccc6',
-        backgroundColor: '#f5f4f2',
-        width: width - 20,
+        borderColor: '#fff',
+        backgroundColor: '#fff',
+        width: width - 60,
         marginVertical: 10
     },
     textArea: {
-        width: width - 20,
+        width: width - 60,
+        height: 120,
         marginVertical: 10,
         shadowOffset: {
             width: 1,
@@ -465,8 +498,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 1,
         padding: 6,
-        borderColor: '#cfccc6',
-        backgroundColor: '#f5f4f2',
+        borderColor: '#fff',
+        backgroundColor: '#fff',
     },
     button: {
         padding: 3,
@@ -487,7 +520,7 @@ const styles = StyleSheet.create({
     },
     split: {
         // borderStyle: 'dashed', borderColor: 'red', borderWidth: 1,
-        width: width /2 - 10, display: 'flex', justifyContent: 'center', alignItems: 'center',
+        width: (width - 60)/2, display: 'flex', justifyContent: 'center', alignItems: 'center',
         height: 50
     }
 })

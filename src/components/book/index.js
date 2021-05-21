@@ -1,10 +1,13 @@
 import * as React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, TextInput, CheckBox, Dimensions, TouchableHighlight } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, TextInput, CheckBox, Dimensions, TouchableHighlight, Platform, KeyboardAvoidingView } from 'react-native';
 import Modal from 'react-native-modal';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
 import { FontAwesome, Entypo as Icon } from '@expo/vector-icons';
 import Constants from 'expo-constants';
+import * as Font from 'expo-font';
+import * as ImagePicker from 'expo-image-picker';
+import { moment } from 'globalthis/implementation';
 
 const { width, height } = Dimensions.get('window');
 
@@ -15,7 +18,8 @@ class Book extends React.Component {
         this.state = {
             books: [],
             visible: false,
-            update: false,
+            file: null,
+            isCamera: false,
             model: {
                 name: '',
                 image: '',
@@ -28,6 +32,7 @@ class Book extends React.Component {
         }
 
         this.firebaseRef = Firebase.firestore().collection(DB.book);
+        this.storageRef = Firebase.storage().ref()
     }
 
     copyDocument() {
@@ -35,6 +40,12 @@ class Book extends React.Component {
             .then(result => result.docs.forEach(doc => {
                 firebase.firestore().collection(DB.book).add(doc.data())
             }))
+    }
+
+    async loadFonts() {
+        await Font.loadAsync({
+            Lato: require('../../../assets/fonts/Lato-Regular.ttf')
+        })
     }
 
     getBooks() {
@@ -73,12 +84,30 @@ class Book extends React.Component {
         }
     }
 
-    createBook() {
-        if (this.state.model.name !== '' && this.state.model.image !== '') {
-            this.setState({ update: true, visible: false })
-            this.firebaseRef.add(this.state.model)
-                .then()
-                .catch(err => console.log(err))
+    async createBook(file) {
+        if (file) {
+            let response, blob;
+            if (Object.keys(file).length > 0) {
+                response = await fetch(file.uri);
+                blob = await response.blob();
+            }
+            const unix = moment(new Date()).unix()
+            this.storageRef.child(`Book/${unix + file.name}`)
+            .put(blob)
+            .then(snapshot => {
+                this.storageRef.child(snapshot.metadata.fullPath)
+                .getDownloadURL()
+                .then(url => {
+                    if (this.state.model.name !== '') {
+                        this.setState({ visible: false })
+                        this.firebaseRef.add({...this.state.model, image: url})
+                            .then(ref => {
+                                this.getBooks();
+                            })
+                            .catch(err => console.log(err))
+                    }
+                })
+            })
         }
     }
 
@@ -86,25 +115,86 @@ class Book extends React.Component {
         this.props.navigation.goBack();
     }
 
+    pickImage = async () => {
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: false,
+                aspect: [2, 3],
+                quality: 1
+            });
+
+            console.log(result);
+
+            if (!result.cancelled) {
+                let fileName = result.uri.split('/').pop();
+                let match = /\.(\w+)$/.exec(fileName);
+                let type = match ? `image/${match[1]}` : `image`;
+                const file = { uri: result.uri, name: fileName, type, width: result.width, height: result.height };
+                this.setState({ file, isCamera: false })
+            }
+
+            //console.log(result);
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
+    cameraShot = async () => {
+        try {
+            let result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: false,
+                aspect: [2, 3],
+                quality: 1
+            });
+
+            if (!result.cancelled) {
+                let fileName = result.uri.split('/').pop();
+                let match = /\.(\w+)$/.exec(fileName);
+                let type = match ? `image/${match[1]}` : `image`;
+                const file = { uri: result.uri, name: fileName, type, width: result.width, height: result.height };
+                this.setState({ file, isCamera: true })
+            }
+
+            //console.log(result);
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
     componentDidMount() {
+        this.loadFonts();
         this.getBooks();
         this.props.navigation.setOptions({
+            headerLeftContainerStyle: {
+                paddingLeft: 8
+            },
+            headerRightContainerStyle: {
+                paddingRight: 8
+            },
             headerRight: () => (
-                <TouchableOpacity style={styles.button} onPress={() => this.setState({visible: true, model: {
-                    name: '',
-                    image: '',
-                    category: 0,
-                    is_farvorite: false,
-                    note: [],
-                    num_of_page_read: 0,
-                    total_page: 0
-                }})}>
-                    <Text style={{ fontSize: 12, color: this.props.context.theme.colors.text }}>THÊM SÁCH</Text>
+                <TouchableOpacity style={styles.button} onPress={() => this.setState({
+                    visible: true, model: {
+                        name: '',
+                        image: '',
+                        category: 0,
+                        is_farvorite: false,
+                        note: [],
+                        num_of_page_read: 0,
+                        total_page: 0
+                    }
+                })}>
+                    <View>
+                        <FontAwesome name='plus-circle' color="#fff" size={25} />
+                    </View>
                 </TouchableOpacity>
             ),
             headerLeft: () => (
                 <TouchableOpacity onPress={() => this.back()}>
-                    <Icon name='chevron-left' size={25} color={this.props.context.theme.colors.text}/>
+                    <Icon name='chevron-left' size={25} color={this.props.context.theme.colors.text} />
                 </TouchableOpacity>
             )
         })
@@ -116,13 +206,6 @@ class Book extends React.Component {
     //     }
     //     return false;
     // }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.update) {
-            this.getBooks();
-            this.setState({ update: false })
-        }
-    }
 
     // <TouchableOpacity style={[styles.buttonBottom]} onPress={() => this.setState({
     //     visible: true, model: {
@@ -146,7 +229,7 @@ class Book extends React.Component {
                         {
                             this.state.books.length > 0 ? this.state.books.map((book, id) => <View style={[styles.bookContainer, { position: 'relative' }]} key={id} >
                                 <View style={styles.label}>
-                                    <Text style={[styles.labelText, {color: this.props.context.theme.colors.text}]}>{book.num_of_page_read}/{book.total_page}</Text>
+                                    <Text style={[styles.labelText, { color: this.props.context.theme.colors.text }]}>{book.num_of_page_read}/{book.total_page}</Text>
                                 </View>
                                 <TouchableOpacity onPress={() => this.handleViewDetail('Detail Book', {
                                     book: book
@@ -168,73 +251,100 @@ class Book extends React.Component {
                     }}
                 >
                     <View style={styles.swipeView}>
-                        <View style={styles.modalView}>
-                            <TextInput
-                                placeholder='Name'
-                                placeholderTextColor='black'
-                                style={[styles.textInput, styles.marginLeft, { marginTop: 5 }]}
-                                selectTextOnFocus={true}
-                                multiline={true}
-                                onChangeText={text => this.handleChangeText(text, 'name')}
-                                value={this.state.model.name} />
-                            <TextInput
-                                placeholder='Image'
-                                placeholderTextColor='black'
-                                style={[styles.textInput, styles.marginLeft]}
-                                selectTextOnFocus={true}
-                                multiline={true}
-                                onChangeText={text => this.handleChangeText(text, 'image')}
-                                value={this.state.model.image} />
-                            <TextInput
-                                placeholder='Category'
-                                placeholderTextColor='black'
-                                style={[styles.textInput, styles.marginLeft]}
-                                keyboardType={"numeric"}
-                                selectTextOnFocus={true}
-                                multiline={true}
-                                onChangeText={text => this.handleChangeText(parseInt(text), 'category')}
-                            />
-                            <TextInput
-                                placeholder='Note'
-                                placeholderTextColor='black'
-                                style={[styles.textInput, styles.marginLeft]}
-                                selectTextOnFocus={true}
-                                multiline={true}
-                                onChangeText={text => this.handleChangeText(text, 'note')}
-                            />
-                            <TextInput
-                                placeholder='Num of page read'
-                                placeholderTextColor='black'
-                                style={[styles.textInput, styles.marginLeft]}
-                                selectTextOnFocus={true}
-                                keyboardType={"numeric"}
-                                multiline={true}
-                                onChangeText={text => this.handleChangeText(parseInt(text), 'num_of_page_read')}
-                            />
-                            <TextInput
-                                placeholder='Total page'
-                                placeholderTextColor='black'
-                                style={[styles.textInput, styles.marginLeft]}
-                                selectTextOnFocus={true}
-                                keyboardType={"numeric"}
-                                multiline={true}
-                                onChangeText={text => this.handleChangeText(parseInt(text), 'total_page')}
-                            />
-                            <View style={{ flexDirection: 'row', padding: 5 }}>
-                                <Text style={styles.marginLeft}>Farvorite</Text>
-                                <CheckBox
-                                    style={{ marginLeft: 5 }}
-                                    onValueChange={value => this.handleChangeText(value, 'is_farvorite')}
-                                    value={this.state.model.is_farvorite} />
+                        <KeyboardAvoidingView behavior={Platform.OS === "android" ? "height" : "padding"}>
+                            <View style={styles.modalView}>
+                                <View style={styles.titleModal}>
+                                    <Text style={{ color: '#000', fontSize: 20, fontWeight: '600', fontFamily: 'Lato' }}>Add Book</Text>
+                                </View>
+                                <TextInput
+                                    placeholder='Name'
+                                    placeholderTextColor='black'
+                                    style={[styles.textInput]}
+                                    selectTextOnFocus={true}
+                                    multiline={true}
+                                    onChangeText={text => this.handleChangeText(text, 'name')}
+                                    value={this.state.model.name} />
+                                <TextInput
+                                    placeholder='Image'
+                                    placeholderTextColor='black'
+                                    style={[styles.textInput]}
+                                    selectTextOnFocus={true}
+                                    multiline={true}
+                                    onChangeText={text => this.handleChangeText(text, 'image')}
+                                    value={this.state.model.image} />
+                                <TextInput
+                                    placeholder='Category'
+                                    placeholderTextColor='black'
+                                    style={[styles.textInput]}
+                                    keyboardType={"numeric"}
+                                    selectTextOnFocus={true}
+                                    multiline={true}
+                                    onChangeText={text => this.handleChangeText(parseInt(text), 'category')}
+                                />
+                                <TextInput
+                                    placeholder='Note'
+                                    placeholderTextColor='black'
+                                    style={[styles.textInput]}
+                                    selectTextOnFocus={true}
+                                    multiline={true}
+                                    onChangeText={text => this.handleChangeText(text, 'note')}
+                                />
+                                <TextInput
+                                    placeholder='Num of page read'
+                                    placeholderTextColor='black'
+                                    style={[styles.textInput]}
+                                    selectTextOnFocus={true}
+                                    keyboardType={"numeric"}
+                                    multiline={true}
+                                    onChangeText={text => this.handleChangeText(parseInt(text), 'num_of_page_read')}
+                                />
+                                <TextInput
+                                    placeholder='Total page'
+                                    placeholderTextColor='black'
+                                    style={[styles.textInput]}
+                                    selectTextOnFocus={true}
+                                    keyboardType={"numeric"}
+                                    multiline={true}
+                                    onChangeText={text => this.handleChangeText(parseInt(text), 'total_page')}
+                                />
+                                <View style={{ flexDirection: 'row', width: (width - 60), height: 70, justifyContent: 'flex-start' }}>
+                                    <View style={{ alignItems: 'flex-start', flexDirection: 'row', display: 'flex' }}>
+                                        <View style={styles.split}>
+                                            {
+                                                this.state.file === null ? <TouchableOpacity onPress={() => this.pickImage()}>
+                                                    <FontAwesome name="image" size={25} color='#bd4a20' />
+                                                </TouchableOpacity> : !this.state.isCamera && <View style={{ width: '100%', height: '100%' }}>
+                                                    <Image source={{ uri: this.state.file.uri }} style={{ width: '100%', height: 50 }} />
+                                                </View>
+                                            }
+                                        </View>
+                                        <View style={styles.split}>
+                                            {
+                                                this.state.file === null ? <TouchableOpacity onPress={() => this.cameraShot()}>
+                                                    <FontAwesome name="camera" size={25} color='#bd4a20' />
+                                                </TouchableOpacity> : this.state.isCamera && <View style={{ width: '100%', height: '100%' }}>
+                                                    <Image source={{ uri: this.state.file.uri }} style={{ width: '100%', height: 50 }} />
+                                                </View>
+                                            }
+                                        </View>
+                                    </View>
+                                </View>
+                                <View style={{ flexDirection: 'row', padding: 5, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                                    <Text>Farvorite</Text>
+                                    <CheckBox
+                                        style={{ marginTop: -5 }}
+                                        onValueChange={value => this.handleChangeText(value, 'is_farvorite')}
+                                        value={this.state.model.is_farvorite} />
+                                </View>
+                                <View style={styles.buttonGroup}>
+                                    <TouchableHighlight
+                                        style={styles.buttonSave}
+                                        onPress={() => this.createBook(this.state.file)}>
+                                        <Text style={[styles.buttonText, { fontSize: 16, fontWeight: 'bold', color: '#fff' }]}>SAVE</Text>
+                                    </TouchableHighlight>
+                                </View>
                             </View>
-                            <View style={styles.buttonGroup}>
-                                <TouchableHighlight
-                                    style={(this.state.model.name === '' || this.state.model.image === '') ? { ...styles.buttonSave, opacity: .8 } : styles.buttonSave}
-                                    onPress={() => this.createBook()} disabled={(this.state.model.name === '' || this.state.model.image === '') ? true : false}>
-                                    <Text style={[styles.buttonText, {fontSize: 16, fontWeight: 'bold'}]}>SAVE</Text>
-                                </TouchableHighlight>
-                            </View>
-                        </View>
+                        </KeyboardAvoidingView>
                     </View>
                 </Modal>
             </ScrollView>
@@ -293,25 +403,40 @@ const styles = StyleSheet.create({
     swipeView: {
         flex: 1,
         justifyContent: 'flex-end',
-        alignItems: 'center',
-        marginTop: 15,
+        width: width - 20
     },
     modalView: {
-        backgroundColor: '#d7d8de',
-        alignItems: 'flex-start',
+        backgroundColor: '#d4d5d9',
         shadowOffset: {
             width: 0,
             height: 2
         },
         shadowOpacity: .25,
-        shadowRadius: 3.5,
+        shadowRadius: 30,
         elevation: 5,
-        width: width,
+        paddingHorizontal: 30,
+        paddingBottom: 10,
+        borderTopRightRadius: 30,
+        borderTopLeftRadius: 30,
+        paddingTop: 20,
+        marginLeft: -20,
+        marginBottom: -20
+    },
+    titleModal: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 50,
+        marginBottom: 10
     },
     buttonModal: {
-        borderRadius: 30,
-        backgroundColor: '#f2400f',
-        width: 60
+        borderRadius: 5,
+        backgroundColor: '#994ce6',
+        width: width - 60,
+        height: 40,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     buttonText: {
         fontSize: 15,
@@ -320,32 +445,36 @@ const styles = StyleSheet.create({
     textInput: {
         // borderWidth: 2,
         // borderColor: '#323330',
-        width: width - 15,
-        padding: 3,
-        marginVertical: 5,
-        borderRadius: 25,
+        shadowOffset: {
+            width: 1,
+            headerRight: 2
+        },
+        shadowRadius: 2,
+        borderRadius: 5,
+        borderWidth: 1,
+        padding: 6,
+        borderColor: '#fff',
         backgroundColor: '#fff',
-        paddingLeft: 10
+        width: width - 60,
+        marginVertical: 10
     },
     marginLeft: {
         marginLeft: 10
     },
     buttonGroup: {
         flexDirection: 'row',
-        width: width,
+        width: width - 60,
         marginVertical: 10,
         justifyContent: 'center'
     },
     buttonSave: {
-        width: 150,
+        borderRadius: 5,
+        backgroundColor: '#994ce6',
+        width: width - 60,
         height: 40,
-        marginLeft: 10,
-        backgroundColor: '#fff',
-        alignSelf: 'center',
-        borderRadius: 50,
-        alignItems: 'center',
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     buttonClose: {
         width: 50,
@@ -358,9 +487,17 @@ const styles = StyleSheet.create({
     },
     button: {
         padding: 3,
-        backgroundColor: 'rgba(92, 110, 191, .5)',
+        // backgroundColor: 'rgba(92, 110, 191, .5)',
         borderRadius: 3,
-        marginHorizontal: 3
+        marginHorizontal: 3,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    split: {
+        // borderStyle: 'dashed', borderColor: 'red', borderWidth: 1,
+        width: (width - 60)/2, display: 'flex', justifyContent: 'center', alignItems: 'center',
+        height: 50
     }
 });
 

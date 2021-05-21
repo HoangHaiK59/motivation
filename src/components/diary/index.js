@@ -310,10 +310,14 @@ const styles = StyleSheet.create({
         marginHorizontal: 10
     },
     bottom: {
+        width: width,
         position: 'absolute',
         bottom: 30,
         flexDirection: 'row',
-        left: 30
+        left: 30,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     date: {
         width: 200,
