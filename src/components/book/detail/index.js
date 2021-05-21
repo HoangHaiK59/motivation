@@ -8,6 +8,7 @@ import { DB } from '../../../helper/db';
 import Animated from 'react-native-reanimated';
 import Cover from './cover';
 import Content from './content';
+import { ModalStyles, placeHolderTextColor } from '../../../common/styles/modal.style';
 
 const { width, height } = Dimensions.get('window');
 
@@ -136,24 +137,25 @@ export default function DetailBook({ route, navigation, context }) {
                 swipeDirection={['down', 'left', 'right', 'up']}
                 onSwipeComplete={() => setVisible(false)}
             >
-                <View style={styles.swipeView}>
-                    <View style={styles.modalView}>
+                <View style={ModalStyles.mainView}>
+                    <View style={ModalStyles.contentView}>
                         <TextInput
                             selectTextOnFocus={true}
                             placeholder='Comment'
-                            placeholderTextColor='#000'
+                            placeholderTextColor={placeHolderTextColor}
                             multiline={true}
-                            style={[styles.textInput, { marginTop: 10 }]}
+                            style={[ModalStyles.input, {height: 100, textAlignVertical: 'top'}]}
                             onChangeText={comment => setComment(comment)}
                             value={comment}
+                            numberOfLines={3}
                         />
                         <View style={{ flexDirection: 'row', marginVertical: 15 }}>
-                            <TouchableHighlight style={comment !== '' ? styles.buttonModal : { ...styles.buttonModal, opacity: .8 }} onPress={() => {
+                            <TouchableHighlight style={ModalStyles.button} onPress={() => {
                                 createCommentNote(bookInfo.id, bookInfo.note, comment);
                                 bookInfo.note = [...bookInfo.note, comment];
                                 setVisible(false);
-                            }} disabled={comment === '' ? true : false}>
-                                <Text style={styles.buttonText}>Create</Text>
+                            }}>
+                                <Text style={ModalStyles.textButton}>Create</Text>
                             </TouchableHighlight>
                         </View>
                     </View>

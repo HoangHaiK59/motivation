@@ -22,6 +22,8 @@ import {
     usePanGestureHandler,
     useValue
 } from 'react-native-redash/lib/module/v1';
+import { ModalStyles } from '../../common/styles/modal.style';
+import * as Font from 'expo-font';
 
 const { width } = Dimensions.get('window');
 
@@ -139,13 +141,18 @@ class Maxim extends React.Component {
             maxim: '',
             author: '',
             maxims: [],
-            update: false,
-            file: {},
+            file: null,
         }
 
         this.firebaseRef = Firebase.firestore().collection(DB.maxim);
         this.storageRef = Firebase.storage().ref();
         this.animatedValue = new Animated.Value(0);
+    }
+
+    async loadFonts() {
+        await Font.loadAsync({
+            Lato: require('../../../assets/fonts/Lato-Regular.ttf')
+        })
     }
 
     getMaxims() {
@@ -243,15 +250,13 @@ class Maxim extends React.Component {
     }
 
     componentDidMount() {
+        this.loadFonts();
         this.getMaxims();
         this.renderNavigation();
     }
 
 
     componentDidUpdate(prevState, prevProps) {
-        if (this.state.update) {
-            this.getMaxims();
-        }
         if (this.state.horizontal != prevState.horizontal) {
             this.renderNavigation();
         }
@@ -264,7 +269,8 @@ class Maxim extends React.Component {
             maxim: this.state.maxim
         })
             .then(res => {
-                this.setState({ visible: false, update: true })
+                this.setState({ visible: false })
+                this.getMaxims();
             })
             .catch(error => console.log(error))
     }
@@ -306,74 +312,84 @@ class Maxim extends React.Component {
                             url={item.url}
                         />}
                     /> : <AnimatedFlatlist
-                            scrollEventThrottle={16}
-                            bounces={false}
-                            {...{ onScroll }}
-                            showsVerticalScrollIndicator={false}
-                            showsHorizontalScrollIndicator={false}
-                            data={this.state.maxims}
-                            renderItem={({ index, item }) => <Wallet
-                                onSwipe={() => {
-                                    const newItems = [...this.state.maxims];
-                                    newItems.splice(newItems.indexOf(item), 1);
-                                    this.setState({ maxims: newItems })
-                                }}
-                                animatedValue={y}
-                                horizontal={this.state.horizontal}
-                                id={index}
-                                title={item.maxim}
-                                author={item.author}
-                                url={item.url}
-                            />}
-                        />
+                        scrollEventThrottle={16}
+                        bounces={false}
+                        {...{ onScroll }}
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        data={this.state.maxims}
+                        renderItem={({ index, item }) => <Wallet
+                            onSwipe={() => {
+                                const newItems = [...this.state.maxims];
+                                newItems.splice(newItems.indexOf(item), 1);
+                                this.setState({ maxims: newItems })
+                            }}
+                            animatedValue={y}
+                            horizontal={this.state.horizontal}
+                            id={index}
+                            title={item.maxim}
+                            author={item.author}
+                            url={item.url}
+                        />}
+                    />
                 }
                 <Modal
                     isVisible={this.state.visible}
-                    backdropOpacity={0.8}
-                    animationIn='slideInUp'
-                    animationOut='slideOutDown'
-                    animationInTiming={350}
-                    animationOutTiming={350}
+                    onSwipeComplete={() => this.setState({ visible: false })}
+                    swipeDirection={['up', 'left', 'right', 'down']}
+                    onBackdropPress={() => this.setState({ visible: false })}
+                    onBackButtonPress={() => {
+                        this.setState({ visible: false });
+                        this.props.navigation.goBack();
+                    }}
                 >
-                    <View style={styles.centerView}>
-                        <View style={styles.modalView}>
+                    <View style={ModalStyles.mainView}>
+                        <View style={ModalStyles.contentView}>
+                            <View style={ModalStyles.titleModal}>
+                                <Text style={ModalStyles.titleText}>Create Maxim</Text>
+                            </View>
+                            <Text style={ModalStyles.textLabel}>Content</Text>
                             <TextInput
                                 value={this.state.maxim}
                                 onChangeText={maxim => this.setState({ maxim })}
                                 selectTextOnFocus={true}
                                 multiline={true}
-                                style={styles.textInput}
+                                style={[ModalStyles.input, {textAlignVertical: 'top', height: 120}]}
                                 placeholder='Maxim...'
+                                placeholderTextColor="#a39ea0"
+                                numberOfLines={4}
                             />
+                            <Text style={ModalStyles.textLabel}>Author</Text>
                             <TextInput
                                 value={this.state.author}
                                 onChangeText={author => this.setState({ author })}
                                 selectTextOnFocus={true}
                                 multiline={true}
-                                style={styles.textInput}
+                                style={ModalStyles.input}
                                 placeholder='Author...'
+                                placeholderTextColor="#a39ea0"
                             />
-                            <View style={{ alignSelf: 'center' }}>
-                                <Image source={{ uri: this.state.file?.uri }} style={{ width: 50, height: 50 }} />
-                            </View>
-                            <View style={{ alignItems: 'center', alignSelf: 'center' }}>
-                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => this.pickImage()}>
-                                    <FontAwesome name="image" size={20} />
-                                </TouchableOpacity>
+                            <View style={ModalStyles.boxUploadContainer}>
+                                <View style={ModalStyles.boxUploadItem}>
+                                    <View style={ModalStyles.itemRow}>
+                                        {
+                                            this.state.file === null ? <TouchableOpacity onPress={() => this.pickImage()}>
+                                                <FontAwesome name="image" size={25} color='#bd4a20' />
+                                            </TouchableOpacity> : <View style={{ width: '100%', height: '100%' }}>
+                                                <Image source={{ uri: this.state.file.uri }} style={{ width: '100%', height: 50 }} />
+                                            </View>
+                                        }
+                                    </View>
+                                </View>
                             </View>
                             <View style={{ flexDirection: 'row', marginVertical: 10, alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}>
                                 <TouchableOpacity
-                                    disabled={(Object.keys(this.state.file).length <= 0 || this.state.maxim === '' || this.state.author === '') ? true : false}
-                                    style={(Object.keys(this.state.file).length <= 0 || this.state.maxim === '' || this.state.author === '') ? [styles.buttonOpacity, { alignItems: 'center' }] :
-                                        [styles.buttonModal, { alignItems: 'center' }]}
+                                    style={ModalStyles.button}
                                     onPress={() => this.upload({
                                         maxim: this.state.maxim,
                                         author: this.state.author
                                     }, this.state.file)}>
-                                    <Text style={styles.text}>Add</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.buttonClose} onPress={() => this.setState({ visible: false })}>
-                                    <Text style={styles.text}>Close</Text>
+                                    <Text style={ModalStyles.textButton}>Add</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

@@ -85,7 +85,7 @@ const Day = ({ route, navigation }) => {
                                 autoFocus={true}
                                 placeholder='type here'
                                 selectTextOnFocus={true}
-                                style={styles.textInput}
+                                style={[styles.textInput]}
                                 onChangeText={text => setText(text)} />
 
                             <View style={{ alignSelf: 'center', flexDirection: 'row' }}>

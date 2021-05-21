@@ -258,7 +258,7 @@ class Book extends React.Component {
                                 </View>
                                 <TextInput
                                     placeholder='Name'
-                                    placeholderTextColor='black'
+                                    placeholderTextColor='#a39ea0'
                                     style={[styles.textInput]}
                                     selectTextOnFocus={true}
                                     multiline={true}
@@ -266,7 +266,7 @@ class Book extends React.Component {
                                     value={this.state.model.name} />
                                 <TextInput
                                     placeholder='Image'
-                                    placeholderTextColor='black'
+                                    placeholderTextColor='#a39ea0'
                                     style={[styles.textInput]}
                                     selectTextOnFocus={true}
                                     multiline={true}
@@ -274,7 +274,7 @@ class Book extends React.Component {
                                     value={this.state.model.image} />
                                 <TextInput
                                     placeholder='Category'
-                                    placeholderTextColor='black'
+                                    placeholderTextColor='#a39ea0'
                                     style={[styles.textInput]}
                                     keyboardType={"numeric"}
                                     selectTextOnFocus={true}
@@ -283,15 +283,16 @@ class Book extends React.Component {
                                 />
                                 <TextInput
                                     placeholder='Note'
-                                    placeholderTextColor='black'
-                                    style={[styles.textInput]}
+                                    placeholderTextColor='#a39ea0'
+                                    style={[styles.textInput, {textAlignVertical: 'top'}]}
                                     selectTextOnFocus={true}
                                     multiline={true}
+                                    numberOfLines={4}
                                     onChangeText={text => this.handleChangeText(text, 'note')}
                                 />
                                 <TextInput
                                     placeholder='Num of page read'
-                                    placeholderTextColor='black'
+                                    placeholderTextColor='#a39ea0'
                                     style={[styles.textInput]}
                                     selectTextOnFocus={true}
                                     keyboardType={"numeric"}
@@ -300,7 +301,7 @@ class Book extends React.Component {
                                 />
                                 <TextInput
                                     placeholder='Total page'
-                                    placeholderTextColor='black'
+                                    placeholderTextColor='#a39ea0'
                                     style={[styles.textInput]}
                                     selectTextOnFocus={true}
                                     keyboardType={"numeric"}
@@ -406,7 +407,7 @@ const styles = StyleSheet.create({
         width: width - 20
     },
     modalView: {
-        backgroundColor: '#d4d5d9',
+        backgroundColor: '#fff',
         shadowOffset: {
             width: 0,
             height: 2
@@ -452,11 +453,17 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         borderRadius: 5,
         borderWidth: 1,
-        padding: 6,
-        borderColor: '#fff',
-        backgroundColor: '#fff',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderColor: '#edebec',
+        backgroundColor: '#edebec',
         width: width - 60,
         marginVertical: 10
+    },
+    textForm: {
+        fontSize: 16,
+        color: '#726f75',
+        fontWeight: '600'
     },
     marginLeft: {
         marginLeft: 10
@@ -469,7 +476,7 @@ const styles = StyleSheet.create({
     },
     buttonSave: {
         borderRadius: 5,
-        backgroundColor: '#994ce6',
+        backgroundColor: '#631ac9',
         width: width - 60,
         height: 40,
         display: 'flex',

@@ -337,13 +337,13 @@ export default function Month({ route, navigation }) {
                                 <Text style={{ color: '#000', fontSize: 20, fontWeight: '600', fontFamily: 'Lato' }}>Create Diary</Text>
                             </View>
                             <Text style={styles.textForm}>Date</Text>
-                            <TextInput placeholder='DD/MM/YYYY' style={styles.input} onChangeText={date => setDate(date)} selectTextOnFocus={true} multiline={true} />
+                            <TextInput placeholderTextColor="#a39ea0" placeholder='DD/MM/YYYY' style={styles.input} onChangeText={date => setDate(date)} selectTextOnFocus={true} multiline={true} />
                             <Text style={styles.textForm}>Name</Text>
-                            <TextInput placeholder='Title...' style={styles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true} />
+                            <TextInput placeholder='Title...' placeholderTextColor="#a39ea0" style={styles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true} />
                             <Text style={styles.textForm}>Description</Text>
-                            <TextInput placeholder='Extra...' style={styles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true} />
+                            <TextInput placeholder='Extra...' placeholderTextColor="#a39ea0" style={styles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true} />
                             <Text style={styles.textForm}>Content</Text>
-                            <TextInput placeholder='Diary...' style={[styles.textArea, {textAlignVertical: 'top'}]} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} numberOfLines={6} />
+                            <TextInput placeholder='Diary...' placeholderTextColor="#a39ea0" style={[styles.textArea, {textAlignVertical: 'top'}]} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} numberOfLines={6} />
                             <View style={{ flexDirection: 'row', width: (width - 60), height: 70, justifyContent: 'flex-start' }}>
                                 <View style={{ alignItems: 'flex-start', flexDirection: 'row', display: 'flex' }}>
                                     <View style={styles.split}>
@@ -427,9 +427,9 @@ const styles = StyleSheet.create({
         fontSize: 14
     },
     textForm: {
-        fontSize: 16,
+        fontSize: 15,
         color: '#726f75',
-        fontWeight: '700'
+        fontWeight: '600'
     },
     centerView: {
         flex: 1,
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
         width: width - 20
     },
     modalView: {
-        backgroundColor: '#d4d5d9',
+        backgroundColor: '#fff',
         shadowOffset: {
             width: 0,
             height: 2
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     },
     buttonModal: {
         borderRadius: 5,
-        backgroundColor: '#994ce6',
+        backgroundColor: '#631ac9',
         width: width - 60,
         height: 40,
         display: 'flex',
@@ -480,9 +480,10 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         borderRadius: 5,
         borderWidth: 1,
-        padding: 6,
-        borderColor: '#fff',
-        backgroundColor: '#fff',
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderColor: '#edebec',
+        backgroundColor: '#edebec',
         width: width - 60,
         marginVertical: 10
     },
@@ -498,8 +499,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 1,
         padding: 6,
-        borderColor: '#fff',
-        backgroundColor: '#fff',
+        borderColor: '#edebec',
+        backgroundColor: '#edebec',
     },
     button: {
         padding: 3,

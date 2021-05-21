@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, TouchableOpacity, Modal, Image } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Picker } from '@react-native-community/picker'
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -220,33 +220,6 @@ class Diary extends React.Component {
                         />
                     )
                 }
-                <Modal visible={this.state.visible} transparent={true} animationType="fade" onRequestClose={() => { }}>
-                <View style={styles.centerView}>
-                    <View style={styles.modalView}>
-                        <TextInput placeholder='Month..' style={styles.input} onChangeText={month => this.setState({ month })} selectTextOnFocus={true}/>
-                        {
-                            this.state.file !== null && <View style={{ alignSelf: 'center' }}>
-                                <Image source={{ uri: this.state.file.uri }} style={{ width: 50, height: 50 }} />
-                            </View>
-                        }
-                        <View style={{ alignItems: 'center', alignSelf: 'center' }}>
-                            <TouchableOpacity onPress={() => this.pickImage()}>
-                                <FontAwesome name="image" size={20} />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
-                            <TouchableOpacity disabled={(Object.keys(this.state.file).length <= 0 || this.state.month === '') ? true : false} 
-                            style={(Object.keys(this.state.file).length > 0 || this.state.month !=='') ? [styles.buttonModal, { alignItems: 'center' }] : [styles.buttonModal, { alignItems: 'center', opacity: .6 }]} 
-                            onPress={() => this.upload(this.state.month, this.state.file)}>
-                                <Text style={styles.text}>Create</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.buttonClose, { alignItems: 'center' }]} onPress={() => this.setState({visible: false})}>
-                                <Text style={styles.text2}>Close</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
             </View>
         )
     }
@@ -291,13 +264,16 @@ const styles = StyleSheet.create({
         color: '#fff'
     },
     filter: {
+        display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
     },
     picker: {
         width: 100,
         height: 30,
-        color: '#fff'
+        color: '#000',
+        backgroundColor: '#fff',
+        borderRadius: 5
     },
     cardContainer: {
         flexDirection: 'row',
