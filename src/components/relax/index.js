@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView, Dimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView, Dimensions, Image, ToastAndroid } from 'react-native';
 import Modal from 'react-native-modal';
 import { FontAwesome, Ionicons as Icon } from '@expo/vector-icons';
 import Constants from 'expo-constants';
@@ -52,7 +52,6 @@ class Relax extends React.Component {
                 let items = [];
                 if (result.docs.length > 0) {
                     result.docs.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
-                    console.log(items);
                     this.setState({ items })
                 }
             })
@@ -95,27 +94,27 @@ class Relax extends React.Component {
         this.setState({ showAction: isShow, idSelected, item })
     }
 
-    displayAlert = () => {
-        setTimeout(() => {
-            this.setState({ visible: false })
-        }, 1500)
+    showToast() {
+        ToastAndroid.showWithGravity(
+            'Changed favorite',
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM
+        )
     }
 
     handleChangeFarvourite = (id, state, message) => {
         this.firebaseRef.doc(id).update({is_farvorite: state})
         .then(()=> {
+            this.showToast();
             this.firebaseRef.where('is_farvorite', '==', true)
             .get()
             .then(result => {
                 let items = [];
                 if (result.docs.length > 0) {
                     result.docs.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
-                    console.log(items);
-                    this.setState({ visible: true,showAction: false, items, message });
-                    this.displayAlert()
+                    this.setState({ showAction: false, items, message });
                 } else {
-                    this.setState({ visible: true,showAction: false, message, items: [] });
-                    this.displayAlert()
+                    this.setState({ showAction: false, message, items: [] });
                 }
             })
             //this.setState({visible: true, showAction: false});
@@ -158,7 +157,7 @@ class Relax extends React.Component {
                                     //this.displayAlert('Message');
                                     //navigation.goBack();
                                 }}>
-                                    <View style={styles.actionCell}>
+                                    <View style={[styles.actionCell, {alignItems: 'center', width: 70}]}>
                                         <Icon name={this.state.item.is_farvorite ? 'ios-heart' : 'ios-heart-empty'} size={24} color={this.state.item.is_farvorite ? '#a6392d' : '#fff'} />
                                     </View>
                                     <View style={[styles.actionCell, { flex: 1 }]}>
@@ -166,7 +165,7 @@ class Relax extends React.Component {
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.actionRow}>
-                                    <View style={[styles.actionCell, { alignItems: 'center' }]}>
+                                    <View style={[styles.actionCell, { alignItems: 'center', width: 70 }]}>
                                         <Icon name='ios-add' size={40} color='#a6392d' />
                                     </View>
                                     <View style={[styles.actionCell, { flex: 1 }]}>
@@ -174,26 +173,26 @@ class Relax extends React.Component {
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.actionRow}>
-                                    <View style={[styles.actionCell, { marginLeft: 3 }]}>
+                                    <View style={[styles.actionCell, {alignItems: 'center', width: 70}]}>
                                         <Icon name='ios-trash' size={26} color='#a6392d' />
                                     </View>
                                     <View style={[styles.actionCell, { flex: 1 }]}>
-                                        <Text style={[styles.text, { marginLeft: 3 }]}>Xóa khỏi danh sách</Text>
+                                        <Text style={[styles.text]}>Xóa khỏi danh sách</Text>
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.actionRow} onPress={() => this.setState({showAction: false})}>
-                                    <View style={[styles.actionCell, { marginLeft: 4 }]}>
+                                    <View style={[styles.actionCell, {alignItems: 'center', width: 70}]}>
                                         <Icon name='ios-arrow-back' size={30} color='#a6392d' />
                                     </View>
                                     <View style={[styles.actionCell, { flex: 1 }]}>
-                                        <Text style={[styles.text, { marginLeft: 4 }]}>Quay lại</Text>
+                                        <Text style={[styles.text]}>Quay lại</Text>
                                     </View>
                                 </TouchableOpacity>
                             </View>
                         </View>
                 }
 
-                <Modal
+                {/* <Modal
                     isVisible={this.state.visible}
                     animationIn={'slideInUp'}
                     animationOut={'slideOutDown'}
@@ -205,7 +204,7 @@ class Relax extends React.Component {
                         </View>
                     </View>
 
-                </Modal>
+                </Modal> */}
 
             </View>
         )
@@ -214,8 +213,8 @@ class Relax extends React.Component {
 
 const styles = StyleSheet.create({
     main: {
-        flex: 1,
-        flexDirection: 'column'
+        flexDirection: 'column',
+        flexGrow: 1
     },
     container: {
         width: width,
@@ -296,7 +295,10 @@ const styles = StyleSheet.create({
     actionRow: {
         flexDirection: "row",
         backgroundColor: "black",
-        height: 40
+        height: 40,
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start'
     },
     actionCell: {
         padding: 16,

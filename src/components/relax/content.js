@@ -87,7 +87,7 @@ export default function Content({ animatedValue, style: { header, items }, navig
                 </ScrollView>
             </View>
             <View style={styles.list}>
-                <Text style={{ fontSize: 28, color: '#c4c0c0', fontWeight: '400', marginLeft: 15 }}>{items.length > 0 ? 'Favourite' : ''}</Text>
+                <Text style={{ fontSize: 28, color: '#c4c0c0', fontWeight: '400', marginLeft: 15 }}>{items.length > 0 ? 'List' : ''}</Text>
                 <View style={styles.itemsList}>
                     {
                         items.length > 0 ? items.map((item, id) => <Item

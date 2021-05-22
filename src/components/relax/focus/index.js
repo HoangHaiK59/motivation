@@ -4,17 +4,30 @@ import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
 import Constants from 'expo-constants';
 import { Feather as Icon } from '@expo/vector-icons';
+import { ItemStyles } from '../../../common/styles/list-item.style';
 
 const Item = ({ title, index, created }) => (
-    <View style={styles.row}>
-        <View style={styles.cell}>
-            <Text style={[styles.text, {fontSize: 15}, styles.index]}>{index}</Text>
+    // <View style={styles.row}>
+    //     <View style={styles.cell}>
+    //         <Text style={[styles.text, {fontSize: 15}, styles.index]}>{index}</Text>
+    //     </View>
+    //     <View style={[styles.cell, {flex: 1}]}>
+    //         <Text style={[styles.title]}>{title}</Text>
+    //         <Text style={[styles.title]}>{created}</Text>
+    //     </View>
+    //     <View style={[styles.cell]}>
+    //         <Icon  name='more-vertical' size={20} color='#fff' />
+    //     </View>
+    // </View>
+    <View style={ItemStyles.sectionItem}>
+        <View style={ItemStyles.index}>
+            <Text style={ItemStyles.textIndex}>{index}</Text>
         </View>
-        <View style={[styles.cell, {flex: 1}]}>
-            <Text style={[styles.title]}>{title}</Text>
-            <Text style={[styles.title]}>{created}</Text>
+        <View style={ItemStyles.content}>
+            <Text style={ItemStyles.text}>{title}</Text>
+            <Text style={ItemStyles.textDes}>{created}</Text>
         </View>
-        <View style={[styles.cell]}>
+        <View style={ItemStyles.progress}>
             <Icon  name='more-vertical' size={20} color='#fff' />
         </View>
     </View>
@@ -70,7 +83,8 @@ export default Focus;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        paddingVertical: Constants.statusBarHeight,
+        flexGrow: 1,
         marginHorizontal: 16
     },
     text: {

@@ -171,25 +171,23 @@ export default function DetailBook({ route, navigation, context }) {
                 swipeDirection={['down', 'left', 'right', 'up']}
                 onSwipeComplete={() => setModal(false)}
             >
-                <View style={styles.swipeView}>
-                    <View style={styles.modalView}>
+                <View style={ModalStyles.mainView}>
+                    <View style={ModalStyles.contentView}>
                         <TextInput
                             selectTextOnFocus={true}
-                            placeholder='Page'
-                            placeholderTextColor='#000'
+                            placeholder='Number of pages read'
+                            placeholderTextColor={placeHolderTextColor}
                             keyboardType={'numeric'}
                             multiline={true}
-                            style={[styles.textInput, { marginTop: 10 }]}
+                            style={ModalStyles.input}
                             onChangeText={page => setPage(parseInt(page))}
                         />
-                        <View style={{ flexDirection: 'row', marginVertical: 15 }}>
-                            <TouchableHighlight style={comment !== '' ? styles.buttonModal : { ...styles.buttonModal, opacity: .8 }} onPress={() => {
-                                updatePageRead(book.id, page);
-                                setModal(false);
-                            }} disabled={page >= bookInfo.total_page ? true : false}>
-                                <Text style={styles.buttonText}>Update</Text>
-                            </TouchableHighlight>
-                        </View>
+                        <TouchableHighlight style={ModalStyles.button} onPress={() => {
+                            updatePageRead(book.id, page);
+                            setModal(false);
+                        }}>
+                            <Text style={ModalStyles.textButton}>Update</Text>
+                        </TouchableHighlight>
                     </View>
                 </View>
             </Modal>

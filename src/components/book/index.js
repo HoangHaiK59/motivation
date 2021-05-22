@@ -8,6 +8,7 @@ import Constants from 'expo-constants';
 import * as Font from 'expo-font';
 import * as ImagePicker from 'expo-image-picker';
 import { moment } from 'globalthis/implementation';
+import { ModalStyles, placeHolderTextColor } from '../../common/styles/modal.style';
 
 const { width, height } = Dimensions.get('window');
 
@@ -250,32 +251,32 @@ class Book extends React.Component {
                         this.props.navigation.goBack();
                     }}
                 >
-                    <View style={styles.swipeView}>
+                    <View style={ModalStyles.mainView}>
                         <KeyboardAvoidingView behavior={Platform.OS === "android" ? "height" : "padding"}>
-                            <View style={styles.modalView}>
-                                <View style={styles.titleModal}>
-                                    <Text style={{ color: '#000', fontSize: 20, fontWeight: '600', fontFamily: 'Lato' }}>Add Book</Text>
+                            <View style={ModalStyles.contentView}>
+                                <View style={ModalStyles.titleModal}>
+                                    <Text style={ModalStyles.titleText}>Add Book</Text>
                                 </View>
                                 <TextInput
                                     placeholder='Name'
-                                    placeholderTextColor='#a39ea0'
-                                    style={[styles.textInput]}
+                                    placeholderTextColor={placeHolderTextColor}
+                                    style={[ModalStyles.input]}
                                     selectTextOnFocus={true}
                                     multiline={true}
                                     onChangeText={text => this.handleChangeText(text, 'name')}
                                     value={this.state.model.name} />
                                 <TextInput
                                     placeholder='Image'
-                                    placeholderTextColor='#a39ea0'
-                                    style={[styles.textInput]}
+                                    placeholderTextColor={placeHolderTextColor}
+                                    style={[ModalStyles.input]}
                                     selectTextOnFocus={true}
                                     multiline={true}
                                     onChangeText={text => this.handleChangeText(text, 'image')}
                                     value={this.state.model.image} />
                                 <TextInput
                                     placeholder='Category'
-                                    placeholderTextColor='#a39ea0'
-                                    style={[styles.textInput]}
+                                    placeholderTextColor={placeHolderTextColor}
+                                    style={[ModalStyles.input]}
                                     keyboardType={"numeric"}
                                     selectTextOnFocus={true}
                                     multiline={true}
@@ -283,8 +284,8 @@ class Book extends React.Component {
                                 />
                                 <TextInput
                                     placeholder='Note'
-                                    placeholderTextColor='#a39ea0'
-                                    style={[styles.textInput, {textAlignVertical: 'top'}]}
+                                    placeholderTextColor={placeHolderTextColor}
+                                    style={ModalStyles.textArea}
                                     selectTextOnFocus={true}
                                     multiline={true}
                                     numberOfLines={4}
@@ -292,8 +293,8 @@ class Book extends React.Component {
                                 />
                                 <TextInput
                                     placeholder='Num of page read'
-                                    placeholderTextColor='#a39ea0'
-                                    style={[styles.textInput]}
+                                    placeholderTextColor={placeHolderTextColor}
+                                    style={[ModalStyles.input]}
                                     selectTextOnFocus={true}
                                     keyboardType={"numeric"}
                                     multiline={true}
@@ -301,49 +302,47 @@ class Book extends React.Component {
                                 />
                                 <TextInput
                                     placeholder='Total page'
-                                    placeholderTextColor='#a39ea0'
-                                    style={[styles.textInput]}
+                                    placeholderTextColor={placeHolderTextColor}
+                                    style={[ModalStyles.input]}
                                     selectTextOnFocus={true}
                                     keyboardType={"numeric"}
                                     multiline={true}
                                     onChangeText={text => this.handleChangeText(parseInt(text), 'total_page')}
                                 />
-                                <View style={{ flexDirection: 'row', width: (width - 60), height: 70, justifyContent: 'flex-start' }}>
-                                    <View style={{ alignItems: 'flex-start', flexDirection: 'row', display: 'flex' }}>
-                                        <View style={styles.split}>
+                                <View style={ModalStyles.boxUploadContainer}>
+                                    <View style={ModalStyles.boxUploadItem}>
+                                        <View style={ModalStyles.itemColumn}>
                                             {
                                                 this.state.file === null ? <TouchableOpacity onPress={() => this.pickImage()}>
                                                     <FontAwesome name="image" size={25} color='#bd4a20' />
                                                 </TouchableOpacity> : !this.state.isCamera && <View style={{ width: '100%', height: '100%' }}>
-                                                    <Image source={{ uri: this.state.file.uri }} style={{ width: '100%', height: 50 }} />
+                                                    <Image source={{ uri: this.state.file.uri }} width="100%" height={50} />
                                                 </View>
                                             }
                                         </View>
-                                        <View style={styles.split}>
+                                        <View style={ModalStyles.itemColumn}>
                                             {
                                                 this.state.file === null ? <TouchableOpacity onPress={() => this.cameraShot()}>
                                                     <FontAwesome name="camera" size={25} color='#bd4a20' />
                                                 </TouchableOpacity> : this.state.isCamera && <View style={{ width: '100%', height: '100%' }}>
-                                                    <Image source={{ uri: this.state.file.uri }} style={{ width: '100%', height: 50 }} />
+                                                    <Image source={{ uri: this.state.file.uri }} width="100%" height={50} />
                                                 </View>
                                             }
                                         </View>
                                     </View>
                                 </View>
-                                <View style={{ flexDirection: 'row', padding: 5, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-                                    <Text>Farvorite</Text>
+                                <View style={ModalStyles.checkbox}>
+                                    <Text style={ModalStyles.textLabel}>Farvorite</Text>
                                     <CheckBox
                                         style={{ marginTop: -5 }}
                                         onValueChange={value => this.handleChangeText(value, 'is_farvorite')}
                                         value={this.state.model.is_farvorite} />
                                 </View>
-                                <View style={styles.buttonGroup}>
-                                    <TouchableHighlight
-                                        style={styles.buttonSave}
-                                        onPress={() => this.createBook(this.state.file)}>
-                                        <Text style={[styles.buttonText, { fontSize: 16, fontWeight: 'bold', color: '#fff' }]}>SAVE</Text>
-                                    </TouchableHighlight>
-                                </View>
+                                <TouchableHighlight
+                                    style={ModalStyles.button}
+                                    onPress={() => this.createBook(this.state.file)}>
+                                    <Text style={ModalStyles.textButton}>SAVE</Text>
+                                </TouchableHighlight>
                             </View>
                         </KeyboardAvoidingView>
                     </View>

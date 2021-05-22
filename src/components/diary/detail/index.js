@@ -8,6 +8,7 @@ import moment from 'moment';
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome, Entypo as Icon } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
+import { ModalStyles, placeHolderTextColor } from '../../../common/styles/modal.style';
 
 const { width } = Dimensions.get('window');
 
@@ -108,7 +109,7 @@ const Item = ({ id, year, collectionId, image, title, name, selected, onSelect }
 }
 
 export default function Month({ route, navigation }) {
-    const [ loaded ] = useFonts({Lato: require('../../../../assets/fonts/Lato-Regular.ttf')})
+    const [loaded] = useFonts({ Lato: require('../../../../assets/fonts/Lato-Regular.ttf') })
     const [file, setFile] = React.useState(null);
     const [visible, setVisible] = React.useState(false);
     const [selected, setSelected] = React.useState(new Map());
@@ -330,23 +331,23 @@ export default function Month({ route, navigation }) {
                 onBackdropPress={() => setVisible(false)}
                 isVisible={visible}
             >
-                <View style={styles.centerView}>
+                <View style={ModalStyles.mainView}>
                     <KeyboardAvoidingView behavior={Platform.OS === "android" ? "height" : "padding"}>
-                        <View style={styles.modalView}>
-                            <View style={styles.titleModal}>
-                                <Text style={{ color: '#000', fontSize: 20, fontWeight: '600', fontFamily: 'Lato' }}>Create Diary</Text>
+                        <View style={ModalStyles.contentView}>
+                            <View style={ModalStyles.titleModal}>
+                                <Text style={ModalStyles.titleText}>Create Diary</Text>
                             </View>
-                            <Text style={styles.textForm}>Date</Text>
-                            <TextInput placeholderTextColor="#a39ea0" placeholder='DD/MM/YYYY' style={styles.input} onChangeText={date => setDate(date)} selectTextOnFocus={true} multiline={true} />
-                            <Text style={styles.textForm}>Name</Text>
-                            <TextInput placeholder='Title...' placeholderTextColor="#a39ea0" style={styles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true} />
-                            <Text style={styles.textForm}>Description</Text>
-                            <TextInput placeholder='Extra...' placeholderTextColor="#a39ea0" style={styles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true} />
-                            <Text style={styles.textForm}>Content</Text>
-                            <TextInput placeholder='Diary...' placeholderTextColor="#a39ea0" style={[styles.textArea, {textAlignVertical: 'top'}]} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} numberOfLines={6} />
-                            <View style={{ flexDirection: 'row', width: (width - 60), height: 70, justifyContent: 'flex-start' }}>
-                                <View style={{ alignItems: 'flex-start', flexDirection: 'row', display: 'flex' }}>
-                                    <View style={styles.split}>
+                            <Text style={ModalStyles.textLabel}>Date</Text>
+                            <TextInput placeholderTextColor={placeHolderTextColor} placeholder='DD/MM/YYYY' style={ModalStyles.input} onChangeText={date => setDate(date)} selectTextOnFocus={true} multiline={true} />
+                            <Text style={ModalStyles.textLabel}>Name</Text>
+                            <TextInput placeholder='Title...' placeholderTextColor={placeHolderTextColor} style={ModalStyles.input} onChangeText={title => setTitle(title)} selectTextOnFocus={true} multiline={true} />
+                            <Text style={ModalStyles.textLabel}>Description</Text>
+                            <TextInput placeholder='Extra...' placeholderTextColor={placeHolderTextColor} style={ModalStyles.input} onChangeText={extra => setExtra(extra)} selectTextOnFocus={true} multiline={true} />
+                            <Text style={ModalStyles.textLabel}>Content</Text>
+                            <TextInput placeholder='Diary...' placeholderTextColor={placeHolderTextColor} style={ModalStyles.textArea} onChangeText={diary => setDiary(diary)} selectTextOnFocus={true} multiline={true} numberOfLines={6} />
+                            <View style={ModalStyles.boxUploadContainer}>
+                                <View style={ModalStyles.boxUploadItem}>
+                                    <View style={ModalStyles.itemColumn}>
                                         {
                                             file === null ? <TouchableOpacity onPress={() => pickImage()}>
                                                 <FontAwesome name="image" size={25} color='#bd4a20' />
@@ -355,24 +356,22 @@ export default function Month({ route, navigation }) {
                                             </View>
                                         }
                                     </View>
-                                    <View style={styles.split}>
+                                    <View style={ModalStyles.itemColumn}>
                                         {
                                             file === null ? <TouchableOpacity onPress={() => cameraShot()}>
                                                 <FontAwesome name="camera" size={25} color='#bd4a20' />
                                             </TouchableOpacity> : isCamera && <View style={{ width: '100%', height: '100%' }}>
-                                                <Image source={{ uri: file.uri }} style={{ width: '100%', height: 50 }} />
+                                                <Image source={{ uri: file.uri }} width="100%" height={50} />
                                             </View>
                                         }
                                     </View>
                                 </View>
                             </View>
-                            <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
-                                <TouchableOpacity
-                                    style={[styles.buttonModal, { alignItems: 'center' }]}
-                                    onPress={() => upload(date, file)}>
-                                    <Text style={[styles.text, { fontSize: 15, fontWeight: '700' }]}>Create</Text>
-                                </TouchableOpacity>
-                            </View>
+                            <TouchableOpacity
+                                style={ModalStyles.button}
+                                onPress={() => upload(date, file)}>
+                                <Text style={ModalStyles.textButton}>Create</Text>
+                            </TouchableOpacity>
                         </View>
                     </KeyboardAvoidingView>
                 </View>
@@ -521,7 +520,7 @@ const styles = StyleSheet.create({
     },
     split: {
         // borderStyle: 'dashed', borderColor: 'red', borderWidth: 1,
-        width: (width - 60)/2, display: 'flex', justifyContent: 'center', alignItems: 'center',
+        width: (width - 60) / 2, display: 'flex', justifyContent: 'center', alignItems: 'center',
         height: 50
     }
 })

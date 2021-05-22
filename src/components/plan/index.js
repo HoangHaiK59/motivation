@@ -175,9 +175,13 @@ const styles = StyleSheet.create({
     sectionItem: {
         display: 'flex',
         flexDirection: 'row',
-        height: 50,
+        height: 65,
         paddingVertical: 10,
-        marginVertical: 8
+        marginVertical: 8,
+        backgroundColor: '#2e2d2d',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        paddingHorizontal: 8
     },
     index: {
         display: 'flex',

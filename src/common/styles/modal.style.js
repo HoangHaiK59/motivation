@@ -19,10 +19,10 @@ export const ModalStyles = StyleSheet.create({
         elevation: 5,
         paddingHorizontal: 30,
         paddingBottom: 10,
-        borderTopRightRadius: 30,
-        borderTopLeftRadius: 30,
+        borderTopRightRadius: 40,
+        borderTopLeftRadius: 40,
         paddingTop: 20,
-        marginLeft: -20,
+        marginLeft: -24,
         marginBottom: -20
     },
     titleModal: {
@@ -64,6 +64,22 @@ export const ModalStyles = StyleSheet.create({
         width: width - 60,
         marginVertical: 10
     },
+    textArea: {
+        width: width - 60,
+        height: 120,
+        marginVertical: 10,
+        shadowOffset: {
+            width: 1,
+            headerRight: 2
+        },
+        shadowRadius: 2,
+        borderRadius: 5,
+        borderWidth: 1,
+        padding: 6,
+        borderColor: '#edebec',
+        backgroundColor: '#edebec',
+        textAlignVertical: 'top'
+    },
     textLabel: {
         fontSize: 15,
         color: '#726f75',
@@ -98,6 +114,14 @@ export const ModalStyles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '700',
         color: '#fff'
+    },
+    checkbox: {
+        flexDirection: 'row',
+        padding: 5,
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        width: (width - 60)
     }
 })
 
