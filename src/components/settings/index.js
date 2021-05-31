@@ -2,39 +2,57 @@ import * as React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import firebase from '../../firebase';
 import { useTheme } from '@react-navigation/native';
+import { notifiCation } from '../../services/notify';
 
 export default function Settings(props) {
     const { colors, dark } = useTheme();
     const signOut = () => {
         firebase.auth().signOut();
     }
+    const sendNotifiCation = () => {
+        notifiCation({
+            autoCancel: true,
+            bigText: '',
+            subText: 'Motivation notify',
+            title: `Let's get up and relax`,
+            vibrate: true,
+            vibration: 300,
+            playSound: true,
+            soundName: 'default',
+        })
+    }
     const { context } = props;
     return (
-        <ScrollView  showsHorizontalScrollIndicator={false} contentContainerStyle={{ marginTop: 10, flexGrow: 1, paddingHorizontal: 10 }}>
+        <ScrollView showsHorizontalScrollIndicator={false} contentContainerStyle={{ marginTop: 10, flexGrow: 1, paddingHorizontal: 10 }}>
             <View style={styles.container}>
-                <Text style={[styles.textHighlight, {color: colors.text}]}>Account</Text>
-                <View style={[styles.box, {marginTop: 10}]}>
+                <Text style={[styles.textHighlight, { color: colors.text }]}>Account</Text>
+                <View style={[styles.box, { marginTop: 10 }]}>
                     <View style={styles.avatar}>
-                        <Text style={[styles.text, {color: colors.text}]}>{context.user.email.slice(0,2).toUpperCase()}</Text>
+                        <Text style={[styles.text, { color: colors.text }]}>{context.user.email.slice(0, 2).toUpperCase()}</Text>
                     </View>
                 </View>
-                <Text style={[styles.textHighlight, {marginTop: 10,color: colors.text}]}>Device</Text>
-                <View style={[styles.split, {marginTop: 10}]}>
-                    <Text style={[styles.text, {color: colors.text}]}>
+                <Text style={[styles.textHighlight, { marginTop: 10, color: colors.text }]}>Device</Text>
+                <View style={[styles.split, { marginTop: 10 }]}>
+                    <Text style={[styles.text, { color: colors.text }]}>
                         Dark Theme
                     </Text>
                     <Switch
-                    trackColor={{false: colors.text, true: colors.text}}
-                    thumbColor={dark ? '#fff': '#000'}
-                    onValueChange={() => context.setThemeProvider(!dark)}
-                    value={dark}
+                        trackColor={{ false: colors.text, true: colors.text }}
+                        thumbColor={dark ? '#fff' : '#000'}
+                        onValueChange={() => context.setThemeProvider(!dark)}
+                        value={dark}
                     />
+                    <TouchableOpacity onPress={sendNotifiCation} style={{ marginTop: 10 }}>
+                        <View style={styles.button}>
+                            <Text style={[styles.text, { color: colors.text }]}>Send notification</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
-                <Text style={[styles.textHighlight, {marginTop: 10,color: colors.text}]}>Other</Text>
-                <TouchableOpacity onPress={signOut} style={{marginTop: 10}}>
+                <Text style={[styles.textHighlight, { marginTop: 10, color: colors.text }]}>Other</Text>
+                <TouchableOpacity onPress={signOut} style={{ marginTop: 10 }}>
                     <View style={styles.button}>
-                        <Text style={[styles.text, {color: colors.text}]}>Sign out</Text>
-                        <Text style={[styles.textDescription, {color: colors.text}]}>You are logged in as {context.user.email}</Text>
+                        <Text style={[styles.text, { color: colors.text }]}>Sign out</Text>
+                        <Text style={[styles.textDescription, { color: colors.text }]}>You are logged in as {context.user.email}</Text>
                     </View>
                 </TouchableOpacity>
             </View>
