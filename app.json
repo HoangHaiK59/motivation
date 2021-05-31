@@ -5,6 +5,7 @@
     "name": "Motivation",
     "slug": "expo-template-bare",
     "version": "1.0.0",
+    "sdkVersion": "41.0.0",
     "platforms": [
       "ios",
       "android",
@@ -12,6 +13,9 @@
     ],
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "android": {
+      "package": "com.motivation"
+    }
   }
 }
