@@ -15,7 +15,8 @@
       "**/*"
     ],
     "android": {
-      "package": "com.motivation"
+      "package": "com.motivation",
+      "googleServicesFile": "./google-services.json"
     }
   }
 }

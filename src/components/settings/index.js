@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import firebase from '../../firebase';
 import { useTheme } from '@react-navigation/native';
-import { notifiCation } from '../../services/notify';
+import { schedulePushNotification } from '../../services/expo-notify';
 
 export default function Settings(props) {
     const { colors, dark } = useTheme();
@@ -10,15 +10,14 @@ export default function Settings(props) {
         firebase.auth().signOut();
     }
     const sendNotifiCation = () => {
-        notifiCation({
-            autoCancel: true,
-            bigText: '',
-            subText: 'Motivation notify',
-            title: `Let's get up and relax`,
-            vibrate: true,
-            vibration: 300,
-            playSound: true,
-            soundName: 'default',
+        schedulePushNotification({
+            content: {
+                title: "Time's up!",
+                body: 'Change sides!',
+            },
+            trigger: {
+                seconds: 2,
+            }
         })
     }
     const { context } = props;

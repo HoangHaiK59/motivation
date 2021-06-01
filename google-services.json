@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "144363705261",
+    "firebase_url": "https://motivation-b2dcb.firebaseio.com",
+    "project_id": "motivation-b2dcb",
+    "storage_bucket": "motivation-b2dcb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144363705261:android:1ffafbc93f3255a0130724",
+        "android_client_info": {
+          "package_name": "com.motivation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "144363705261-8cmr0kv6fqc4reqivbaarrjsgu4r33i7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.motivation",
+            "certificate_hash": "a0bb930c8da9f5348af92c4e33ffaf04643c7169"
+          }
+        },
+        {
+          "client_id": "144363705261-roketr4u48qqi2s99o72ceche3i52k2n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwBISXjuIbJ2udDOmhyZr8U8iWQsBQP0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "144363705261-roketr4u48qqi2s99o72ceche3i52k2n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

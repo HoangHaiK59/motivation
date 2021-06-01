@@ -1,26 +1,29 @@
 import React from 'react';
-
-import { View, Text, StyleSheet, ScrollView, FlatList, Dimensions, SectionList, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Dimensions, SectionList, SafeAreaView, TouchableOpacity } from 'react-native';
 import * as _ from 'lodash';
 import moment from 'moment';
 const { width } = Dimensions.get('window');
 import base64 from 'base-64';
 import Doughnut from '../doughnut';
 import { FontAwesome } from '@expo/vector-icons'
+import Schedule from './schedule';
+import firebase from '../../firebase';
 
-const Item = ({item, index}) => {
-    return <View style={styles.sectionItem}>
-        <View style={styles.index}>
-            <Text style={styles.textIndex}>{index + 1}</Text>
+const Item = ({ item, index, onUpdateProgress }) => {
+    return <TouchableOpacity onPress={() => onUpdateProgress(item)}>
+        <View style={styles.sectionItem}>
+            <View style={styles.index}>
+                <Text style={styles.textIndex}>{index + 1}</Text>
+            </View>
+            <View style={styles.content}>
+                <Text style={styles.text}>{item.name}</Text>
+                <Text style={styles.textDes}>{item.content}</Text>
+            </View>
+            <View style={styles.progress}>
+                <Doughnut percentage={item.progress} radius={25} color={'tomato'} delay={500} max={100} />
+            </View>
         </View>
-        <View style={styles.content}>
-            <Text style={styles.text}>{item.name}</Text>
-            <Text style={styles.textDes}>{item.content}</Text>
-        </View>
-        <View style={styles.progress}>
-            <Doughnut percentage={50} radius={25} color={'tomato'} delay={500} max={100} />
-        </View>
-    </View>
+    </TouchableOpacity>
 }
 
 class Plan extends React.Component {
@@ -31,28 +34,52 @@ class Plan extends React.Component {
             date: new Date(),
             month: [],
             numInMonth: 0,
-            plan: [
-                {
-                    key: base64.encode('12321321132'),
-                    title: 'Plan',
-                    data: [
-                        {key: base64.encode('abd'), name: 'Water', content: '6 cups of day', progress: 0},
-                        {key: base64.encode('abc'), name: 'Sleep', content: '8 hours a day', progress: 0},
-                        {key: base64.encode('abcde'), name: 'Running', content: '2km', progress: 0},
-                        {key: base64.encode('abcdef'), name: 'Walking', content: '4000 steps', progress: 0},
-                        {key: base64.encode('123456'), name: 'Reading Book', content: '30 pages', progress: 0}
-                    ]
-                }
-            ]
+            visible: false,
+            plan: [],
+            updateVisible: false
         }
+
+        this.firestore = firebase.firestore();
+    }
+
+    /**
+     * process show or hide modal
+     * @param {boolean} visible 
+     */
+    handleShowOrClose(visible) {
+        this.setState({ visible })
+    }
+
+    /**
+     * process show or hide modal update
+     * @param {boolean} updateVisible 
+     */
+    handleUpdateShowOrClose(updateVisible) {
+        this.setState({ updateVisible })
     }
 
     componentDidMount() {
         this.getDayInMonth(this.state.date.getMonth() + 1, this.state.date.getFullYear())
+        this.getTodayPlan();
     }
 
     componentDidUpdate() {
         // this.goIndex();
+    }
+
+    getTodayPlan() {
+        this.firestore.collection('plan')
+            .where('created', '==', moment(new Date()).format('DD/MM/YYYY'))
+            .get()
+            .then(snapShot => {
+                if (snapShot.docs.length > 0) {
+                    this.setState({ plan: [...snapShot.docs.map(doc => ({ id: doc.id, ...doc.data() }))] })
+                }
+            })
+    }
+
+    onUpdateProgress(item) {
+
     }
 
     async getDayInMonth(month, year) {
@@ -61,46 +88,46 @@ class Plan extends React.Component {
         // new Date(`${m < 10 ? '0'+ m: m + '/' + month < 10 ? '0' + month : month + '/' + year}`)
         // monthTemp = monthTemp.map(m => ({day: m, th: moment('01/05/2021').format('ddd')}))
         monthTemp = monthTemp.map(m => {
-            const dateString = (m < 10 ? `0${m}`: m) + '/' + (month < 10 ? '0' + month: month) + '/' + year;
-            return {day: m, th: moment(dateString, 'DD/MM/YYYY').format('ddd'), key: m + moment(dateString, 'DD/MM/YYYY').format('ddd')}
+            const dateString = (m < 10 ? `0${m}` : m) + '/' + (month < 10 ? '0' + month : month) + '/' + year;
+            return { day: m, th: moment(dateString, 'DD/MM/YYYY').format('ddd'), key: m + moment(dateString, 'DD/MM/YYYY').format('ddd') }
         })
         this.setState({ month: monthTemp, numInMonth: numDay });
     }
 
     getItemLayout = (data, index) => {
-        return {length: 60, offset: 60 * index, index}
+        return { length: 60, offset: 60 * index, index }
     }
 
     render() {
         const index = this.state.month.findIndex(m => m.day === this.state.date.getDate());
         return (
-            <SafeAreaView style={{flexGrow: 1}}>
+            <SafeAreaView style={{ flexGrow: 1 }}>
                 <View style={styles.container}>
                     <View style={styles.calendar}>
                         <FlatList
-                        ref={(ref) => this.flatListRef = ref}
-                        horizontal
-                        data={this.state.month}
-                        getItemLayout={this.getItemLayout}
-                        initialScrollIndex={index}
-                        renderItem={({item, index}) => (<View key={item.key} style={styles.item}>
-                                    <View style={[styles.children, item.day === this.state.date.getDate() && {backgroundColor: '#4c7cf5'}]}>
-                                        <Text style={styles.text}>{item.th}</Text>
-                                        <View style={styles.date}>
-                                            <Text style={styles.text}>{item.day}</Text>
-                                        </View>
+                            ref={(ref) => this.flatListRef = ref}
+                            horizontal
+                            data={this.state.month}
+                            getItemLayout={this.getItemLayout}
+                            initialScrollIndex={index}
+                            renderItem={({ item, index }) => (<View key={item.key} style={styles.item}>
+                                <View style={[styles.children, item.day === this.state.date.getDate() && { backgroundColor: '#4c7cf5' }]}>
+                                    <Text style={styles.text}>{item.th}</Text>
+                                    <View style={styles.date}>
+                                        <Text style={styles.text}>{item.day}</Text>
                                     </View>
-                                </View>)}
+                                </View>
+                            </View>)}
                         />
                     </View>
                     <SafeAreaView style={styles.plan}>
-                        <SectionList 
+                        <SectionList
                             sections={this.state.plan}
                             keyExtractor={(item) => item.key}
-                            renderItem={({item, index}) => (
-                                <Item item={item} index={index} />
+                            renderItem={({ item, index }) => (
+                                <Item item={item} index={index} onUpdateProgress={this.onUpdateProgress.bind(this)} />
                             )}
-                            renderSectionHeader={({section: {title}}) => (
+                            renderSectionHeader={({ section: { title } }) => (
                                 <View style={styles.sectionHeader}>
                                     <Text style={styles.text}>{title}</Text>
                                     <Text style={styles.text}>More</Text>
@@ -109,13 +136,16 @@ class Plan extends React.Component {
                         />
                     </SafeAreaView>
                     <View style={styles.create}>
-                        <TouchableOpacity style={styles.createBtn}>
+                        <TouchableOpacity style={styles.createBtn} onPress={this.handleShowOrClose.bind(this, true)}>
                             <View>
                                 <FontAwesome color="#77a3a6" size={35} name="plus-circle" />
                             </View>
                         </TouchableOpacity>
                     </View>
                 </View>
+                {
+                    this.state.visible && <Schedule visible={this.state.visible} setVisible={this.handleShowOrClose.bind(this)} />
+                }
             </SafeAreaView>
         )
     }
@@ -128,7 +158,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         paddingHorizontal: 8,
         position: 'relative',
-        paddingTop:8,
+        paddingTop: 8,
         paddingBottom: 16
     },
     text: {
@@ -142,7 +172,7 @@ const styles = StyleSheet.create({
     calendar: {
         display: 'flex',
         flexDirection: 'row',
-        height: 64
+        height: 72
     },
     item: {
         display: 'flex',

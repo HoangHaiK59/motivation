@@ -47,6 +47,15 @@ export const ModalStyles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    buttonOther: {
+        borderRadius: 5,
+        backgroundColor: '#c2281d',
+        width: width - 60,
+        height: 40,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     input: {
         // borderWidth: 2,
         // borderColor: '#323330',

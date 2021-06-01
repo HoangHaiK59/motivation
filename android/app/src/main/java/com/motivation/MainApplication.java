@@ -21,6 +21,7 @@ import expo.modules.constants.ConstantsPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.updates.UpdatesController;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
