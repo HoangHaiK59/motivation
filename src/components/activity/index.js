@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, LogBox, Modal, ScrollView, FlatList, TouchableHighlight, Dimensions } from 'react-native';
+import { View, StyleSheet, LogBox, Modal, ScrollView, FlatList, TouchableHighlight, Dimensions } from 'react-native';
 import Firebase from '../../firebase';
 import { DB } from '../../helper/db';
 import { FontAwesome } from '@expo/vector-icons';
+import Text from '../text/regular';
 
 // LogBox.ignoreLogs(['Setting a timer']);
 

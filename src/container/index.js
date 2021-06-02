@@ -1,7 +1,5 @@
 import * as React from 'react';
-// import { View, StyleSheet } from 'react-native';
-//import { Navigation } from 'react-native-navigation';
-import { View, StatusBar, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -31,9 +29,9 @@ import { UserContext } from '../components/context/user.context';
 import Authentication from '../components/authentication';
 import Investment from '../components/investment';
 import ViewInvest from '../components/investment/view';
-import Constants from 'expo-constants';
-import * as Notifications from 'expo-notifications';
 import { useNotifications } from '../services/expo-notify';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -46,16 +44,19 @@ function HomeStack({ context }) {
                     <TouchableOpacity style={styles.cog} onPress={() => navigation.navigate('Setting')}>
                         <FontAwesome name="cog" size={20} color={context.theme.colors.text} />
                     </TouchableOpacity>
-                )
+                ), headerTitleStyle: {
+                    fontFamily: 'LatoBold'
+                }
             })} />
-            <Stack.Screen name="Book" children={(props) => <Book {...props} context={context} />} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
+            <Stack.Screen name="Book" children={(props) => <Book {...props} context={context} />} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '', headerTitleStyle: { fontFamily: 'LatoBold', fontWeight: 'bold' } }} />
             <Stack.Screen name="Sport" component={Sport} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Plan" component={Plan} options={({ route, navigation }) => ({
                 headerShown: true, headerTitleAlign: 'center', headerLeft: () => (
                     <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
                         <FontAwesome name='chevron-left' size={20} color='white' />
                     </TouchableOpacity>
-                )
+                ),
+                headerTitleStyle: { fontFamily: 'LatoBold', fontWeight: 'bold' }
             })} />
             <Stack.Screen name="Creative" component={Creative} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Diary" component={Diary} options={{ headerShown: false, headerTitleAlign: 'center' }} />
@@ -71,7 +72,8 @@ function HomeStack({ context }) {
                         <FontAwesome name='chevron-left' size={20} color='white' />
                     </TouchableOpacity>
                 )
-                , headerShown: true, headerTitleAlign: 'center', title: route.params.title
+                , headerShown: true, headerTitleAlign: 'center', title: route.params.title,
+                headerTitleStyle: { fontFamily: 'LatoBold', fontWeight: 'bold' }
             })} />
             <Stack.Screen name="View Image" component={ViewImage} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Month" component={Month} options={({ route, navigation }) => ({ headerShown: true, headerTitleAlign: 'center', headerTransparent: true, headerTitleStyle: { color: 'white' }, title: route.params.month + `/${route.params.year}` })} />
@@ -98,7 +100,8 @@ function HomeStack({ context }) {
                     <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
                         <FontAwesome name='chevron-left' size={20} color='white' />
                     </TouchableOpacity>
-                )
+                ),
+                headerTitleStyle: { fontFamily: 'LatoBold', fontWeight: 'bold' }
             })} />
         </Stack.Navigator>
     )
@@ -114,58 +117,67 @@ function StatisticStack({ context }) {
 
 export default function Container() {
     useNotifications();
-    return (
-        <UserContext.Consumer>
-            {
-                context => (
-                    <View style={styles.container}>
-                        <StatusBar translucent backgroundColor="#050504" barStyle={"light-content"} />
-                        <NavigationContainer theme={context.theme}>
-                            {
-                                context.user ? <Tab.Navigator
-                                    screenOptions={({ route, navigation }) => ({
-                                        tabBarHideOnKeyboard: true,
-                                        tabBarLabelStyle: {
-                                            color: '#c4c0c0'
-                                        },
-                                        tabBarItemStyle: {
-                                            height: 45
-                                        },
-                                        tabBarStyle: {
-                                            backgroundColor: '#050504'
-                                        },
-                                        tabBarIcon: ({ focused, color, size }) => {
-                                            let iconName;
-                                            if (route.name === 'Home') {
-                                                iconName = focused ? 'home' : 'home'
-                                            } else if ((route.name === 'Statistic')) {
-                                                iconName = focused
-                                                    ? 'line-chart'
-                                                    : 'line-chart';
-                                            } else if ((route.name === 'Settings')) {
-                                                iconName = focused
-                                                    ? 'cog'
-                                                    : 'cog';
-                                                //navigation.setParams({handleDarkMode: handleDarkMode()})
+    const [loaded] = useFonts({
+        'SansPro': require('../../assets/fonts/SourceSansPro-Regular.ttf'),
+        'Lato': require('../../assets/fonts/Lato-Regular.ttf'),
+        'LatoBold': require('../../assets/fonts/Lato-Bold.ttf')
+    })
+    if (!loaded) {
+        return <AppLoading />
+    } else {
+        return (
+            <UserContext.Consumer>
+                {
+                    context => (
+                        <View style={styles.container}>
+                            <StatusBar translucent backgroundColor="#050504" barStyle={"light-content"} />
+                            <NavigationContainer theme={context.theme}>
+                                {
+                                    context.user ? <Tab.Navigator
+                                        screenOptions={({ route, navigation }) => ({
+                                            tabBarHideOnKeyboard: true,
+                                            tabBarLabelStyle: {
+                                                color: '#c4c0c0'
+                                            },
+                                            tabBarItemStyle: {
+                                                height: 45
+                                            },
+                                            tabBarStyle: {
+                                                backgroundColor: '#050504'
+                                            },
+                                            tabBarIcon: ({ focused, color, size }) => {
+                                                let iconName;
+                                                if (route.name === 'Home') {
+                                                    iconName = focused ? 'home' : 'home'
+                                                } else if ((route.name === 'Statistic')) {
+                                                    iconName = focused
+                                                        ? 'line-chart'
+                                                        : 'line-chart';
+                                                } else if ((route.name === 'Settings')) {
+                                                    iconName = focused
+                                                        ? 'cog'
+                                                        : 'cog';
+                                                    //navigation.setParams({handleDarkMode: handleDarkMode()})
+                                                }
+                                                return <FontAwesome name={iconName} size={size} color={focused ? '#e33310' : color} />;
                                             }
-                                            return <FontAwesome name={iconName} size={size} color={focused ? '#e33310' : color} />;
-                                        }
-                                    })}
-                                >
-                                    <Tab.Screen options={{ headerShown: false }} name="Home" children={(props) => <HomeStack {...props} context={context} />} />
-                                    <Tab.Screen options={{ headerShown: false }} name="Statistic" children={(props) => <StatisticStack {...props} context={context} />} />
-                                </Tab.Navigator> : <Stack.Navigator>
-                                    <Stack.Screen name="Login" children={(props) => <Authentication {...props} context={context} />} options={{ headerTitleAlign: 'center' }} />
-                                </Stack.Navigator>
-                            }
+                                        })}
+                                    >
+                                        <Tab.Screen options={{ headerShown: false }} name="Home" children={(props) => <HomeStack {...props} context={context} />} />
+                                        <Tab.Screen options={{ headerShown: false }} name="Statistic" children={(props) => <StatisticStack {...props} context={context} />} />
+                                    </Tab.Navigator> : <Stack.Navigator>
+                                        <Stack.Screen name="Login" children={(props) => <Authentication {...props} context={context} />} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+                                    </Stack.Navigator>
+                                }
 
-                        </NavigationContainer>
-                    </View>
-                )
-            }
-        </UserContext.Consumer>
+                            </NavigationContainer>
+                        </View>
+                    )
+                }
+            </UserContext.Consumer>
 
-    )
+        )
+    }
 }
 
 const styles = StyleSheet.create({

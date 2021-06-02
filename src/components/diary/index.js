@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Dimensions, TextInput, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Picker } from '@react-native-community/picker'
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -9,6 +9,8 @@ import Constants from 'expo-constants';
 import * as _ from 'lodash';
 import DateTimePicker from '@react-native-community/datetimepicker'
 import moment from 'moment';
+import Text from '../text/regular';
+import TextBold from '../text/bold';
 
 const { width, height } = Dimensions.get('window');
 
@@ -182,8 +184,8 @@ class Diary extends React.Component {
                                  <View style={styles.item}>
                                      <Image source={{ uri: month.data.url }} style={{ width: width-85, height: 400, opacity: .5 }}/>
                                      <View style={styles.viewAbs}>
-                                        <Text style={styles.textAbs}>{month.data.month}</Text>
-                                        <Text style={styles.textAbs}>{mapMonth(month.data.month)}</Text>
+                                        <TextBold style={styles.textAbs}>{month.data.month}</TextBold>
+                                        <TextBold style={styles.textAbs}>{mapMonth(month.data.month)}</TextBold>
                                      </View>
                                  </View>
                              </TouchableOpacity>) : null

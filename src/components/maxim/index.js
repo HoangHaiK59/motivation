@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Animated, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { View, StyleSheet, Animated, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Image } from 'react-native';
 import { Feather, FontAwesome, Entypo as Icon } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import Modal from 'react-native-modal';
@@ -24,6 +24,7 @@ import {
 } from 'react-native-redash/lib/module/v1';
 import { ModalStyles } from '../../common/styles/modal.style';
 import * as Font from 'expo-font';
+import Text from '../text/regular'
 
 const { width } = Dimensions.get('window');
 
@@ -317,6 +318,7 @@ class Maxim extends React.Component {
                         {...{ onScroll }}
                         showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{paddingVertical: Constants.statusBarHeight}}
                         data={this.state.maxims}
                         renderItem={({ index, item }) => <Wallet
                             onSwipe={() => {

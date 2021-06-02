@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Animated, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, Image, Dimensions, FlatList, SafeAreaView, TouchableOpacity, TextInput, Animated, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
 import Firebase from '../../../firebase';
 import { DB } from '../../../helper/db';
@@ -9,6 +9,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome, Entypo as Icon } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { ModalStyles, placeHolderTextColor } from '../../../common/styles/modal.style';
+import Text from '../../text/regular';
+import TextBold from '../../text/bold';
 
 const { width } = Dimensions.get('window');
 
@@ -31,7 +33,7 @@ const height = wHeight - 64;
 
 const AnimatedFlatlist = Animated.createAnimatedComponent(FlatList);
 
-const Wallet = ({ y, id, index, year, collectionId, image, title, name, selected, onSelect }) => {
+const Wallet = React.memo(({ y, id, index, year, collectionId, image, title, name, selected, onSelect }) => {
     const position = Animated.subtract(index * CARD_HEIGHT, y);
     const isDisappearing = -CARD_HEIGHT;
     const isTop = 0;
@@ -79,7 +81,7 @@ const Wallet = ({ y, id, index, year, collectionId, image, title, name, selected
             />
         </Animated.View>
     )
-}
+})
 
 const Item = ({ id, year, collectionId, image, title, name, selected, onSelect }) => {
     return <TouchableOpacity
@@ -91,17 +93,17 @@ const Item = ({ id, year, collectionId, image, title, name, selected, onSelect }
         ]}>
         <View style={styles.itemLeft}>
             <View style={styles.textInLeft}>
-                <Text style={[styles.text, { fontWeight: 'bold' }]}>{id.slice(0, id.indexOf('-'))}</Text>
-                <Text style={[styles.text, { fontWeight: 'bold' }]}>{id.slice(id.indexOf('-') + 1, id.length)}</Text>
+                <TextBold style={[styles.text, { fontWeight: 'bold' }]}>{id.slice(0, id.indexOf('-'))}</TextBold>
+                <TextBold style={[styles.text, { fontWeight: 'bold' }]}>{id.slice(id.indexOf('-') + 1, id.length)}</TextBold>
             </View>
         </View>
         <View style={styles.itemRight}>
             {
                 image !== '' ? <Image source={{ uri: image }} style={styles.image} /> :
                     <View style={{ width: width - 70, height: 'auto' }}>
-                        <Text style={[styles.textStyle, { fontWeight: 'bold' }]}>&#8221;</Text>
+                        <TextBold style={[styles.textStyle, { fontWeight: 'bold' }]}>&#8221;</TextBold>
                         <Text style={[styles.textStyle, { alignSelf: 'center' }]}>{title}</Text>
-                        <Text style={[styles.textStyle, { alignSelf: 'flex-end', fontWeight: 'bold' }]}>&#8221;</Text>
+                        <TextBold style={[styles.textStyle, { alignSelf: 'flex-end', fontWeight: 'bold' }]}>&#8221;</TextBold>
                     </View>
             }
         </View>

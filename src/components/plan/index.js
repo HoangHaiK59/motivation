@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, SectionList, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, FlatList, Dimensions, SectionList, SafeAreaView, TouchableOpacity } from 'react-native';
 import * as _ from 'lodash';
 import moment from 'moment';
 const { width } = Dimensions.get('window');
@@ -8,8 +8,9 @@ import Doughnut from '../doughnut';
 import { FontAwesome } from '@expo/vector-icons'
 import Schedule from './schedule';
 import firebase from '../../firebase';
+import Text from '../text/regular'
 
-const Item = ({ item, index, onUpdateProgress }) => {
+const Item = React.memo(({ item, index, onUpdateProgress }) => {
     return <TouchableOpacity onPress={() => onUpdateProgress(item)}>
         <View style={styles.sectionItem}>
             <View style={styles.index}>
@@ -24,7 +25,22 @@ const Item = ({ item, index, onUpdateProgress }) => {
             </View>
         </View>
     </TouchableOpacity>
-}
+})
+
+const ItemDate = React.memo(({ item, index, date, changeDate }) => (
+    <TouchableOpacity onPress={() => changeDate(item)}>
+        <View key={item.key} style={styles.item}>
+            <View style={[styles.children, item.day === date.getDate() && { backgroundColor: '#4c7cf5' }]}>
+                <Text style={styles.text}>{item.th}</Text>
+                <View style={styles.date}>
+                    <Text style={styles.text}>{item.day}</Text>
+                </View>
+            </View>
+        </View>
+    </TouchableOpacity>
+))
+
+
 
 class Plan extends React.Component {
     constructor(props) {
@@ -67,13 +83,15 @@ class Plan extends React.Component {
         // this.goIndex();
     }
 
-    getTodayPlan() {
+    getTodayPlan(date = null) {
         this.firestore.collection('plan')
-            .where('created', '==', moment(new Date()).format('DD/MM/YYYY'))
+            .where('created', '==', moment(date || this.state.date).format('DD/MM/YYYY'))
             .get()
             .then(snapShot => {
                 if (snapShot.docs.length > 0) {
                     this.setState({ plan: [...snapShot.docs.map(doc => ({ id: doc.id, ...doc.data() }))] })
+                } else {
+                    this.setState({ plan: [] })
                 }
             })
     }
@@ -89,13 +107,18 @@ class Plan extends React.Component {
         // monthTemp = monthTemp.map(m => ({day: m, th: moment('01/05/2021').format('ddd')}))
         monthTemp = monthTemp.map(m => {
             const dateString = (m < 10 ? `0${m}` : m) + '/' + (month < 10 ? '0' + month : month) + '/' + year;
-            return { day: m, th: moment(dateString, 'DD/MM/YYYY').format('ddd'), key: m + moment(dateString, 'DD/MM/YYYY').format('ddd') }
+            return { date: dateString, day: m, th: moment(dateString, 'DD/MM/YYYY').format('ddd'), key: m + moment(dateString, 'DD/MM/YYYY').format('ddd') }
         })
         this.setState({ month: monthTemp, numInMonth: numDay });
     }
 
     getItemLayout = (data, index) => {
         return { length: 60, offset: 60 * index, index }
+    }
+
+    changeDate(item) {
+        this.setState({ date: moment(item.date, 'DD/MM/YYYY').toDate() })
+        this.getTodayPlan(moment(item.date, 'DD/MM/YYYY').toDate())
     }
 
     render() {
@@ -110,14 +133,7 @@ class Plan extends React.Component {
                             data={this.state.month}
                             getItemLayout={this.getItemLayout}
                             initialScrollIndex={index}
-                            renderItem={({ item, index }) => (<View key={item.key} style={styles.item}>
-                                <View style={[styles.children, item.day === this.state.date.getDate() && { backgroundColor: '#4c7cf5' }]}>
-                                    <Text style={styles.text}>{item.th}</Text>
-                                    <View style={styles.date}>
-                                        <Text style={styles.text}>{item.day}</Text>
-                                    </View>
-                                </View>
-                            </View>)}
+                            renderItem={({ item, index }) => <ItemDate item={item} index={index} date={this.state.date} changeDate={this.changeDate.bind(this)} />}
                         />
                     </View>
                     <SafeAreaView style={styles.plan}>

@@ -13,7 +13,10 @@ export const UserContext = React.createContext({
 
 const getUser = async () => {
     const result = await AsyncStorage.getItem('userFirebase');
-    return JSON.parse(result)
+    if (result) {
+        return JSON.parse(result)
+    }
+    return null;
 }
 
 const getTheme = async () => {

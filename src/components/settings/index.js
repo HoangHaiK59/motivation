@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import firebase from '../../firebase';
 import { useTheme } from '@react-navigation/native';
 import { schedulePushNotification } from '../../services/expo-notify';
+import Text from '../text/regular';
+import TextBold from '../text/bold';
 
 export default function Settings(props) {
     const { colors, dark } = useTheme();
@@ -22,32 +24,36 @@ export default function Settings(props) {
     }
     const { context } = props;
     return (
-        <ScrollView showsHorizontalScrollIndicator={false} contentContainerStyle={{ marginTop: 10, flexGrow: 1, paddingHorizontal: 10 }}>
+        <ScrollView showsHorizontalScrollIndicator={false} contentContainerStyle={{ marginTop: 10, flexGrow: 1, paddingHorizontal: 25 }}>
             <View style={styles.container}>
-                <Text style={[styles.textHighlight, { color: colors.text }]}>Account</Text>
+                <TextBold style={[styles.textHighlight, { color: colors.text }]}>Account</TextBold>
                 <View style={[styles.box, { marginTop: 10 }]}>
                     <View style={styles.avatar}>
                         <Text style={[styles.text, { color: colors.text }]}>{context.user.email.slice(0, 2).toUpperCase()}</Text>
                     </View>
                 </View>
-                <Text style={[styles.textHighlight, { marginTop: 10, color: colors.text }]}>Device</Text>
-                <View style={[styles.split, { marginTop: 10 }]}>
-                    <Text style={[styles.text, { color: colors.text }]}>
-                        Dark Theme
-                    </Text>
-                    <Switch
-                        trackColor={{ false: colors.text, true: colors.text }}
-                        thumbColor={dark ? '#fff' : '#000'}
-                        onValueChange={() => context.setThemeProvider(!dark)}
-                        value={dark}
-                    />
+                <TextBold style={[styles.textHighlight, { marginTop: 10, color: colors.text }]}>Device</TextBold>
+                <View style={styles.device}>
+                    <View style={[styles.split, { marginTop: 10 }]}>
+                        <View style={{ flex: 1 }}>
+                            <Text style={[styles.text, { color: colors.text }]}>
+                                Dark
+                            </Text>
+                        </View>
+                        <Switch
+                            trackColor={{ false: colors.text, true: colors.text }}
+                            thumbColor={dark ? '#fff' : '#000'}
+                            onValueChange={() => context.setThemeProvider(!dark)}
+                            value={dark}
+                        />
+                    </View>
                     <TouchableOpacity onPress={sendNotifiCation} style={{ marginTop: 10 }}>
                         <View style={styles.button}>
                             <Text style={[styles.text, { color: colors.text }]}>Send notification</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
-                <Text style={[styles.textHighlight, { marginTop: 10, color: colors.text }]}>Other</Text>
+                <TextBold style={[styles.textHighlight, { marginTop: 10, color: colors.text }]}>Other</TextBold>
                 <TouchableOpacity onPress={signOut} style={{ marginTop: 10 }}>
                     <View style={styles.button}>
                         <Text style={[styles.text, { color: colors.text }]}>Sign out</Text>
@@ -71,14 +77,14 @@ const styles = StyleSheet.create({
         flexDirection: 'column'
     },
     text: {
-        fontSize: 18
+        fontSize: 15
     },
     textDescription: {
         fontSize: 12
     },
     textHighlight: {
-        fontSize: 20,
-        fontWeight: 'bold'
+        fontSize: 18,
+        fontWeight: '600'
     },
     box: {
         width: '100%',
@@ -98,6 +104,12 @@ const styles = StyleSheet.create({
     split: {
         width: '100%',
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        flexDirection: 'row'
+    },
+    device: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
     }
 })

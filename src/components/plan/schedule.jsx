@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TextInput, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import Modal from 'react-native-modal';
 import { ModalStyles, placeHolderTextColor } from '../../common/styles/modal.style';
 import base64 from 'base-64';

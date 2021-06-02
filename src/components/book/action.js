@@ -9,7 +9,7 @@ const RATIO = 100 / 320;
 const HEIGHT = WIDTH * RATIO;
 const MARGIN = 8;
 
-export const CARD_HEIGHT = HEIGHT + MARGIN * 2;
+export const CARD_HEIGHT = HEIGHT + MARGIN * 2 + 20;
 
 
 export default function Action({ x, deleteOpacity }) {
