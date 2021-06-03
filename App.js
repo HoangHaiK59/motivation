@@ -4,6 +4,7 @@ import { Platform, InteractionManager, LogBox } from 'react-native';
 import Container from './src/container';
 import { decode, encode } from 'base-64';
 import UserProvider from './src/components/context/user.context';
+import { MenuProvider } from 'react-native-popup-menu'
 
 if (!global.btoa) {
   global.btoa = encode;
@@ -73,7 +74,9 @@ const instructions = Platform.select({
 export default function App() {
   return (
     <UserProvider>
-      <Container />
+      <MenuProvider>
+        <Container />
+      </MenuProvider>
     </UserProvider>
   )
 }

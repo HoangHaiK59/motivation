@@ -32,6 +32,7 @@ import ViewInvest from '../components/investment/view';
 import { useNotifications } from '../services/expo-notify';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
+import Life from '../components/life';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -81,6 +82,7 @@ function HomeStack({ context }) {
             <Stack.Screen name="Focus" component={Focus} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Sleep" component={Sleep} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Relax Action" component={RelaxAction} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Life" component={Life} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Investment" component={Investment} options={({ route, navigation }) => ({
                 headerShown: true, headerTitle: '', headerTitleAlign: 'center', headerLeft: () => (
                     <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>

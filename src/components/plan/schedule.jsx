@@ -8,10 +8,11 @@ import PropTypes from 'prop-types';
 import { FontAwesome } from '@expo/vector-icons';
 import firebase from '../../firebase';
 import { callToastWithGravity, Duration, Gravity } from '../../services/toast';
+import Text from '../text/regular';
 
 const firestore = firebase.firestore();
 
-const Schedule = ({ visible, setVisible }) => {
+const Schedule = ({ visible, setVisible, callBackEvent }) => {
     const [schedule, setSchedule] = useState(
         {
             key: base64.encode(moment(new Date()).toISOString()),
@@ -50,7 +51,8 @@ const Schedule = ({ visible, setVisible }) => {
             .then(ref => {
                 if (ref.id) {
                     callToastWithGravity('Saved', Duration.short, Gravity.bottom);
-
+                    setVisible(false);
+                    callBackEvent();
                 }
             })
             .catch(error => {
@@ -68,7 +70,7 @@ const Schedule = ({ visible, setVisible }) => {
             ...schedule,
             data: schedule.data.map(d => {
                 if (d.key === key) {
-                    return ({...d, [field]: text})
+                    return ({ ...d, [field]: text })
                 }
                 return d
             })
@@ -85,15 +87,25 @@ const Schedule = ({ visible, setVisible }) => {
     >
         <View style={ModalStyles.mainView}>
             <View style={ModalStyles.contentView}>
+                <View style={ModalStyles.titleWithBtn}>
+                    <View style={{flex: 1}}>
+                        <Text style={ModalStyles.titleText}>Schedule</Text>
+                    </View>
+                    <View style={{ flex: 0 }}>
+                        <TouchableOpacity onPress={handleAddItem}>
+                            <FontAwesome name='plus-circle' size={25} color='#c72712' />
+                        </TouchableOpacity>
+                    </View>
+                </View>
                 {
                     schedule.data.length > 0 && <View style={styles.container}>
                         {
                             schedule.data.map(d => <View key={d.key} style={styles.group}>
                                 <View style={styles.item}>
-                                    <TextInput placeholder="name" placeholderTextColor={placeHolderTextColor} multiline={true} value={d.name} onChangeText={text => onChangeText(text,d.key,'name')} style={[ModalStyles.input, { width: '100%' }]} />
+                                    <TextInput placeholder="name" placeholderTextColor={placeHolderTextColor} multiline={true} value={d.name} onChangeText={text => onChangeText(text, d.key, 'name')} style={[ModalStyles.input, { width: '100%' }]} />
                                 </View>
                                 <View style={styles.item}>
-                                    <TextInput placeholder="content" placeholderTextColor={placeHolderTextColor} multiline={true} value={d.content} onChangeText={text => onChangeText(text,d.key,'content')} style={[ModalStyles.input, { width: '100%' }]} />
+                                    <TextInput placeholder="content" placeholderTextColor={placeHolderTextColor} multiline={true} value={d.content} onChangeText={text => onChangeText(text, d.key, 'content')} style={[ModalStyles.input, { width: '100%' }]} />
                                 </View>
                                 <TouchableOpacity onPress={() => removeItem(d.key)}>
                                     <FontAwesome name='minus-circle' size={25} color='#e88c35' />
@@ -104,13 +116,8 @@ const Schedule = ({ visible, setVisible }) => {
                 }
                 <View style={styles.group}>
                     <View style={styles.item}>
-                        <TouchableOpacity onPress={handleAddItem} style={[ModalStyles.buttonOther, {width: '100%'}]}>
-                            <FontAwesome name='plus-circle' size={30} color='#fff' />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.item}>
-                        <TouchableOpacity onPress={saveSchedule} style={[ModalStyles.button, {width: '100%'}]}>
-                            <FontAwesome name='check-circle' size={30} color='#fff' />
+                        <TouchableOpacity onPress={saveSchedule} style={[ModalStyles.button, { width: '100%' }]}>
+                            <FontAwesome name='check-circle' size={25} color='#fff' />
                         </TouchableOpacity>
                     </View>
                 </View>

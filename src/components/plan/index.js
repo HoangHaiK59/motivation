@@ -9,6 +9,14 @@ import { FontAwesome } from '@expo/vector-icons'
 import Schedule from './schedule';
 import firebase from '../../firebase';
 import Text from '../text/regular'
+import UpdateProgress from './updateProgress';
+import {
+    Menu,
+    MenuOptions,
+    MenuOption,
+    MenuTrigger,
+} from 'react-native-popup-menu';
+import { callToastWithGravity, Duration, Gravity } from '../../services/toast';
 
 const Item = React.memo(({ item, index, onUpdateProgress }) => {
     return <TouchableOpacity onPress={() => onUpdateProgress(item)}>
@@ -52,7 +60,8 @@ class Plan extends React.Component {
             numInMonth: 0,
             visible: false,
             plan: [],
-            updateVisible: false
+            updateVisible: false,
+            itemUpdate: null
         }
 
         this.firestore = firebase.firestore();
@@ -97,7 +106,7 @@ class Plan extends React.Component {
     }
 
     onUpdateProgress(item) {
-
+        this.setState({ itemUpdate: item, updateVisible: true })
     }
 
     async getDayInMonth(month, year) {
@@ -121,6 +130,34 @@ class Plan extends React.Component {
         this.getTodayPlan(moment(item.date, 'DD/MM/YYYY').toDate())
     }
 
+    callBackEvent() {
+        this.getTodayPlan();
+    }
+
+    markAllDone() {
+        this.firestore.doc(`plan/${this.state.plan[0].id}`)
+            .update({ data: this.state.plan[0].data.map(d => ({ ...d, progress: 100 })) })
+            .then(() => {
+                callToastWithGravity('Mark all done success!', Duration.short, Gravity.bottom)
+                this.getTodayPlan();
+            })
+            .catch(error => {
+
+            })
+    }
+
+    resetProgress() {
+        this.firestore.doc(`plan/${this.state.plan[0].id}`)
+            .update({ data: this.state.plan[0].data.map(d => ({ ...d, progress: 0 })) })
+            .then(() => {
+                callToastWithGravity('Reset success!', Duration.short, Gravity.bottom)
+                this.getTodayPlan();
+            })
+            .catch(error => {
+
+            })
+    }
+
     render() {
         const index = this.state.month.findIndex(m => m.day === this.state.date.getDate());
         return (
@@ -133,11 +170,13 @@ class Plan extends React.Component {
                             data={this.state.month}
                             getItemLayout={this.getItemLayout}
                             initialScrollIndex={index}
+                            showsHorizontalScrollIndicator={false}
                             renderItem={({ item, index }) => <ItemDate item={item} index={index} date={this.state.date} changeDate={this.changeDate.bind(this)} />}
                         />
                     </View>
                     <SafeAreaView style={styles.plan}>
                         <SectionList
+                            showsVerticalScrollIndicator={false}
                             sections={this.state.plan}
                             keyExtractor={(item) => item.key}
                             renderItem={({ item, index }) => (
@@ -146,7 +185,17 @@ class Plan extends React.Component {
                             renderSectionHeader={({ section: { title } }) => (
                                 <View style={styles.sectionHeader}>
                                     <Text style={styles.text}>{title}</Text>
-                                    <Text style={styles.text}>More</Text>
+                                    <Menu >
+                                        <MenuTrigger>
+                                            <FontAwesome name='ellipsis-v' size={20} color='#fff' />
+                                        </MenuTrigger>
+                                        <MenuOptions customStyles={optionStyles}>
+                                            <MenuOption onSelect={this.markAllDone.bind(this)} text="Mark all done" />
+                                            <MenuOption onSelect={this.resetProgress.bind(this)} text="Reset all" />
+                                            <MenuOption text="Take a copy" />
+                                            <MenuOption text="Delete" />
+                                        </MenuOptions>
+                                    </Menu>
                                 </View>
                             )}
                         />
@@ -160,7 +209,20 @@ class Plan extends React.Component {
                     </View>
                 </View>
                 {
-                    this.state.visible && <Schedule visible={this.state.visible} setVisible={this.handleShowOrClose.bind(this)} />
+                    this.state.visible && <Schedule
+                        visible={this.state.visible}
+                        setVisible={this.handleShowOrClose.bind(this)}
+                        callBackEvent={this.callBackEvent.bind(this)}
+                    />
+                }
+                {
+                    this.state.updateVisible && <UpdateProgress
+                        visible={this.state.updateVisible}
+                        setVisible={this.handleUpdateShowOrClose.bind(this)}
+                        schedule={this.state.plan[0]}
+                        item={this.state.itemUpdate}
+                        callBackEvent={this.callBackEvent.bind(this)}
+                    />
                 }
             </SafeAreaView>
         )
@@ -283,5 +345,26 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     }
 });
+
+const optionStyles = {
+    optionsContainer: {
+        padding: 5,
+        width: 120
+    },
+    optionsWrapper: {
+        //backgroundColor: 'purple',
+    },
+    optionWrapper: {
+        //backgroundColor: 'yellow',
+        margin: 5,
+    },
+    optionTouchable: {
+        // underlayColor: 'gold',
+        activeOpacity: 70,
+    },
+    optionText: {
+        color: 'brown',
+    },
+}
 
 export default Plan;

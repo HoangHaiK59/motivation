@@ -32,6 +32,14 @@ export const ModalStyles = StyleSheet.create({
         height: 50,
         marginBottom: 10
     },
+    titleWithBtn: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 50,
+        marginBottom: 10,
+        flexDirection: 'row'
+    },
     titleText: { 
         color: '#000', 
         fontSize: 20, 
