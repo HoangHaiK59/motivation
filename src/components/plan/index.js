@@ -17,6 +17,7 @@ import {
     MenuTrigger,
 } from 'react-native-popup-menu';
 import { callToastWithGravity, Duration, Gravity } from '../../services/toast';
+import { Entypo as Icon } from '@expo/vector-icons';
 
 const Item = React.memo(({ item, index, onUpdateProgress }) => {
     return <TouchableOpacity onPress={() => onUpdateProgress(item)}>
@@ -83,7 +84,30 @@ class Plan extends React.Component {
         this.setState({ updateVisible })
     }
 
+    setOptions() {
+        this.props.navigation.setOptions({
+            headerLeftContainerStyle: {
+                paddingLeft: 8
+            },
+            headerRightContainerStyle: {
+                paddingRight: 8
+            },
+            headerTitle: '',
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => back()}>
+                    <Icon name='chevron-left' size={25} color='#fff' />
+                </TouchableOpacity>
+            ),
+            headerRight: () => (
+                <TouchableOpacity onPress={this.handleShowOrClose.bind(this, true)}>
+                    <Icon name='circle-with-plus' size={25} color="#77a3a6" />
+                </TouchableOpacity>
+            )
+        })
+    }
+
     componentDidMount() {
+        this.setOptions();
         this.getDayInMonth(this.state.date.getMonth() + 1, this.state.date.getFullYear())
         this.getTodayPlan();
     }
@@ -174,42 +198,54 @@ class Plan extends React.Component {
                             renderItem={({ item, index }) => <ItemDate item={item} index={index} date={this.state.date} changeDate={this.changeDate.bind(this)} />}
                         />
                     </View>
-                    <SafeAreaView style={styles.plan}>
-                        <SectionList
-                            showsVerticalScrollIndicator={false}
-                            sections={this.state.plan}
-                            keyExtractor={(item) => item.key}
-                            renderItem={({ item, index }) => (
-                                <Item item={item} index={index} onUpdateProgress={this.onUpdateProgress.bind(this)} />
-                            )}
-                            renderSectionHeader={({ section: { title } }) => (
-                                <View style={styles.sectionHeader}>
-                                    <Text style={styles.text}>{title}</Text>
-                                    <Menu >
-                                        <MenuTrigger>
-                                            <FontAwesome name='ellipsis-v' size={20} color='#fff' />
-                                        </MenuTrigger>
-                                        <MenuOptions customStyles={optionStyles}>
-                                            <MenuOption onSelect={this.markAllDone.bind(this)} text="Mark all done" />
-                                            <MenuOption onSelect={this.resetProgress.bind(this)} text="Reset all" />
-                                            <MenuOption text="Take a copy" />
-                                            <MenuOption text="Delete" />
-                                        </MenuOptions>
-                                    </Menu>
-                                </View>
-                            )}
-                        />
-                    </SafeAreaView>
-                    <View style={styles.create}>
+                    {
+                        this.state.plan.length === 0 && <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ color: '#fff', fontSize: 16 }}>No plan today.</Text>
+                            <Text style={{ color: '#e34d4d' }}>Create now !</Text>
+                            {/* <TouchableOpacity style={{width: 90, borderRadius: 100, backgroundColor: '#db1616', padding: 4, marginTop: 4}} onPress={this.handleShowOrClose.bind(this, true)}>
+                                <Text style={{ color: '#fff' }}>Create now!</Text>
+                            </TouchableOpacity> */}
+                        </View>
+                    }
+                    {
+                        this.state.plan.length > 0 && <SafeAreaView style={styles.plan}>
+                            <SectionList
+                                showsVerticalScrollIndicator={false}
+                                sections={this.state.plan}
+                                keyExtractor={(item) => item.key}
+                                renderItem={({ item, index }) => (
+                                    <Item item={item} index={index} onUpdateProgress={this.onUpdateProgress.bind(this)} />
+                                )}
+                                renderSectionHeader={({ section: { title } }) => (
+                                    <View style={styles.sectionHeader}>
+                                        <Text style={styles.text}>{title}</Text>
+                                        <Menu >
+                                            <MenuTrigger>
+                                                <FontAwesome name='ellipsis-v' size={20} color='#fff' />
+                                            </MenuTrigger>
+                                            <MenuOptions customStyles={optionStyles}>
+                                                <MenuOption onSelect={this.markAllDone.bind(this)} text="Mark all done" />
+                                                <MenuOption onSelect={this.resetProgress.bind(this)} text="Reset all" />
+                                                <MenuOption text="Take a copy" />
+                                                <MenuOption text="Delete" />
+                                            </MenuOptions>
+                                        </Menu>
+                                    </View>
+                                )}
+                            />
+                        </SafeAreaView>
+                    }
+                    {/* <View style={styles.create}>
                         <TouchableOpacity style={styles.createBtn} onPress={this.handleShowOrClose.bind(this, true)}>
                             <View>
                                 <FontAwesome color="#77a3a6" size={35} name="plus-circle" />
                             </View>
                         </TouchableOpacity>
-                    </View>
+                    </View> */}
                 </View>
                 {
                     this.state.visible && <Schedule
+                        date={this.state.date}
                         visible={this.state.visible}
                         setVisible={this.handleShowOrClose.bind(this)}
                         callBackEvent={this.callBackEvent.bind(this)}

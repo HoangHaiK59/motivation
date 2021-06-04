@@ -8,6 +8,10 @@ export const ModalStyles = StyleSheet.create({
         justifyContent: 'flex-end',
         width: width - 20
     },
+    mainViewAvoidKeyboard: {
+        justifyContent: 'flex-end',
+        width: width - 20
+    },
     contentView: {
         backgroundColor: '#fff',
         shadowOffset: {
