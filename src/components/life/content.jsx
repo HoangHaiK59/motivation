@@ -95,7 +95,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         //flex: 1,
         paddingBottom: 24,
-        marginBottom: 10
+        marginBottom: 10,
+        paddingHorizontal: 16
     },
     item: {
         //backgroundColor: '#f9c2ff',

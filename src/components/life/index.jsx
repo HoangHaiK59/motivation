@@ -85,9 +85,10 @@ const Life = props => {
 const styles = StyleSheet.create({
     main: {
         flexGrow: 1,
-        paddingVertical: Constants.statusBarHeight,
+        //paddingVertical: Constants.statusBarHeight,
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        paddingTop: 12
     },
     info: {
         flex: 0.5,

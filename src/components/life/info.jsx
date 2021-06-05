@@ -40,7 +40,6 @@ const Story = ({route, navigation}) => {
 const styles = StyleSheet.create({
     main: {
         flexGrow: 1,
-        paddingHorizontal: 12,
         paddingTop: Constants.statusBarHeight
     },
     container: {
