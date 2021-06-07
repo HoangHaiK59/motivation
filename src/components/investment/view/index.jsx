@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet, Image, Dimensions } from 'react-native';
-import firebase from '../../../firebase';
+import firebase from '../../../investment.firebase';
 import HTML from 'react-native-render-html';
 
 const firestore = firebase.firestore();
@@ -14,7 +14,7 @@ const ViewInvest = ({route, navigation}) => {
         getDoc()
     }, [])
     const getDoc = () => {
-        firestore.doc(`investment/${id}`)
+        firestore.doc(`posts/${id}`)
         .get()
         .then(doc => {
             if (doc.exists) {

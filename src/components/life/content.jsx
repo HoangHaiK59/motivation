@@ -47,7 +47,7 @@ export default function Content({ animatedValue , style: {header, item} }) {
                     />
                 </Animated.View>
                 <View style={styles.headerContainer}>
-                    <Animated.Text style={[styles.headerName, { opacity }]}>{header}</Animated.Text>
+                    <Animated.Text style={[styles.headerNameSm, { opacity }]}>{header}</Animated.Text>
                 </View>
             </View>
             <View style={styles.header}>
@@ -85,6 +85,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         fontSize: 48,
+        fontWeight: 'bold'
+    },
+    headerNameSm: {
+        textAlign: 'center',
+        color: 'white',
+        fontSize: 32,
         fontWeight: 'bold'
     },
     header: {

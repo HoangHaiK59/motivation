@@ -1,32 +1,17 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { StyleSheet, View, FlatList, SafeAreaView, TouchableOpacity, Image } from 'react-native';
-import Constants from 'expo-constants';
-import Text from '../text/regular';
+import { StyleSheet, View, SafeAreaView, TouchableOpacity, TextInput, KeyboardAvoidingView } from 'react-native';
 import TextBold from '../text/bold';
 import { Entypo as Icon } from '@expo/vector-icons';
 import New from './create';
 import firebase from '../../firebase';
+import { AnimatedFlatList } from '../common/flatlist';
 
 const firestore = firebase.firestore();
-
-const Item = ({item, index, onPress}) => {
-    return (
-        <TouchableOpacity onPress={() => onPress(item)}>
-            <View style={styles.card}>
-                <View style={styles.left}>
-                    <Image source={{uri: item.url}} style={styles.image} />
-                </View>
-                <View style={styles.right}>
-                    <Text style={{color: '#fff'}}>{item.name}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-    )
-}
 
 const Life = props => {
     const [stories, setStories] = useState([]);
     const [visible, setVisible] = useState(false);
+    const [filter, setFilter] = useState('');
     useLayoutEffect(() => {
         props.navigation.setOptions({
             headerLeftContainerStyle: {
@@ -57,6 +42,16 @@ const Life = props => {
     const openOrClose = (visible) => {
         setVisible(visible)
     }
+    const getStoriesByFilter = () => {
+        firestore.collection('life')
+        .orderBy('name')
+        .where('name', '>=', filter.toUpperCase())
+        .where('name', '<=', filter.toUpperCase() + '~')
+        .get()
+        .then(snapShot => {
+            setStories(snapShot.docs.map(doc => ({id: doc.id, ...doc.data()})))
+        })
+    }
     const getStories = () => {
         firestore.collection('life')
         .get()
@@ -64,16 +59,29 @@ const Life = props => {
             setStories(snapShot.docs.map(doc => ({id: doc.id, ...doc.data()})))
         })
     }
+    const back = () => {
+        props.navigation.goBack();
+    }
     return (
         <SafeAreaView style={styles.main}>
             <View style={styles.info}>
                 <TextBold style={styles.title}>Recent Post</TextBold>
+                <TextInput
+                placeholder="Search.."
+                placeholderTextColor={styles.placeholderText.color}
+                style={styles.input}
+                value={filter}
+                onChangeText={filter => setFilter(filter)}
+                returnKeyType="search"
+                onSubmitEditing={getStoriesByFilter}
+                />
             </View>
-            <FlatList
+            <AnimatedFlatList
             contentContainerStyle={{paddingHorizontal: 12}}
-            data={stories}
             showsVerticalScrollIndicator={false}
-            renderItem={({item, index}) => <Item item={item} index={index} onPress={onPress} />}
+            data={stories}
+            typeRender={'BOTH'}
+            onPressItem={onPress}
             />
             {
                 visible && <New visible={visible} setVisible={openOrClose} callback={getStories} />
@@ -91,31 +99,28 @@ const styles = StyleSheet.create({
         paddingTop: 12
     },
     info: {
-        flex: 0.5,
-        paddingHorizontal: 12
+        paddingHorizontal: 12,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-evenly',
+        height: 80,
+        paddingBottom: 5
     },
     title: {
-        fontSize: 17,
+        fontSize: 16,
         fontWeight: '700',
         color: '#fff'
     },
-    card: {
-        display: 'flex',
-        flexDirection: 'row',
-        backgroundColor: '#1c1b1b',
-        height: 84
+    input: {
+        borderRadius: 5,
+        padding: 5,
+        backgroundColor: '#1d1f1f',
+        color: '#949999'
     },
-    left: {
-        flex: .5
-    },
-    right: {
-        flex: 1
-    },
-    image: {
-        resizeMode: 'cover',
-        width: 100,
-        height: 100
+    placeholderText: {
+        color: '#949999'
     }
+
 })
 
 export default Life;
