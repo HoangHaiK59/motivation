@@ -7,7 +7,7 @@ import { FontAwesome, Entypo as Icon } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import * as Font from 'expo-font';
 import * as ImagePicker from 'expo-image-picker';
-import { moment } from 'globalthis/implementation';
+import moment from 'moment';
 import { ModalStyles, placeHolderTextColor } from '../../common/styles/modal.style';
 
 const { width, height } = Dimensions.get('window');

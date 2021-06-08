@@ -194,7 +194,8 @@ const styles = StyleSheet.create({
         padding: 20,
         //marginVertical: 16,
         //marginHorizontal: 8,
-        height: CARD_HEIGHT,
+        minHeight: CARD_HEIGHT,
+        maxHeight: CARD_HEIGHT + 200,
         width: WIDTH
     },
     text: {

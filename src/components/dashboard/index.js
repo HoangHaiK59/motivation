@@ -164,6 +164,14 @@ export default function Dashboard(props) {
                         </TouchableWithoutFeedback>
                     </LinearGradient>
 
+                    <LinearGradient colors={['#ff5f6d', '#ffc371']} style={[styles.item]}>
+                        <TouchableWithoutFeedback onPress={() => handlePress('Vocabulary')}>
+                            <Animated.View style={[styles.button]}>
+                                <Text style={[styles.text, { padding: 5 }]}>Vocabulary</Text>
+                            </Animated.View>
+                        </TouchableWithoutFeedback>
+                    </LinearGradient>
+
                 </View>
             </View>
         </ScrollView>

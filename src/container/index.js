@@ -34,6 +34,7 @@ import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import Life from '../components/life';
 import Story from '../components/life/info';
+import Vocabulary from '../components/vocabulary';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -85,6 +86,7 @@ function HomeStack({ context }) {
             <Stack.Screen name="Relax Action" component={RelaxAction} options={{ headerShown: false, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Life" component={Life} options={{ headerShown: true, headerTitleAlign: 'center' }} />
             <Stack.Screen name="Life Story" component={Story} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Vocabulary" component={Vocabulary} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
             <Stack.Screen name="Investment" component={Investment} options={({ route, navigation }) => ({
                 headerShown: true, headerTitle: '', headerTitleAlign: 'center', headerLeft: () => (
                     <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
@@ -153,7 +155,7 @@ export default function Container() {
                                                 let iconName;
                                                 if (route.name === 'Home') {
                                                     iconName = focused ? 'home' : 'home'
-                                                } else if ((route.name === 'Statistic')) {
+                                                } else if ((route.name === 'Analysis')) {
                                                     iconName = focused
                                                         ? 'line-chart'
                                                         : 'line-chart';
@@ -168,7 +170,7 @@ export default function Container() {
                                         })}
                                     >
                                         <Tab.Screen options={{ headerShown: false }} name="Home" children={(props) => <HomeStack {...props} context={context} />} />
-                                        <Tab.Screen options={{ headerShown: false }} name="Statistic" children={(props) => <StatisticStack {...props} context={context} />} />
+                                        <Tab.Screen options={{ headerShown: false }} name="Analysis" children={(props) => <StatisticStack {...props} context={context} />} />
                                     </Tab.Navigator> : <Stack.Navigator>
                                         <Stack.Screen name="Login" children={(props) => <Authentication {...props} context={context} />} options={{ headerShown: false, headerTitleAlign: 'center' }} />
                                     </Stack.Navigator>
