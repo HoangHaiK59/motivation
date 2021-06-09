@@ -35,6 +35,7 @@ import AppLoading from 'expo-app-loading';
 import Life from '../components/life';
 import Story from '../components/life/info';
 import Vocabulary from '../components/vocabulary';
+import Synthesis from '../components/vocabulary/viewList';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -43,71 +44,220 @@ function HomeStack({ context }) {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Dashboard" children={(props) => <Dashboard {...props} context={context} />} options={({ route, navigation }) => ({
-                headerShown: true, headerTitle: '', headerTitleAlign: 'center', headerRight: props => (
+                headerShown: true,
+                headerTitle: '',
+                headerTitleAlign: 'center',
+                headerRight: props => (
                     <TouchableOpacity style={styles.cog} onPress={() => navigation.navigate('Setting')}>
                         <FontAwesome name="cog" size={20} color={context.theme.colors.text} />
                     </TouchableOpacity>
                 ), headerTitleStyle: {
                     fontFamily: 'LatoBold'
+                }, headerStyle: {
+                    backgroundColor: context.theme.colors.background
                 }
             })} />
-            <Stack.Screen name="Book" children={(props) => <Book {...props} context={context} />} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '', headerTitleStyle: { fontFamily: 'LatoBold', fontWeight: 'bold' } }} />
-            <Stack.Screen name="Sport" component={Sport} options={{ headerShown: false, headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Book" children={(props) => <Book {...props} context={context} />} options={{
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerTitle: '',
+                headerTitleStyle: {
+                    fontFamily: 'LatoBold', fontWeight: 'bold'
+                },
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
+            }} />
+            <Stack.Screen name="Sport" component={Sport} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }} />
             <Stack.Screen name="Plan" component={Plan} options={({ route, navigation }) => ({
-                headerShown: true, headerTitleAlign: 'center', headerLeft: () => (
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerLeft: () => (
                     <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
                         <FontAwesome name='chevron-left' size={20} color='white' />
                     </TouchableOpacity>
                 ),
-                headerTitleStyle: { fontFamily: 'LatoBold', fontWeight: 'bold' }
+                headerTitleStyle: {
+                    fontFamily: 'LatoBold',
+                    fontWeight: 'bold'
+                },
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
             })} />
-            <Stack.Screen name="Creative" component={Creative} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Diary" component={Diary} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Relax" component={Relax} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Maxim" component={Maxim} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '', headerTransparent: true }} />
-            <Stack.Screen name="Travel" component={Travel} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '', headerLeftContainerStyle: { paddingLeft: 15 }, headerRightContainerStyle: { paddingRight: 15 } }} />
-            <Stack.Screen name="Style" component={Style} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Detail Book" children={props => <DetailBook {...props} context={context} />} options={({ route, navigation }) => ({ data: route.params.data, headerShown: true, headerTitleAlign: 'center', headerTransparent: true })} />
+            <Stack.Screen name="Creative" component={Creative} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }} />
+            <Stack.Screen name="Diary" component={Diary} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }} />
+            <Stack.Screen name="Relax" component={Relax} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }} />
+            <Stack.Screen name="Maxim" component={Maxim} options={{
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerTitle: '',
+                headerTransparent: true
+            }}
+            />
+            <Stack.Screen name="Travel" component={Travel} options={{
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerTitle: '',
+                headerLeftContainerStyle: {
+                    paddingLeft: 15
+                },
+                headerRightContainerStyle: {
+                    paddingRight: 15
+                },
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
+            }} />
+            <Stack.Screen name="Style" component={Style} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }} />
+            <Stack.Screen name="Detail" component={Detail} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }} />
+            <Stack.Screen name="Detail Book" children={props => <DetailBook {...props} context={context} />} options={({ route, navigation }) => ({
+                data: route.params.data,
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerTransparent: true
+            })}
+            />
             <Stack.Screen name="Detail Travel" component={DetailTravel} options={({ route, navigation }) => ({
                 headerLeft: () => (
                     <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
                         <FontAwesome name='chevron-left' size={20} color='white' />
                     </TouchableOpacity>
                 )
-                , headerShown: true, headerTitleAlign: 'center', title: route.params.title,
-                headerTitleStyle: { fontFamily: 'LatoBold', fontWeight: 'bold' }
+                ,
+                headerShown: true,
+                headerTitleAlign: 'center',
+                title: route.params.title,
+                headerTitleStyle: {
+                    fontFamily: 'LatoBold',
+                    fontWeight: 'bold'
+                },
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
             })} />
-            <Stack.Screen name="View Image" component={ViewImage} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Month" component={Month} options={({ route, navigation }) => ({ headerShown: true, headerTitleAlign: 'center', headerTransparent: true, headerTitleStyle: { color: 'white' }, title: route.params.month + `/${route.params.year}` })} />
-            <Stack.Screen name="Day" component={Day} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Focus" component={Focus} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Sleep" component={Sleep} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Relax Action" component={RelaxAction} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Life" component={Life} options={{ headerShown: true, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Life Story" component={Story} options={{ headerShown: false, headerTitleAlign: 'center' }} />
-            <Stack.Screen name="Vocabulary" component={Vocabulary} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '' }} />
+            <Stack.Screen name="View Image" component={ViewImage} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }}
+            />
+            <Stack.Screen name="Month" component={Month} options={({ route, navigation }) => ({
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerTransparent: true,
+                headerTitleStyle: {
+                    color: 'white'
+                },
+                title: route.params.month + `/${route.params.year}`
+            })} />
+            <Stack.Screen name="Day" component={Day} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }}
+            />
+            <Stack.Screen name="Focus" component={Focus} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }}
+            />
+            <Stack.Screen name="Sleep" component={Sleep} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }}
+            />
+            <Stack.Screen name="Relax Action" component={RelaxAction} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }}
+            />
+            <Stack.Screen name="Life" component={Life} options={{
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
+            }}
+            />
+            <Stack.Screen name="Life Story" component={Story} options={{
+                headerShown: false,
+                headerTitleAlign: 'center'
+            }}
+            />
+            <Stack.Screen name="Vocabulary" component={Vocabulary} options={{
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerTitle: '',
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
+            }} />
+            <Stack.Screen name="Synthesis" component={Synthesis} options={{
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerTitle: '',
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
+            }} />
             <Stack.Screen name="Investment" component={Investment} options={({ route, navigation }) => ({
-                headerShown: true, headerTitle: '', headerTitleAlign: 'center', headerLeft: () => (
-                    <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
-                        <FontAwesome name='chevron-left' size={20} color='white' />
-                    </TouchableOpacity>
-                )
-            })} />
-            <Stack.Screen name="View Invest" component={ViewInvest} options={({ route, navigation }) => ({
-                headerShown: true, headerTitleAlign: 'center', headerTitle: '', headerLeft: () => (
-                    <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
-                        <FontAwesome name='chevron-left' size={20} color='white' />
-                    </TouchableOpacity>
-                )
-            })} />
-            <Stack.Screen name="Setting" children={(props) => <Settings {...props} context={context} />} options={({ route, navigation }) => ({
-                headerShown: true, headerTitleAlign: 'center', headerLeft: () => (
+                headerShown: true,
+                headerTitle: '',
+                headerTitleAlign: 'center',
+                headerLeft: () => (
                     <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
                         <FontAwesome name='chevron-left' size={20} color='white' />
                     </TouchableOpacity>
                 ),
-                headerTitleStyle: { fontFamily: 'LatoBold', fontWeight: 'bold' }
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
+            })} />
+            <Stack.Screen name="View Invest" component={ViewInvest} options={({ route, navigation }) => ({
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerTitle: '',
+                headerLeft: () => (
+                    <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
+                        <FontAwesome name='chevron-left' size={20} color='white' />
+                    </TouchableOpacity>
+                ),
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
+            })} />
+            <Stack.Screen name="Setting" children={(props) => <Settings {...props} context={context} />} options={({ route, navigation }) => ({
+                headerShown: true,
+                headerTitleAlign: 'center',
+                headerLeft: () => (
+                    <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.goBack()}>
+                        <FontAwesome name='chevron-left' size={20} color='white' />
+                    </TouchableOpacity>
+                ),
+                headerTitleStyle: {
+                    fontFamily: 'LatoBold',
+                    fontWeight: 'bold'
+                },
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
             })} />
         </Stack.Navigator>
     )
@@ -116,7 +266,12 @@ function HomeStack({ context }) {
 function StatisticStack({ context }) {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Statistic" component={Statistic} options={{ headerTitleAlign: 'center' }} />
+            <Stack.Screen name="Statistic" component={Statistic} options={{
+                headerTitleAlign: 'center',
+                headerStyle: {
+                    backgroundColor: context.theme.colors.background
+                }
+            }} />
         </Stack.Navigator>
     )
 }

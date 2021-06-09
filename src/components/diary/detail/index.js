@@ -330,7 +330,7 @@ export default function Month({ route, navigation }) {
                     setVisible(false);
                     navigation.goBack()
                 }}
-                onBackdropPress={() => setVisible(false)}
+                // onBackdropPress={() => setVisible(false)}
                 isVisible={visible}
             >
                 <View style={ModalStyles.mainView}>

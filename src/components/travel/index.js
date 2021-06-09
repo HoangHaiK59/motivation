@@ -204,7 +204,6 @@ class Travel extends React.Component {
                     isVisible={this.state.visible}
                     swipeDirection={['down', 'left', 'right', 'up']}
                     onSwipeComplete={() => this.setState({ visible: false })}
-                    onBackdropPress={() => this.setState({ visible: false })}
                     onBackButtonPress={() => this.setState({ visible: false })}
                 >
                     <View style={styles.swipeView}>

@@ -36,7 +36,6 @@ const UpdateProgress = ({ schedule, item, visible, setVisible, callBackEvent }) 
     }
     return <Modal
         isVisible={visible}
-        onBackdropPress={() => setVisible(false)}
         onBackButtonPress={() => {
             setVisible(false);
         }}

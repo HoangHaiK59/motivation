@@ -129,7 +129,6 @@ export default function DetailBook({ route, navigation, context }) {
             }
             <Modal
                 isVisible={visible}
-                onBackdropPress={() => setVisible(false)}
                 onBackButtonPress={() => {
                     setVisible(false);
                     navigation.goBack();
@@ -163,7 +162,6 @@ export default function DetailBook({ route, navigation, context }) {
             </Modal>
             <Modal
                 isVisible={modal}
-                onBackdropPress={() => setModal(false)}
                 onBackButtonPress={() => {
                     setModal(false);
                     navigation.goBack();

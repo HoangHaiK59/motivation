@@ -80,7 +80,6 @@ const Schedule = ({ date, visible, setVisible, callBackEvent }) => {
     }
     return <Modal
         isVisible={visible}
-        onBackdropPress={() => setVisible(false)}
         onBackButtonPress={() => {
             setVisible(false);
         }}

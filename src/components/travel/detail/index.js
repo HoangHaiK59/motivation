@@ -266,7 +266,6 @@ export default function DetailTravel({ route, navigation }) {
                 isVisible={visible}
                 swipeDirection={['down', 'left', 'right', 'up']}
                 onSwipeComplete={() => setVisible(false)}
-                onBackdropPress={() => setVisible(false)}
                 onBackButtonPress={() => setVisible(false)}
             >
                 <View style={styles.swipeView}>

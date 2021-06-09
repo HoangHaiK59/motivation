@@ -339,7 +339,6 @@ class Maxim extends React.Component {
                     isVisible={this.state.visible}
                     onSwipeComplete={() => this.setState({ visible: false })}
                     swipeDirection={['up', 'left', 'right', 'down']}
-                    onBackdropPress={() => this.setState({ visible: false })}
                     onBackButtonPress={() => {
                         this.setState({ visible: false });
                         this.props.navigation.goBack();

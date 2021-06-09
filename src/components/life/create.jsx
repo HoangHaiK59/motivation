@@ -100,7 +100,6 @@ const New = ({ visible, setVisible, callback }) => {
 
     return <Modal
         isVisible={visible}
-        onBackdropPress={() => setVisible(false)}
         onBackButtonPress={() => {
             setVisible(false);
         }}

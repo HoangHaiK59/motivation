@@ -72,7 +72,7 @@ const Day = ({ route, navigation }) => {
             <Modal isVisible={visible}
                 swipeDirection={['down', 'left', 'right', 'up']}
                 onSwipeComplete={() => setVisible(false)}
-                onBackdropPress={() => setVisible(false)}
+                // onBackdropPress={() => setVisible(false)}
                 onBackButtonPress={() => navigation.goBack()}
             >
                 <View style={styles.swipeView}>
